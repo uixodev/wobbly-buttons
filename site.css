@@ -270,8 +270,8 @@ a { color: inherit; }
 
 /* ═════════ ORCHID BANDS: Services and Contact sit on full-width purple ═════════ */
 #services, #contact {
-  --muted: rgba(17, 17, 17, .74); --hair: rgba(17, 17, 17, .22);
-  background: var(--accent); box-shadow: 0 0 0 100vmax var(--accent); clip-path: inset(0 -100vmax); border-top: 0;
+  --band: #D8C7EB; --muted: rgba(17, 17, 17, .9); --hair: rgba(17, 17, 17, .2);
+  background: var(--band); box-shadow: 0 0 0 100vmax var(--band); clip-path: inset(0 -100vmax); border-top: 0;
 }
 #services { margin-top: 1px; }
 .more-blob { background: #fff; }
