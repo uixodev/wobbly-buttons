@@ -1,0 +1,2 @@
+/* Hides the native cursor only once the ink cursor is active (fine pointers). */
+html.ink-cursor-on, html.ink-cursor-on * { cursor: none !important; }

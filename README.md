@@ -26,3 +26,12 @@ Run: `npx serve .` (or any static server) and open `index.html`.
 ```
 
 The A-mark is a soft-body blob with an imperfect, gently wobbling outline (like the buttons); its eyes track the cursor, the body leans and bulges toward it, the dot floats away when you hover, a press squishes it and release makes it hop, and it blinks on its own. Size with `font-size`, colour with `color`.
+
+## Ink-droplet cursor
+
+```html
+<link rel="stylesheet" href="ink-cursor.css" />
+<script type="module" src="ink-cursor.js"></script>
+```
+
+A living ink droplet replaces the native cursor: it lags the pointer on a spring, wobbles, stretches into a teardrop along its direction of travel, swells over links/buttons, squishes on press, and leaves a thin trail that fades in about half a second. It uses `mix-blend-mode: difference`, so it is dark on light backgrounds and flips light over dark ones (like the solid button). Only activates for fine pointers (mouse/pen), so touch devices keep their normal behaviour; with `prefers-reduced-motion` it is a plain droplet with no trail. Tune `R`, `TRAIL_MS` and the spring constants at the top of `ink-cursor.js`.
