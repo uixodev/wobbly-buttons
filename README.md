@@ -47,3 +47,13 @@ A living ink droplet replaces the native cursor: it lags the pointer on a spring
 ## Navigation bar
 
 `nav.css` + the `<header class="site-nav">` markup in `index.html`: logo on the left, mono uppercase links centred (hover lifts + turns Orchid), `[ BRISTOL, UK ]` and a softly breathing ink dot on the right. Collapses to logo + links on phones.
+
+## Hero: procedural glass flower
+
+`glass-flower.js` builds the flower in code (three.js, no Blender / no model file): six separate, named petals (`Petal_01`…`Petal_06`) plus `Centre_Pod` and `Centre_Ring`, grouped under one `Flower` group. Each petal is a closed, thick, rounded-edge surface from a parametric grid (~4k triangles each); the `PETALS` table at the top of the file holds every artistic parameter (length, width, opening angle, cup, twist, skew, ripple, thickness) — edit a row and it rebuilds.
+
+`hero-flower.js` renders it as refractive glass (`MeshPhysicalMaterial`: transmission, IOR 1.55, dispersion, faint Orchid attenuation) in a small procedural photo-studio. The giant headline and the thin curved line are painted into the scene background, so the glass really bends them. A hidden `<h1>` keeps the real text for screen readers / SEO / no-WebGL. Scrolling the tall hero turns the flower from face-on into its side profile and spins it (damped, `prefers-reduced-motion` aware).
+
+- Fonts: Bodoni Moda (headline), Cormorant Garamond (paragraph), JetBrains Mono (tagline / nav).
+- Export for Spline etc.: open the console and run `exportFlowerGLB()`. The mesh exports cleanly; the glass look (transmission, IOR, dispersion, tint) is a runtime material, so recreate it in Spline's glass material.
+- three.js loads from a CDN via the import map in `index.html` (pinned `0.170.0`).

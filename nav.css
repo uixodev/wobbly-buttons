@@ -1,5 +1,8 @@
 /* Site navigation: logo · links · location tag */
 .site-nav {
+  --nav-h: 64px;
+  position: sticky; top: 0; z-index: 20;
+  min-height: var(--nav-h); box-sizing: border-box;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
