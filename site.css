@@ -130,9 +130,9 @@ a { color: inherit; }
 .mini-photo-pink { background: radial-gradient(ellipse 40% 36% at 50% 55%, #f3c9c2 0 60%, transparent 62%), radial-gradient(ellipse 20% 30% at 35% 40%, #f0b8b3 0 60%, transparent 62%), radial-gradient(ellipse 22% 28% at 65% 42%, #f0b8b3 0 60%, transparent 62%), linear-gradient(150deg, #f9d9d4, #f2bdbb); }
 .mini-photo-coffee { background: radial-gradient(ellipse 30% 38% at 50% 58%, rgba(255,255,255,.65) 0 56%, transparent 58%), radial-gradient(ellipse 26% 22% at 50% 70%, #b97a42 0 60%, transparent 62%), linear-gradient(160deg, #3c2c20, #7a5a3c); }
 
-.scene-tablet { background: linear-gradient(160deg, #cdb79e, #e9dccb 60%, #efe6d9); }
+.scene-tablet { background: #e4d5c2; }
 .tablet { left: 7%; top: 12%; width: 78%; transform: perspective(1100px) rotateY(9deg) rotateX(4deg) rotateZ(-9deg); background: #1c1c1c; padding: 2.2%; border-radius: 14px; filter: drop-shadow(0 16px 16px rgba(60,38,20,.3)); aspect-ratio: 1.38; }
-.scene-pink { background: linear-gradient(150deg, #6c775b, #59634b 55%, #485139); }
+.scene-pink { background: #59634b; }
 .card-mock { left: 8%; top: 10%; width: 82%; background: #fceae5; border-radius: 12px; padding: 1.2%; box-shadow: 0 18px 30px rgba(120,40,60,.22); transform: rotate(-1.5deg); aspect-ratio: 1.42; }
 .card-mock .mini-nav { padding-top: 3.6cqw; } .card-mock .mini-body { padding-top: 4cqw; }
 .petal { position: absolute; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #fbd2dc, #ee93ae 70%); box-shadow: 0 4px 10px rgba(150,50,80,.25); }
