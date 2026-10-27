@@ -268,13 +268,13 @@ a { color: inherit; }
   .note-contact { right: auto; left: 2%; top: -14%; } .note-contact .hand { font-size: 1.15rem; }
 }
 
-/* ═════════ ORCHID BANDS: Services and Contact sit on full-width purple ═════════ */
-#services, #contact {
-  --band: #D8C7EB; --muted: rgba(17, 17, 17, .9); --hair: rgba(17, 17, 17, .2);
-  background: var(--band); box-shadow: 0 0 0 100vmax var(--band); clip-path: inset(0 -100vmax); border-top: 0;
-}
-#services { margin-top: 1px; }
-.more-blob { background: #fff; }
-.more-blob:hover { background: #fff; }
+/* ═════════ LILAC BANDS: Services and Contact sit on full-width, hand-cut lilac shapes (wobbly edges, never a ruler line) ═════════ */
+#services, #contact { --muted: rgba(17, 17, 17, .9); --hair: rgba(17, 17, 17, .2); position: relative; isolation: isolate; border-top: 0; }
+#services::before, #contact::before { content: ""; position: absolute; z-index: -1; left: calc(50% - 50vw); right: calc(50% - 50vw); top: -34px; bottom: -34px; background: #D8C7EB; pointer-events: none; }
+#services::before { clip-path: url(#band-a); }
+#contact::before { clip-path: url(#band-b); bottom: -4px; }
+.more-blob, .more-blob:hover { background: #fff; }
 #contact { padding-bottom: calc(clamp(60px, 8vw, 120px) + clamp(64px, 8vw, 118px)); }
 .footer, .footer-dark { margin-top: 0; }
+html { overflow-x: clip; }
+#playground { border-top: 0; }
