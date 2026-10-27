@@ -267,3 +267,14 @@ a { color: inherit; }
   .legal-row { flex-direction: column; align-items: flex-start; gap: 14px; }
   .note-contact { right: auto; left: 2%; top: -14%; } .note-contact .hand { font-size: 1.15rem; }
 }
+
+/* ═════════ ORCHID BANDS: Services and Contact sit on full-width purple ═════════ */
+#services, #contact {
+  --muted: rgba(17, 17, 17, .74); --hair: rgba(17, 17, 17, .22);
+  background: var(--accent); box-shadow: 0 0 0 100vmax var(--accent); clip-path: inset(0 -100vmax); border-top: 0;
+}
+#services { margin-top: 1px; }
+.more-blob { background: #fff; }
+.more-blob:hover { background: #fff; }
+#contact { padding-bottom: calc(clamp(60px, 8vw, 120px) + clamp(64px, 8vw, 118px)); }
+.footer, .footer-dark { margin-top: 0; }
