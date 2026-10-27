@@ -28,7 +28,7 @@ body { margin: 0; background: var(--bg); color: var(--ink); font: 300 1.08rem/1.
 img, svg, canvas { display: block; max-width: 100%; }
 a { color: inherit; }
 ::selection { background: var(--accent); color: var(--ink); }
-.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .wrap { width: min(1380px, 100% - 2 * var(--gutter)); margin-inline: auto; }
 [id] { scroll-margin-top: 84px; }
 
@@ -340,60 +340,36 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   .social svg { width: 28px; height: 28px; }
 }
 
-/* ═════════ HERO: a deck of mini-story cards starring the character. Click / swipe / arrow keys to swap; the top card plays its story ═════════ */
-.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.hero-deck { position: relative; width: min(100%, 560px); margin-inline: auto; outline: none; -webkit-tap-highlight-color: transparent; }
-.dk-stack { position: relative; aspect-ratio: 1.16; margin: 0 0 0 0; }
-.dk-card { --p: 0; --fg: #111; --bgc: #fff; --sign: 1; position: absolute; left: 4%; top: 7%; width: 80%; aspect-ratio: 1.2; background: var(--bgc); color: var(--fg); border: 1.5px solid #111; border-radius: 18px 14px 19px 13px / 14px 19px 13px 16px; overflow: hidden; cursor: grab; touch-action: pan-y; -webkit-user-select: none; user-select: none;
-  z-index: calc(10 - var(--p)); transform: translate(calc(var(--p) * 17px), calc(var(--p) * -13px)) rotate(calc(var(--p) * var(--sign) * 2.4deg)) scale(calc(1 - var(--p) * .04));
-  transition: transform .55s cubic-bezier(.3, 1.3, .5, 1), opacity .4s ease, box-shadow .3s ease; box-shadow: 7px 12px 0 rgba(17, 17, 17, .09); }
-.dk-card:nth-child(even) { --sign: -1; }
-.dk-card.tone-sand { --bgc: #E4D5C2; }
-.dk-card.tone-black { --bgc: #111; --fg: #F7F3EF; border-color: #111; }
-.dk-card.top { box-shadow: 9px 16px 0 rgba(17, 17, 17, .12), 0 34px 50px -26px rgba(17, 17, 17, .4); }
-.dk-card.drag { cursor: grabbing; transition: none; }
-.dk-card svg { display: block; width: 100%; height: 100%; fill: var(--fg); stroke: none; overflow: visible; }
-.dk-card .ground { fill: none; stroke: var(--fg); stroke-width: 1.6; stroke-linecap: round; opacity: .7; }
-.dk-card .ground.dash { stroke-dasharray: 6 8; }
-.dk-card .arm { fill: none; stroke: var(--fg); stroke-width: 5.5; stroke-linecap: round; }
-.dk-card .mark { fill: none; stroke: var(--fg); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.dk-card .mark.big { stroke-width: 3; }
-.dk-card .outline { fill: none; stroke: var(--fg); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
-.dk-card .outline.fillp { fill: var(--bgc); }
-.dk-card .fillc { fill: var(--fg); }
-.dk-card .eyes ellipse { fill: var(--bgc); } .dk-card .eyes .pupil { fill: var(--fg); translate: var(--look, 0 0); }
-.dk-card .say { font: 400 26px var(--hand); fill: var(--fg); } .dk-card .say.sm { font-size: 20px; }
-.dk-card .mono { font: 400 7px var(--mono); letter-spacing: .1em; fill: var(--fg); }
-.dk-card .drops path { fill: var(--fg); }
-.dk-chap { position: absolute; left: 6%; bottom: 4%; margin: 0; font: 400 .66rem/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; opacity: .7; }
-.dk-chap b { font-weight: 400; margin-right: 8px; }
-.dk-ui { display: flex; align-items: center; justify-content: center; gap: 18px; margin: 6px 0 0; }
-.dk-ui button { width: 40px; height: 40px; border: 1.5px solid var(--ink); border-radius: 50% 46% 52% 48% / 48% 52% 46% 50%; background: transparent; color: var(--ink); font: 400 1rem/1 var(--mono); cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background .25s ease, color .25s ease, transform .4s cubic-bezier(.3, 1.6, .5, 1); }
-.dk-ui button:hover, .dk-ui button:focus-visible { background: var(--ink); color: var(--bg); transform: rotate(-6deg) scale(1.08); outline: none; }
-.dk-dots { display: flex; gap: 9px; } .dk-dots i { width: 8px; height: 8px; border: 1.3px solid var(--ink); border-radius: 50%; transition: background .3s ease, transform .3s ease; } .dk-dots i.on { background: var(--ink); transform: scale(1.25); }
-.hero-deck:focus-visible .dk-stack { outline: 2px dashed var(--ink); outline-offset: 12px; }
-.dk-note { left: 1%; top: -10%; flex-direction: column; align-items: flex-start; transform: rotate(-7deg); pointer-events: none; }
-.dk-note .hand { font-size: clamp(1.15rem, 1.9vw, 1.55rem); line-height: 1; margin: 0; }
-.dk-note .scribble { width: clamp(34px, 4.2vw, 56px); margin-left: 36px; }
 
-/* the stories: they only play on the top card */
-.dk-card:not(.top) * { animation-play-state: paused !important; }
-.arm-wave { animation: wave .9s ease-in-out infinite alternate; } @keyframes wave { from { transform: rotate(-14deg); } to { transform: rotate(18deg); } }
-.bubble { transform-box: view-box; transform-origin: 170px 40px; animation: pop 4.2s ease-in-out infinite; } .bubble.slow { transform-origin: 50px 40px; animation-duration: 5s; }
-@keyframes pop { 0%, 6% { transform: scale(0); opacity: 0; } 14%, 86% { transform: scale(1); opacity: 1; } 100% { transform: scale(.9); opacity: 0; } }
-.eye { animation: blink 4.5s infinite; transform-box: fill-box; transform-origin: center; } @keyframes blink { 0%, 94%, 100% { transform: scaleY(1); } 97% { transform: scaleY(.1); } }
-.strain { animation: strain 2.2s ease-in-out infinite alternate; transform-box: view-box; } @keyframes strain { from { transform: rotate(-9deg); } to { transform: rotate(-4deg); } }
-.typing { animation: type .28s ease-in-out infinite alternate; } @keyframes type { from { transform: translate(0, 0); } to { transform: translate(3px, 3px); } }
-.drops path { animation: drop 1.5s ease-in infinite; animation-delay: var(--d, 0s); opacity: 0; } @keyframes drop { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(26px); opacity: 0; } }
-.laptop text { animation: flash 1.2s steps(2) infinite; } @keyframes flash { 50% { opacity: .2; } }
-.rays .mark, .spark .mark { animation: twinkle 1.2s ease-in-out infinite; animation-delay: var(--d, 0s); transform-box: fill-box; transform-origin: center; } @keyframes twinkle { 0%, 100% { opacity: .2; transform: scale(.7); } 50% { opacity: 1; transform: scale(1.1); } }
-.bulb { animation: bulb 2s ease-in-out infinite; transform-box: fill-box; transform-origin: center bottom; } @keyframes bulb { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
-.hop { animation: hop 1.1s cubic-bezier(.3, 0, .3, 1) infinite; } @keyframes hop { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(-14px); } 70% { transform: translateY(0) scaleY(.96); } }
-.arm.up.l { animation: cheerl .55s ease-in-out infinite alternate; } .arm.up.r { animation: cheerr .55s ease-in-out infinite alternate; } @keyframes cheerl { from { transform: rotate(-6deg); } to { transform: rotate(8deg); } } @keyframes cheerr { from { transform: rotate(6deg); } to { transform: rotate(-8deg); } }
-.walk { animation: walk .5s ease-in-out infinite alternate; transform-box: view-box; } @keyframes walk { from { transform: translateY(0) rotate(-2deg); } to { transform: translateY(-5px) rotate(2deg); } }
-.arm.swing.a { animation: swing .5s ease-in-out infinite alternate; } .arm.swing.b { animation: swing .5s ease-in-out infinite alternate-reverse; } @keyframes swing { from { transform: rotate(-22deg); } to { transform: rotate(22deg); } }
-.ground.dash { animation: scroll 1s linear infinite; } @keyframes scroll { to { stroke-dashoffset: -28; } }
-.dust circle { animation: dust 1s ease-out infinite; animation-delay: var(--d, 0s); transform-box: fill-box; transform-origin: center; } @keyframes dust { from { transform: scale(.4) translateX(0); opacity: .9; } to { transform: scale(1.6) translateX(-16px); opacity: 0; } }
-@media (hover: none) { .dk-card { cursor: pointer; } }
-@media (max-width: 900px) { .hero-deck { width: min(100%, 480px); } .dk-note { left: 0; top: -4%; } }
-@media (prefers-reduced-motion: reduce) { .dk-card, .dk-card * { animation: none !important; transition: none !important; } .bubble { opacity: 1; transform: none; } }
+/* ═════════ HERO: the cat at its desk (traced from the drawing, then animated). Tail swings, notes sway, plant breathes, it blinks, its eyes follow your cursor, click it to say meow ═════════ */
+.hero-cat { width: min(112%, 780px); margin: 0 auto 64px; margin-left: clamp(-60px, -4vw, 0px); cursor: pointer; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; touch-action: manipulation; }
+.hero-cat svg { display: block; width: 100%; height: auto; overflow: visible; }
+.hero-cat .ink use { fill: var(--ink); }
+.hero-cat .a { transform-box: view-box; }
+.hero-cat .eyes .cover { fill: var(--ink); } .hero-cat .eyes .white { fill: #F7F3EF; }
+.hero-cat .look { transform: translate(var(--ex, 0px), var(--ey, 0px)); transition: transform .12s ease-out; }
+.hero-cat .white { transform-box: fill-box; transform-origin: center; animation: cat-blink 5s infinite; }
+@keyframes cat-blink { 0%, 93%, 100% { scale: 1 1; } 96% { scale: 1 .08; } }
+.a-tail { transform-origin: 470px 495px; animation: cat-tail 2.8s ease-in-out infinite alternate; }
+@keyframes cat-tail { from { transform: rotate(-6deg); } to { transform: rotate(8deg); } }
+.a-ear { transform-origin: 790px 240px; animation: cat-ear 7s infinite; }
+@keyframes cat-ear { 0%, 88%, 100% { transform: rotate(0); } 91% { transform: rotate(-7deg); } 94% { transform: rotate(3deg); } 97% { transform: rotate(-4deg); } }
+.a-n1 { transform-origin: 375px 30px; animation: cat-sway 5.2s ease-in-out infinite alternate; }
+.a-n2 { transform-origin: 1022px 58px; animation: cat-sway 4.4s ease-in-out -1.4s infinite alternate; }
+.a-n3 { transform-origin: 1175px 135px; animation: cat-sway 4.9s ease-in-out -2.6s infinite alternate; }
+@keyframes cat-sway { from { transform: rotate(-1.6deg); } to { transform: rotate(1.6deg); } }
+.a-plant { transform-origin: 1250px 440px; animation: cat-plant 3.8s ease-in-out infinite alternate; }
+@keyframes cat-plant { from { transform: rotate(-2.2deg); } to { transform: rotate(3deg); } }
+.a-spark { animation: cat-spark 2.2s steps(1) infinite; }
+@keyframes cat-spark { 0%, 55% { opacity: 1; } 62% { opacity: .1; } 70% { opacity: 1; } 78% { opacity: .1; } 86%, 100% { opacity: 1; } }
+.a-logo { transform-origin: 978px 428px; animation: cat-logo 3.2s ease-in-out infinite; }
+@keyframes cat-logo { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.09); } }
+.hero-cat .steam path { stroke: var(--ink); stroke-width: 3; stroke-dasharray: .7 1.4; animation: cat-steam 3.4s ease-in-out infinite; animation-delay: var(--d, 0s); opacity: 0; }
+@keyframes cat-steam { 0% { stroke-dashoffset: .7; opacity: 0; } 25% { opacity: .75; } 100% { stroke-dashoffset: -.9; opacity: 0; } }
+.hero-cat .meow { font: 400 54px var(--hand); fill: var(--ink); opacity: 0; transform-box: fill-box; transform-origin: left bottom; }
+.hero-cat.said .meow { animation: cat-meow 1.5s ease both; }
+@keyframes cat-meow { 0% { opacity: 0; scale: .5; } 15%, 75% { opacity: 1; scale: 1; } 100% { opacity: 0; scale: 1; translate: 0 -14px; } }
+.hero-cat.said .a-tail { animation-duration: .5s; } .hero-cat.said .a-ear { animation: cat-ear-fast .6s 2; }
+@keyframes cat-ear-fast { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-8deg); } }
+@media (max-width: 900px) { .hero-cat { width: 100%; margin-left: 0; } }
+@media (prefers-reduced-motion: reduce) { .hero-cat *, .hero-cat .look { animation: none !important; transition: none !important; } }
