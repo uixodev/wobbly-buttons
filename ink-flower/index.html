@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Living ink flower</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #F7F3EF; }
+    canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: pan-y; }
+    .hint { position: fixed; left: 24px; bottom: 20px; margin: 0; font: 400 12px/1.5 ui-monospace, "JetBrains Mono", Menlo, monospace; letter-spacing: .14em; text-transform: uppercase; color: #8a847f; pointer-events: none; }
+  </style>
+</head>
+<body>
+  <canvas id="ink" aria-label="Interactive ink flower artwork" role="img"></canvas>
+  <p class="hint">Living ink · move your cursor close</p>
+  <script type="module">
+    import { createInkFlower } from './ink-flower.js';
+    window.flower = createInkFlower(document.getElementById('ink'));   // try flower.set({ petalCount: 5, damping: 4 }) in the console
+  </script>
+</body>
+</html>

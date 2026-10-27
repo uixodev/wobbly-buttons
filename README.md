@@ -59,3 +59,7 @@ A living ink droplet replaces the native cursor: it lags the pointer on a spring
 - three.js loads from a CDN via the import map in `index.html` (pinned `0.170.0`).
 
 `SHOW_DECOR` at the top of `hero-flower.js` (default `false`) brings back the flowing line, its dots and the floating droplets once the flower composition is final.
+
+## Living ink flower (stage 1 preview)
+
+`ink-flower/index.html` + `ink-flower/ink-flower.js`: a flower of soft, elastic black ink in plain Canvas 2D (no dependencies). Run any static server in the repo root and open `/ink-flower/`. All the knobs live in the labelled `CONFIG` block at the top of `ink-flower.js` (petal count/length/width, asymmetry, idle movement, cursor radius and push/pull strength, spring strength, damping, colours); tweak live from the console with `flower.set({ ... })`. Not yet wired into the hero.
