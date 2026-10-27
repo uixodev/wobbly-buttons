@@ -1,61 +1,73 @@
-// Hero: three floating sample websites in a little 3D stage.
-//   cursor     the whole stage tilts toward it; the cards sit at different depths so they slide against each other (parallax)
-//   drag       pick a card up (mouse / pen) and move it; let go and it springs home
-//   click/tap  brings that card to the front
-// With prefers-reduced-motion nothing tilts or springs; cards still come forward on click.
+// Hero: a deck of mini-story cards starring the character (hello → hmm… → aha! → off we go).
+//   top card   plays its little animation (the others wait, paused)
+//   click/tap  swaps: the top card flies off and slips to the back of the deck
+//   drag/swipe pull the top card sideways and let go past a threshold to swap (otherwise it springs back)
+//   keys       ← / → (or Enter / Space) when the deck is focused; the arrow buttons work too
+//   auto       swaps every few seconds while visible; pauses while you hover or focus it, and stops for good once you swap by hand
+// To change a story, edit that card's <svg> in index.html. With prefers-reduced-motion there is no auto-swap and cards change instantly.
 
-const root = document.getElementById('hero-cards');
-if (root) {
+const deck = document.getElementById('hero-deck');
+if (deck) {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const stage = root.querySelector('.hc-stage'), cursorEl = root.querySelector('.hc-cursor');
-  const cards = [...root.querySelectorAll('.hc')].map((el, i) => ({ el, depth: [46, 20, 0][i], x: 0, y: 0, vx: 0, vy: 0, tx: 0, ty: 0, drag: false, z: 3 - i }));
-  const tilt = { rx: 0, ry: 0, trx: 0, try: 0 }, par = { x: 0, y: 0, tx: 0, ty: 0 };
-  let raf = 0, visible = true, ticks = 0;
+  const stack = deck.querySelector('.dk-stack'), cards = [...stack.querySelectorAll('.dk-card')], dots = [...deck.querySelectorAll('.dk-dots i')], live = document.getElementById('dk-live');
+  let order = cards.map((_, i) => i), busy = false, auto = !reduced, hovering = false, visible = true, timer = 0;
 
-  addEventListener('pointermove', (e) => {
-    if (reduced || e.pointerType === 'touch') return;
-    const r = root.getBoundingClientRect(), nx = clamp(((e.clientX - (r.left + r.width / 2)) / (innerWidth / 2)), -1, 1), ny = clamp(((e.clientY - (r.top + r.height / 2)) / (innerHeight / 2)), -1, 1);
-    tilt.try = nx * 9; tilt.trx = -ny * 7; par.tx = nx; par.ty = ny; wake();
-  }, { passive: true });
-  function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
+  function apply() {
+    cards.forEach((c, i) => { const p = order.indexOf(i); c.style.setProperty('--p', p); c.classList.toggle('top', p === 0); c.setAttribute('aria-hidden', p === 0 ? 'false' : 'true'); });
+    dots.forEach((d, i) => d.classList.toggle('on', i === order[0]));
+    if (live) live.textContent = cards[order[0]].getAttribute('aria-label');
+  }
+  apply();
 
-  const front = (c) => { let top = Math.max(...cards.map((o) => o.z)); if (c.z === top) return; cards.forEach((o) => { if (o.z > c.z) o.z--; }); c.z = top; cards.forEach((o) => { o.el.style.zIndex = o.z; }); };
-  cards.forEach((c) => {
-    c.el.style.zIndex = c.z;
-    let sx = 0, sy = 0, moved = false;
-    c.el.addEventListener('pointerdown', (e) => {
-      front(c); if (reduced || e.pointerType === 'touch') return;
-      c.drag = true; moved = false; sx = e.clientX - c.x; sy = e.clientY - c.y; c.el.classList.add('drag'); c.el.setPointerCapture(e.pointerId); wake();
-    });
-    c.el.addEventListener('pointermove', (e) => { if (!c.drag) return; c.tx = e.clientX - sx; c.ty = e.clientY - sy; if (Math.abs(c.tx) + Math.abs(c.ty) > 4) moved = true; });
-    const drop = () => { if (!c.drag) return; c.drag = false; c.tx = c.ty = 0; c.el.classList.remove('drag'); wake(); };
-    c.el.addEventListener('pointerup', drop); c.el.addEventListener('pointercancel', drop);
+  function next(dir = 1, fromX = 0) {
+    if (busy) return; busy = true;
+    const top = cards[order[0]];
+    if (reduced) { order = dir > 0 ? [...order.slice(1), order[0]] : [order[order.length - 1], ...order.slice(0, -1)]; apply(); busy = false; return; }
+    if (dir > 0) {
+      const fly = top.animate([{ transform: top.style.transform || getComputedStyle(top).transform }, { transform: `translate(${(fromX >= 0 ? 1 : -1) * 120}%, -14%) rotate(${(fromX >= 0 ? 1 : -1) * 18}deg)`, opacity: 0 }], { duration: 380, easing: 'cubic-bezier(.4,0,.8,.4)', fill: 'forwards' });
+      fly.onfinish = () => {
+        top.style.transition = 'none'; fly.cancel(); order = [...order.slice(1), order[0]]; apply(); top.style.opacity = '0';
+        void top.offsetWidth; top.style.transition = ''; top.style.opacity = ''; busy = false;
+      };
+    } else {                                                          // bring the last card back to the front
+      const last = cards[order[order.length - 1]];
+      last.style.transition = 'none'; last.style.opacity = '0'; order = [last === top ? order[0] : order[order.length - 1], ...order.filter((i) => cards[i] !== last)]; apply(); void last.offsetWidth; last.style.transition = ''; last.style.opacity = ''; busy = false;
+    }
+  }
+  const stop = () => { auto = false; clearInterval(timer); };
+  const go = (dir, x) => { stop(); next(dir, x); };
+
+  deck.querySelector('.dk-next').addEventListener('click', (e) => { e.stopPropagation(); go(1); });
+  deck.querySelector('.dk-prev').addEventListener('click', (e) => { e.stopPropagation(); go(-1); });
+  deck.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(1); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
   });
 
-  function frame() {
-    ticks++;
-    tilt.rx += (tilt.trx - tilt.rx) * 0.08; tilt.ry += (tilt.try - tilt.ry) * 0.08;
-    par.x += (par.tx - par.x) * 0.08; par.y += (par.ty - par.y) * 0.08;
-    stage.style.setProperty('--rx', `${tilt.rx.toFixed(2)}deg`); stage.style.setProperty('--ry', `${tilt.ry.toFixed(2)}deg`);
-    let busy = Math.abs(tilt.trx - tilt.rx) + Math.abs(tilt.try - tilt.ry) > 0.02;
-    for (const c of cards) {
-      if (c.drag) { c.x += (c.tx - c.x) * 0.35; c.y += (c.ty - c.y) * 0.35; c.vx = c.vy = 0; busy = true; }
-      else {                                    // spring home
-        c.vx += (-90 * (c.x) - 11 * c.vx) * (1 / 60); c.vy += (-90 * (c.y) - 11 * c.vy) * (1 / 60); c.x += c.vx; c.y += c.vy;
-        if (Math.abs(c.x) + Math.abs(c.y) + Math.abs(c.vx) + Math.abs(c.vy) > 0.05) busy = true; else { c.x = c.y = c.vx = c.vy = 0; }
-      }
-      const lift = c.drag ? 40 : 0;
-      c.el.style.setProperty('--x', `${(c.x + par.x * c.depth * -0.5).toFixed(1)}px`);
-      c.el.style.setProperty('--y', `${(c.y + par.y * c.depth * -0.5).toFixed(1)}px`);
-      c.el.style.setProperty('--z', `${c.depth + lift}px`);
-    }
-    // the little arrow drifts with the front card's depth
-    cursorEl.style.setProperty('--cx', `${(par.x * -26).toFixed(1)}px`); cursorEl.style.setProperty('--cy', `${(par.y * -20).toFixed(1)}px`);
-    raf = visible && busy ? requestAnimationFrame(frame) : 0;
-  }
-  const wake = () => { if (!raf && visible && !reduced) raf = requestAnimationFrame(frame); };
-  new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) wake(); }).observe(root);
-  addEventListener('pointerleave', () => { tilt.trx = tilt.try = par.tx = par.ty = 0; wake(); });
-  document.documentElement.addEventListener('pointerleave', () => { tilt.trx = tilt.try = par.tx = par.ty = 0; wake(); });
-  if (!reduced) { tilt.trx = -2; tilt.try = 4; wake(); setTimeout(() => { tilt.trx = tilt.try = 0; wake(); }, 900); }   // a small hello tilt
+  // drag / swipe the top card
+  let drag = null;
+  stack.addEventListener('pointerdown', (e) => {
+    const top = cards[order[0]]; if (busy || !top.contains(e.target)) return;
+    drag = { x: e.clientX, y: e.clientY, dx: 0, top, id: e.pointerId, moved: false };
+  });
+  stack.addEventListener('pointermove', (e) => {
+    if (!drag || e.pointerId !== drag.id) return;
+    drag.dx = e.clientX - drag.x; const dy = e.clientY - drag.y;
+    if (!drag.moved && Math.abs(drag.dx) > 6 && Math.abs(drag.dx) > Math.abs(dy)) { drag.moved = true; drag.top.classList.add('drag'); drag.top.setPointerCapture(e.pointerId); }
+    if (drag.moved) drag.top.style.transform = `translate(${drag.dx}px, ${dy * 0.25}px) rotate(${drag.dx * 0.05}deg)`;
+  });
+  const end = (e) => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const d = drag; drag = null; d.top.classList.remove('drag');
+    if (d.moved && Math.abs(d.dx) > 80) { go(1, d.dx); d.top.style.transform = ''; }
+    else { d.top.style.transform = ''; if (!d.moved) go(1); }          // a plain click / tap swaps too
+  };
+  stack.addEventListener('pointerup', end); stack.addEventListener('pointercancel', (e) => { if (drag) { drag.top.classList.remove('drag'); drag.top.style.transform = ''; drag = null; } });
+
+  // gentle auto-play while it is on screen and untouched
+  const tick = () => { if (auto && visible && !hovering && !busy && !document.hidden) next(1); };
+  if (auto) timer = setInterval(tick, 5200);
+  deck.addEventListener('pointerenter', () => { hovering = true; }); deck.addEventListener('pointerleave', () => { hovering = false; });
+  deck.addEventListener('focusin', () => { hovering = true; }); deck.addEventListener('focusout', () => { hovering = false; });
+  new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(deck);
 }

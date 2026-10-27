@@ -80,35 +80,68 @@
       </div>
 
       <div class="hero-art">
-        <div class="hero-cards" id="hero-cards">
-          <div class="hc-stage">
-            <article class="hc hc-a" data-z="3" aria-label="Ava Studio, a sample website">
-              <div class="hc-bar"><i></i><i></i><i></i><span></span></div>
-              <div class="hc-body">
-                <div class="hc-copy"><b>Ava<br />Studio</b><em>Portfolio · 2025</em></div>
-                <svg class="hc-flower" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 52 C34 44 26 24 38 12 C48 4 56 22 50 52 C58 30 74 22 84 32 C92 42 70 52 50 52 C70 60 80 78 70 88 C60 96 52 78 50 52 C44 72 28 82 18 72 C10 62 30 52 50 52Z"/></svg>
-              </div>
+        <div class="hero-deck" id="hero-deck" tabindex="0" role="group" aria-roledescription="carousel" aria-label="Mini stories of the Vira character. Press an arrow key or click to swap cards.">
+          <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><g id="vira-body"><path d="M12 100 C14 62 26 10 50 10 C74 10 86 62 88 100 C80 104 72 96 68 82 C60 76 40 76 32 82 C28 96 20 104 12 100Z"/><circle cx="86" cy="12" r="6.5"/></g></defs></svg>
+          <div class="dk-stack">
+            <article class="dk-card tone-white" aria-label="Story 1 of 4: hello">
+              <svg viewBox="0 0 240 200" aria-hidden="true">
+  <path class="ground" d="M26 178 C80 174 160 182 214 177"/>
+  <path class="arm" d="M80 132 C66 140 62 152 66 162"/>
+  <g class="arm-wave" style="transform-origin:168px 124px"><path class="arm" d="M168 124 C188 112 196 94 193 76"/><path class="mark" d="M204 70 l9 -5 M205 82 l11 0 M201 60 l5 -9"/></g>
+  <g transform="translate(66 70) scale(1.1)"><use href="#vira-body"/></g>
+  <g class="eyes " transform="translate(66 70) scale(1.1)"><g class="eye"><ellipse cx="40" cy="44" rx="6.5" ry="8.5"/><circle class="pupil" cx="40" cy="44" r="3.2" style="--look:3px 1px"/></g><g class="eye"><ellipse cx="60" cy="44" rx="6.5" ry="8.5"/><circle class="pupil" cx="60" cy="44" r="3.2" style="--look:3px 1px"/></g></g>
+  <g class="bubble"><path class="outline" d="M138 22 C138 12 150 8 170 8 C196 8 210 14 210 30 C210 44 196 50 172 50 C166 50 160 49 156 47 L146 56 L148 44 C140 40 138 32 138 22Z"/><text x="174" y="37" text-anchor="middle" class="say">hi!</text></g>
+</svg>
+              <p class="dk-chap"><b>01</b> hello</p>
             </article>
-            <article class="hc hc-b" data-z="2" aria-label="Salt, a sample website">
-              <div class="hc-bar"><i></i><i></i><i></i><span></span></div>
-              <div class="hc-body">
-                <div class="hc-img"></div>
-                <div class="hc-copy"><b class="it">Salt</b><em>Ceramics &amp; objects</em></div>
-              </div>
+            <article class="dk-card tone-sand" aria-label="Story 2 of 4: hmm…">
+              <svg viewBox="0 0 240 200" aria-hidden="true">
+  <path class="ground" d="M20 178 C80 174 170 182 222 177"/>
+  <g class="floorballs"><circle cx="34" cy="172" r="6" class="outline"/><path class="mark" d="M30 170 l5 3 M32 175 l6 -3"/><circle cx="52" cy="176" r="5" class="outline"/></g>
+  <g class="laptop"><path class="outline" d="M132 98 H214 L212 150 H134 Z"/><path class="outline" d="M120 154 H228 L222 162 H126 Z"/><path class="mark big" d="M156 114 l18 18 M174 114 l-18 18"/><text x="173" y="146" class="mono" text-anchor="middle">ERROR</text></g>
+  <g class="strain" style="transform-origin:78px 176px"><g transform="translate(28 72) scale(1)"><use href="#vira-body"/></g>
+    <g class="eyes worry" transform="translate(28 72) scale(1)"><g class="eye"><ellipse cx="40" cy="44" rx="6.5" ry="8.5"/><circle class="pupil" cx="40" cy="44" r="3.2" style="--look:3px 3px"/></g><g class="eye"><ellipse cx="60" cy="44" rx="6.5" ry="8.5"/><circle class="pupil" cx="60" cy="44" r="3.2" style="--look:3px 3px"/></g></g>
+    <path class="mark brow" d="M56 78 l9 -4 M78 74 l8 4"/>
+    <g class="typing"><path class="arm" d="M104 134 C116 140 124 148 132 150"/></g>
+    <path class="arm" d="M34 138 C24 146 24 156 28 166"/>
+  </g>
+  <g class="drops"><path d="M98 56 q-4 7 0 10 q4 -3 0 -10z" style="--d:0s"/><path d="M110 64 q-4 7 0 10 q4 -3 0 -10z" style="--d:.5s"/><path d="M88 70 q-4 7 0 10 q4 -3 0 -10z" style="--d:1s"/></g>
+  <g class="bubble slow"><circle cx="50" cy="48" r="3" class="fillc"/><circle cx="40" cy="36" r="5" class="fillc"/><path class="outline" d="M22 26 C22 14 36 10 52 12 C70 8 86 16 82 26 C86 36 70 40 56 36 C42 42 24 38 22 26Z" transform="translate(-10 -10)"/><text x="30" y="20" text-anchor="middle" class="say sm">hmm…</text></g>
+</svg>
+              <p class="dk-chap"><b>02</b> hmm…</p>
             </article>
-            <article class="hc hc-c" data-z="1" aria-label="The Calm Club, a sample website">
-              <div class="hc-bar"><i></i><i></i><i></i><span></span></div>
-              <div class="hc-body">
-                <div class="hc-copy"><b>The<br />Calm<br />Club</b><em>Slow wellness</em></div>
-                <svg class="hc-plant" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 96 C50 70 48 44 52 14"/><path d="M50 70 C30 66 20 52 22 38 C40 40 48 54 50 70"/><path d="M51 52 C68 50 80 38 80 24 C62 26 52 38 51 52"/><path d="M50 82 C66 80 76 72 78 60 C62 62 52 70 50 82"/></svg>
-              </div>
+            <article class="dk-card tone-black" aria-label="Story 3 of 4: aha!">
+              <svg viewBox="0 0 240 200" aria-hidden="true">
+  <path class="ground" d="M26 178 C80 174 160 182 214 177"/>
+  <g class="rays"><path class="mark" d="M120 6 V-2 M148 14 l7 -6 M92 14 l-7 -6 M158 36 h8 M82 36 h-8"/></g>
+  <g class="bulb"><path class="outline fillp" d="M120 52 C98 52 92 30 106 18 C114 10 126 10 134 18 C148 30 142 52 120 52Z"/><path class="outline" d="M112 52 h16 M114 58 h12"/><path class="mark" d="M114 36 l6 -8 l6 8"/></g>
+  <path class="arm up l" d="M84 132 C66 124 60 106 64 90" style="transform-origin:84px 132px"/>
+  <path class="arm up r" d="M158 132 C176 124 182 106 178 90" style="transform-origin:158px 132px"/>
+  <g class="hop" style="transform-origin:120px 190px"><g transform="translate(70 76) scale(1.05)"><use href="#vira-body"/></g>
+  <g class="eyes " transform="translate(70 76) scale(1.05)"><g class="eye"><ellipse cx="40" cy="44" rx="6.5" ry="8.5"/><circle class="pupil" cx="40" cy="44" r="3.2" style="--look:0px -3px"/></g><g class="eye"><ellipse cx="60" cy="44" rx="6.5" ry="8.5"/><circle class="pupil" cx="60" cy="44" r="3.2" style="--look:0px -3px"/></g></g></g>
+  <g class="spark"><path class="mark" d="M40 60 v10 M35 65 h10"/><path class="mark" d="M200 120 v10 M195 125 h10" style="--d:.6s"/><path class="mark" d="M196 52 v8 M192 56 h8" style="--d:1.2s"/></g>
+  <text x="196" y="30" class="say" text-anchor="middle" transform="rotate(8 196 30)">aha!</text>
+</svg>
+              <p class="dk-chap"><b>03</b> aha!</p>
+            </article>
+            <article class="dk-card tone-white" aria-label="Story 4 of 4: off we go">
+              <svg viewBox="0 0 240 200" aria-hidden="true">
+  <path class="ground dash" d="M0 178 H240"/>
+  <g class="post"><path class="outline" d="M204 188 V104"/><path class="outline fillp" d="M178 100 H228 L236 112 L228 124 H178 Z"/><text x="204" y="116" class="mono" text-anchor="middle">BRISTOL</text></g>
+  <g class="dust"><circle cx="38" cy="180" r="4" class="outline"/><circle cx="26" cy="184" r="3" class="outline" style="--d:.4s"/></g>
+  <g class="walk" style="transform-origin:92px 186px">
+    <path class="arm swing a" d="M76 128 C66 134 62 146 66 156" style="transform-origin:76px 128px"/>
+    <g transform="translate(46 74) scale(1.02)"><use href="#vira-body"/></g>
+    <g class="eyes " transform="translate(46 74) scale(1.02)"><g class="eye"><ellipse cx="40" cy="44" rx="6.5" ry="8.5"/><circle class="pupil" cx="40" cy="44" r="3.2" style="--look:4px 0px"/></g><g class="eye"><ellipse cx="60" cy="44" rx="6.5" ry="8.5"/><circle class="pupil" cx="60" cy="44" r="3.2" style="--look:4px 0px"/></g></g>
+    <path class="arm swing b" d="M136 128 C146 134 152 146 148 156" style="transform-origin:136px 128px"/>
+  </g>
+</svg>
+              <p class="dk-chap"><b>04</b> off we go</p>
             </article>
           </div>
-          <svg class="hc-cursor" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3 L5 19 L9.5 15 L12.5 21.5 L15 20.4 L12 14 L18 14 Z"/></svg>
-          <div class="note hc-note">
-            <p class="hand">drag<br />to explore</p>
-            <svg class="scribble draw" viewBox="0 0 80 60" aria-hidden="true"><path pathLength="1" d="M8 6 C30 2 62 14 66 42 M66 42 L58 34 M66 42 L74 34"/></svg>
-          </div>
+          <p class="dk-ui"><button type="button" class="dk-prev" aria-label="Previous card">←</button><span class="dk-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span><button type="button" class="dk-next" aria-label="Next card">→</button></p>
+          <div class="note dk-note" aria-hidden="true"><p class="hand">click a card<br />to swap</p><svg class="scribble draw" viewBox="0 0 80 60"><path pathLength="1" d="M8 6 C30 2 62 14 66 42 M66 42 L58 34 M66 42 L74 34"/></svg></div>
+          <p class="sr-only" aria-live="polite" id="dk-live"></p>
         </div>
         <p class="scroll-hint"><span>Scroll<br />for more</span><i></i></p>
       </div>
