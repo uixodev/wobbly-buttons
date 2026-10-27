@@ -33,7 +33,6 @@ class Wobbly {
     this.svg = el('svg', { 'aria-hidden': 'true' });
     this.shape = el('path', { class: 'wb-shape' });
     this.sparks = {
-      hover: el('g', { class: 'wb-spark wb-hover' }),
       press: el('g', { class: 'wb-spark wb-press' }),
       release: el('g', { class: 'wb-spark wb-release' }),
     };
@@ -78,13 +77,7 @@ class Wobbly {
   buildSparks() {
     const { w, h } = this, S = this.sparks;
     const line = (x1, y1, x2, y2) => el('path', { d: `M${x1} ${y1}L${x2} ${y2}` });
-    const arc = (d) => el('path', { d });
     for (const g of Object.values(S)) g.replaceChildren();
-    // hover: double arcs off the top-left and bottom-right bulges
-    S.hover.append(
-      arc('M-6 22Q-6 -4 22 -10'), arc('M-14 26Q-14 -12 24 -18'),
-      arc(`M${w + 6} ${h - 22}Q${w + 6} ${h + 4} ${w - 22} ${h + 10}`), arc(`M${w + 14} ${h - 26}Q${w + 14} ${h + 12} ${w - 24} ${h + 18}`),
-    );
     // press: ticks fanning out of the top and bottom edges
     for (const dx of [-26, 0, 26]) {
       const a = dx / 90;
