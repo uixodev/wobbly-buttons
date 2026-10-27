@@ -2,7 +2,7 @@
 // is painted into the scene background, so the glass genuinely refracts and bends it. Scrolling the tall hero
 // turns the flower from face-on into its side profile and spins it; motion is damped so it feels heavy and glassy.
 import * as THREE from 'three';
-import { buildFlower, exportGLB } from './glass-flower.js';
+import { buildFlower, bloomBounds, exportGLB } from './glass-flower.js';
 
 const IVORY = '#F7F3EF';
 const INK = '#111111';
@@ -17,7 +17,7 @@ if (hero && canvas) start();
 // The dark flags are what give the glass its crisp dark edges (a uniformly bright room makes it look milky).
 function studioEnvironment() {
   const env = new THREE.Scene();
-  const room = new THREE.Mesh(new THREE.BoxGeometry(24, 16, 24), new THREE.MeshBasicMaterial({ color: new THREE.Color('#5a554f'), side: THREE.BackSide }));
+  const room = new THREE.Mesh(new THREE.BoxGeometry(24, 16, 24), new THREE.MeshBasicMaterial({ color: new THREE.Color('#948d85'), side: THREE.BackSide }));
   env.add(room);
   const panel = (w, h, color, x, y, z, ry = 0, rx = 0, power = 1) => {
     const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: new THREE.Color(color).multiplyScalar(power), side: THREE.DoubleSide }));
@@ -26,10 +26,13 @@ function studioEnvironment() {
   panel(14, 2.2, '#ffffff', 0, 7.2, 0, 0, Math.PI / 2, 14);          // long overhead strip
   panel(2.4, 12, '#fff6ea', -9, 1, 4, Math.PI / 2.4, 0, 9);          // tall warm softbox, left
   panel(2.0, 10, '#ffffff', 9.5, 0, -3, -Math.PI / 2.2, 0, 8);       // tall softbox, right
-  panel(7, 9, '#0b0a0a', 0, 1, 11.5, Math.PI, 0, 1);                 // black flag behind the camera
+  panel(7, 9, '#1a1816', 0, 1, 11.5, Math.PI, 0, 1);                 // dark flag behind the camera
   panel(5, 12, '#0b0a0a', -11, 0, -5, Math.PI / 2, 0, 1);            // black flags at the sides
   panel(4, 11, '#0b0a0a', 11, 0, 5, -Math.PI / 2, 0, 1);
   panel(12, 3, '#ffffff', 0, -6.5, 0, 0, Math.PI / 2, 4);            // soft bounce from below
+  panel(3.2, 12, '#AD86CF', 6, 2, 9, -Math.PI / 3, 0, 9);
+  panel(3.2, 12, '#AD86CF', -6, 1, 8, Math.PI / 3, 0, 6);             // orchid strip: the soft purple in the reflections
+  panel(1.6, 9, '#D0C8C0', -7, 0, -8, Math.PI / 3, 0, 4);            // warm neutral strip
   return env;
 }
 
@@ -51,23 +54,22 @@ async function start() {
 
   // ---- clear glass with a faint orchid tint
   const glass = new THREE.MeshPhysicalMaterial({
-    color: new THREE.Color('#ffffff').lerp(new THREE.Color(ORCHID), 0.02),
+    color: new THREE.Color('#ffffff').lerp(new THREE.Color(ORCHID), 0.05),
     roughness: 0.03,
     transmission: 1,
     thickness: 1.1,
     ior: 1.55,
     dispersion: 0.3,
     attenuationColor: new THREE.Color(ORCHID),
-    attenuationDistance: 16,
+    attenuationDistance: 8,
     specularIntensity: 1,
     clearcoat: 1,
     clearcoatRoughness: 0.02,
-    envMapIntensity: 1.35,
+    envMapIntensity: 1.0,
   });
 
   const flower = buildFlower(glass);
-  const bounds = new THREE.Box3().setFromObject(flower);
-  flower.position.sub(bounds.getCenter(new THREE.Vector3()));   // rotate around the visual centre
+  flower.position.sub(bloomBounds(flower).getCenter(new THREE.Vector3()));   // rotate around the bloom, not the stem
   const pivot = new THREE.Group();
   pivot.add(flower);
   scene.add(pivot);
@@ -136,7 +138,7 @@ async function start() {
     const aspect = W / H;
     camera.aspect = aspect;
     // world height visible at z=0: wide screens frame the flower by height, narrow ones by width
-    const visH = Math.max(4.7, 3.9 / aspect);
+    const visH = Math.max(4.4, 3.7 / aspect);
     camera.position.set(0, 0, (visH / 2) / Math.tan(THREE.MathUtils.degToRad(FOV / 2)));
     camera.updateProjectionMatrix();
     layout = { W, H, aspect, visW: visH * aspect, visH };
@@ -164,7 +166,7 @@ async function start() {
     const a = ease(Math.min(1, p / 0.55)), b = ease(Math.max(0, (p - 0.55) / 0.45));
     state.rx = mix(mix(0.95, 0.04, a), 0.4, b);
     state.ry = 0.4 + p * Math.PI * 2.1;
-    state.s = mix(1.08, 0.96, ease(p));
+    state.s = mix(1.08, 0.94, ease(p));
     state.y = mix(0, 0.15, ease(p));
   }
   addEventListener('scroll', target, { passive: true });
@@ -180,9 +182,9 @@ async function start() {
     const idle = reduced ? 0 : Math.sin(t * 0.55) * 0.035;
     pivot.rotation.set(view.rx + idle, view.ry + (reduced ? 0 : t * 0.06), 0, 'YXZ');
     const { visW, visH, aspect } = layout;
-    pivot.scale.setScalar(view.s * (aspect > 1.1 ? 1 : 0.8));
+    pivot.scale.setScalar(view.s * (aspect > 1.1 ? 1 : 0.85));
     // sit right of centre on wide screens, centred on phones
-    pivot.position.set(aspect > 1.1 ? visW * 0.14 : 0, view.y + (aspect > 1.1 ? 0 : visH * 0.09), 0);
+    pivot.position.set(aspect > 1.1 ? visW * 0.13 : 0, view.y + (aspect > 1.1 ? 0 : visH * 0.09), 0);
     droplets.forEach((d) => {
       const { fx, fy, phase } = d.userData;
       d.position.set((fx - 0.5) * visW, (0.5 - fy) * visH + Math.sin(t * 0.8 + phase) * 0.06 + state.p * (fx < 0.5 ? 0.5 : -0.4), 0.2);
