@@ -1,10 +1,10 @@
 /*
- * ALIVE SOUND — a crisp click with a little echo after it. Synthesised with the Web Audio API: no audio files.
+ * ALIVE SOUND — a magical click with a shimmering echo. Synthesised with the Web Audio API: no audio files.
  *
- *   press      a click (a tiny noise transient + a short glassy tick + a soft low "tap" so it feels physical),
- *              followed by a short, fading echo
+ *   press      a soft click (a tiny snap + a glassy tick), then a quick rising flick of three glass-bell notes
+ *              (like a wand), a puff of sparkle dust, and an airy, fading echo of all of it
  *   (middle)   silence: nothing plays while the background is open
- *   settle     a lighter version of the same click + echo as the page returns to ivory (set `settleClick: 0` to remove it)
+ *   settle     a gentler, falling version as the page returns to ivory (set `settleSparkle: 0` to remove it)
  *
  * Browsers only allow audio after a user gesture, so the AudioContext is created on the first press.
  *
@@ -16,15 +16,26 @@
 // CONFIGURATION
 // ─────────────────────────────────────────────────────────────────────────────
 export const SOUND_CONFIG = {
-  masterVolume: 0.85,      // overall level (about 0.4 = quiet, 0.85 = comfortable, 1.4 = strong)
-  click: 1.0,              // level of the press click
-  settleClick: 0.55,       // level of the click as the page settles back (0 = no second click)
-  tickHz: 2400,            // pitch of the bright "tick" part of the click (higher = sharper, lower = woodier)
-  tapHz: 170,              // pitch of the soft low "tap" under the click (0 = no body)
-  echoTime: 0.19,          // seconds between echoes
-  echoFeedback: 0.30,      // how much of each echo feeds the next (0 = a single repeat, 0.5 = long tail)
-  echoMix: 0.45,           // how loud the echo is compared with the click (0 = dry click only)
-  echoTone: 3200,          // echoes get darker: this low-pass (Hz) is applied on every repeat
+  masterVolume: 1.5,       // overall level (about 0.7 = quiet, 1.5 = comfortable, 2.2 = strong)
+
+  // — the click —
+  click: 0.8,              // level of the click itself (0 = no click, only the magic)
+  tickHz: 3000,            // pitch of the glassy tick inside the click (higher = brighter)
+
+  // — the magic —
+  magic: 1.0,              // level of the bell notes and sparkle dust (0 = back to a plain click)
+  notes: [1318.51, 1661.22, 1975.53],   // E6, G#6, B6: a rising E-major flick. Edit to change the "spell"
+  flickSeconds: 0.12,      // how fast the notes run up (smaller = quicker flick)
+  dust: 0.7,               // level of the airy sparkle-dust whoosh (0 = none)
+
+  // — the echo —
+  echoTime: 0.21,          // seconds between echoes
+  echoFeedback: 0.36,      // how much of each echo feeds the next (0 = a single repeat, 0.5 = long tail)
+  echoMix: 0.55,           // how loud the echo is compared with the dry sound (0 = none)
+  echoTone: 6500,          // echoes get darker: this low-pass (Hz) is applied on every repeat
+
+  // — settling back —
+  settleSparkle: 0.5,      // level of the gentle falling sparkle as the page returns to ivory (0 = silent)
 };
 
 export function createAliveSound(options = {}) {
@@ -34,7 +45,7 @@ export function createAliveSound(options = {}) {
 
   // ── building blocks (they take the context + a bus, so they also work with an OfflineAudioContext for testing) ──
   function makeNoise(c) {
-    const len = Math.floor(c.sampleRate * 0.1), buf = c.createBuffer(1, len, c.sampleRate), d = buf.getChannelData(0);
+    const len = Math.floor(c.sampleRate * 0.5), buf = c.createBuffer(1, len, c.sampleRate), d = buf.getChannelData(0);
     for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
     return buf;
   }
@@ -47,7 +58,7 @@ export function createAliveSound(options = {}) {
 
     const send = c.createGain(); send.gain.value = cfg.echoMix;
     const delay = c.createDelay(1.5); delay.delayTime.value = cfg.echoTime;
-    const tone = c.createBiquadFilter(); tone.type = 'lowpass'; tone.frequency.value = cfg.echoTone;   // each repeat darker than the last
+    const tone = c.createBiquadFilter(); tone.type = 'lowpass'; tone.frequency.value = cfg.echoTone;   // each repeat a little darker than the last
     const fb = c.createGain(); fb.gain.value = Math.min(cfg.echoFeedback, 0.85);
     const wet = c.createGain(); wet.gain.value = 1;
     input.connect(send); send.connect(delay);
@@ -56,37 +67,70 @@ export function createAliveSound(options = {}) {
     return input;
   }
 
+  // a soft click: a tiny snap and a glassy tick
   function click(c, out, t, level) {
-    // 1. transient: a few milliseconds of high-passed noise, the "snap"
     const src = c.createBufferSource(); src.buffer = noiseBuf || (noiseBuf = makeNoise(c));
-    const hp = c.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1800;
+    const hp = c.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 2200;
     const ng = c.createGain();
     ng.gain.setValueAtTime(0.0001, t);
-    ng.gain.exponentialRampToValueAtTime(0.55 * level, t + 0.0015);
-    ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.03);
-    src.connect(hp); hp.connect(ng); ng.connect(out); src.start(t); src.stop(t + 0.05);
+    ng.gain.exponentialRampToValueAtTime(0.4 * level, t + 0.0012);
+    ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.02);
+    src.connect(hp); hp.connect(ng); ng.connect(out); src.start(t); src.stop(t + 0.04);
 
-    // 2. tick: a very short sine that drops in pitch, like a tapped glass
     const o = c.createOscillator(), og = c.createGain();
     o.type = 'sine';
     o.frequency.setValueAtTime(cfg.tickHz, t);
-    o.frequency.exponentialRampToValueAtTime(cfg.tickHz * 0.5, t + 0.025);
+    o.frequency.exponentialRampToValueAtTime(cfg.tickHz * 0.6, t + 0.02);
     og.gain.setValueAtTime(0.0001, t);
-    og.gain.exponentialRampToValueAtTime(0.4 * level, t + 0.0012);
-    og.gain.exponentialRampToValueAtTime(0.0001, t + 0.045);
-    o.connect(og); og.connect(out); o.start(t); o.stop(t + 0.07);
+    og.gain.exponentialRampToValueAtTime(0.3 * level, t + 0.001);
+    og.gain.exponentialRampToValueAtTime(0.0001, t + 0.035);
+    o.connect(og); og.connect(out); o.start(t); o.stop(t + 0.06);
+  }
 
-    // 3. tap: a soft low thump so the click has a little body
-    if (cfg.tapHz > 0) {
-      const b = c.createOscillator(), bg = c.createGain();
-      b.type = 'sine';
-      b.frequency.setValueAtTime(cfg.tapHz, t);
-      b.frequency.exponentialRampToValueAtTime(cfg.tapHz * 0.45, t + 0.06);
-      bg.gain.setValueAtTime(0.0001, t);
-      bg.gain.exponentialRampToValueAtTime(0.5 * level, t + 0.003);
-      bg.gain.exponentialRampToValueAtTime(0.0001, t + 0.09);
-      b.connect(bg); bg.connect(out); b.start(t); b.stop(t + 0.12);
+  // one glass-bell note: a sine with a few inharmonic partials, like a struck glass / celesta
+  function bell(c, out, t, freq, level, ring = 1) {
+    const partials = [[1, 1.0, 0.9], [2.0, 0.35, 0.55], [2.76, 0.22, 0.4], [5.4, 0.08, 0.22]];   // [ratio, gain, decay seconds]
+    for (const [ratio, gain, decay] of partials) {
+      const f = freq * ratio;
+      if (f > 14000) continue;
+      const o = c.createOscillator(), g = c.createGain();
+      o.type = 'sine'; o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.16 * gain * level, t + 0.004);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + decay * ring);
+      o.connect(g); g.connect(out); o.start(t); o.stop(t + decay * ring + 0.05);
     }
+  }
+
+  // sparkle dust: high-passed noise with a band that sweeps upward (or downward), over a quarter of a second
+  function dust(c, out, t, level, up = true) {
+    const src = c.createBufferSource(); src.buffer = noiseBuf || (noiseBuf = makeNoise(c));
+    const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 1.4;
+    bp.frequency.setValueAtTime(up ? 3500 : 9000, t);
+    bp.frequency.exponentialRampToValueAtTime(up ? 9000 : 3500, t + 0.28);
+    const g = c.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.11 * level, t + 0.05);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.34);
+    src.connect(bp); bp.connect(g); g.connect(out); src.start(t); src.stop(t + 0.4);
+  }
+
+  // the press: click → rising bell flick → dust (the echo is added by the bus)
+  function playPress(c, out, t) {
+    if (cfg.click > 0) click(c, out, t, cfg.click);
+    if (cfg.magic > 0) {
+      const n = cfg.notes.length;
+      cfg.notes.forEach((f, i) => bell(c, out, t + 0.012 + (i / Math.max(1, n - 1)) * cfg.flickSeconds, f, cfg.magic * (0.8 + 0.2 * (i / Math.max(1, n - 1))), i === n - 1 ? 1.3 : 0.8));
+      if (cfg.dust > 0) dust(c, out, t + 0.01, cfg.dust * cfg.magic, true);
+    }
+  }
+  // settling back: the same notes falling, softer
+  function playSettle(c, out, t) {
+    const lvl = cfg.settleSparkle;
+    if (lvl <= 0) return;
+    const notes = [...cfg.notes].reverse(), n = notes.length;
+    notes.forEach((f, i) => bell(c, out, t + (i / Math.max(1, n - 1)) * cfg.flickSeconds * 1.4, f * 0.5, lvl * 1.2, 1.1));   // an octave lower: calmer
+    if (cfg.dust > 0) dust(c, out, t, cfg.dust * lvl, false);
   }
 
   // ── public API (real-time) ──
@@ -106,22 +150,22 @@ export function createAliveSound(options = {}) {
     config: cfg,
     get enabled() { return enabled; },
     setEnabled(v) { enabled = !!v; if (!enabled) clearTimeout(settleTimer); },
-    // press: the click and its echo. Nothing plays after that while the background is open.
-    open() { clearTimeout(settleTimer); if (!enabled || !ensure()) return; click(ctx, bus, ctx.currentTime + 0.005, cfg.click); },
-    // the page is going back to ivory: a lighter click + echo as it lands
+    // press: the magical click and its echo. Nothing plays after that while the background is open.
+    open() { clearTimeout(settleTimer); if (!enabled || !ensure()) return; playPress(ctx, bus, ctx.currentTime + 0.005); },
+    // the page is going back to ivory: a gentle falling sparkle as it lands
     close(recedeSeconds) {
       clearTimeout(settleTimer);
-      if (!enabled || cfg.settleClick <= 0) return;
-      settleTimer = setTimeout(() => { if (enabled && ensure()) click(ctx, bus, ctx.currentTime + 0.005, cfg.settleClick); }, Math.max(0, recedeSeconds * 0.95) * 1000);
+      if (!enabled || cfg.settleSparkle <= 0) return;
+      settleTimer = setTimeout(() => { if (enabled && ensure()) playSettle(ctx, bus, ctx.currentTime + 0.005); }, Math.max(0, recedeSeconds * 0.95) * 1000);
     },
     // used by tests: render the whole sequence offline into a buffer
     _render: async (spread, hold, recede) => {
-      const sr = 44100, total = spread + hold + recede + 1.5;
+      const sr = 44100, total = spread + hold + recede + 2;
       const off = new OfflineAudioContext(1, Math.ceil(sr * total), sr);
       const master = off.createGain(); master.gain.value = cfg.masterVolume; master.connect(off.destination);
       const b = makeBus(off, master); noiseBuf = null;
-      click(off, b, 0.005, cfg.click);
-      if (cfg.settleClick > 0) click(off, b, spread + hold + recede * 0.95, cfg.settleClick);
+      playPress(off, b, 0.005);
+      playSettle(off, b, spread + hold + recede * 0.95);
       const buf = await off.startRendering(); noiseBuf = null;
       return buf;
     },
