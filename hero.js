@@ -23,3 +23,18 @@ if (cat) {
   cat.setAttribute('tabindex', '0'); cat.setAttribute('role', 'button');
   cat.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); meow(); } });
 }
+
+// Contact: the thinking cat. Eyes follow the cursor; click / tap makes the fish in its thought bubble go wild for a second.
+const cc = document.getElementById('contact-cat');
+if (cc) {
+  const reduced2 = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const svg2 = cc.querySelector('svg'), look2 = cc.querySelector('#cc-look');
+  const EYE2 = { x: 645, y: 463 };
+  let raf2 = 0, qx = 0, qy = 0;
+  if (!reduced2) addEventListener('pointermove', (e) => { qx = e.clientX; qy = e.clientY; if (raf2) return; raf2 = requestAnimationFrame(() => {
+    raf2 = 0; const r = svg2.getBoundingClientRect(), k = r.width / 1030, dx = qx - (r.left + EYE2.x * k), dy = qy - (r.top + EYE2.y * k), d = Math.hypot(dx, dy) || 1, m = Math.min(1, d / 300) * 6;
+    look2.style.setProperty('--ex', `${((dx / d) * m).toFixed(2)}px`); look2.style.setProperty('--ey', `${((dy / d) * m * 0.8).toFixed(2)}px`);
+  }); }, { passive: true });
+  let t2 = 0;
+  cc.addEventListener('click', () => { cc.classList.add('said'); clearTimeout(t2); t2 = setTimeout(() => cc.classList.remove('said'), 1400); });
+}
