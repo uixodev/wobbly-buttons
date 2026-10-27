@@ -4,12 +4,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Wobbly buttons</title>
-  <script type="importmap">
-  { "imports": {
-    "three": "https://unpkg.com/three@0.170.0/build/three.module.js",
-    "three/addons/": "https://unpkg.com/three@0.170.0/examples/jsm/"
-  } }
-  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Manrope:wght@800&family=Bodoni+Moda:opsz,wght@6..96,600&family=Cormorant+Garamond:wght@500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="wobbly-buttons.css" />
@@ -38,9 +32,8 @@
   <section class="hero" aria-label="Introduction">
     <div class="hero-stage">
       <canvas class="hero-canvas" aria-hidden="true"></canvas>
-      <h1 class="hero-title">Beautiful ideas</h1>
+      <h1 class="hero-title"><span class="l1">Beautiful</span> <span class="l2">Ideas</span></h1>
       <p class="hero-tagline">Websites for small businesses<br />and creative people</p>
-      <div class="hero-progress" aria-hidden="true"></div>
       <div class="hero-copy">
         <p class="hero-lede">I design and build distinctive websites for beauty studios, small businesses and creative people — with personality in every detail.</p>
         <div class="hero-buttons">
@@ -53,6 +46,6 @@
   <script type="module" src="wobbly-buttons.js"></script>
   <script type="module" src="vira-logo.js"></script>
   <script type="module" src="ink-cursor.js"></script>
-  <script type="module" src="hero-flower.js"></script>
+  <script type="module" src="hero-ink.js"></script>
 </body>
 </html>

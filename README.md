@@ -48,18 +48,10 @@ A living ink droplet replaces the native cursor: it lags the pointer on a spring
 
 `nav.css` + the `<header class="site-nav">` markup in `index.html`: logo on the left, mono uppercase links centred (hover lifts + turns Orchid), `[ BRISTOL, UK ]` and a softly breathing ink dot on the right. Collapses to logo + links on phones.
 
-## Hero: procedural glass flower
+## Hero
 
-`glass-flower.js` builds the sculpture in code (three.js, no Blender / no model file): six overlapping petals (`Petal_01`…`06`) that swirl around one point — some rear up and curl toward the viewer, others sweep out sideways, no two alike — plus a small glass centre (`Centre_Pod` and a few `Stamen_NN` filaments), all under one `Flower` group. No stem, no leaves. Each petal is a closed, thick surface from a parametric grid with a rounded glass lip and fine streaks. The `PETALS` table at the top of the file holds every artistic parameter (opening angle `a0`/`a1`, `curl`, `cup`, `twist`, the swirl-driving `skew`, thickness…) — edit a row and it rebuilds.
+`hero-ink.js` + `hero.css` + the `<section class="hero">` in `index.html`: the living ink flower (`ink-flower/ink-flower.js`) behind a real, selectable HTML headline. Where the headline crosses the ink it inverts to ivory (`mix-blend-mode: difference`, colour `#E6E2DE`, so ivory − that = brand ink `#111`), which lets the flower overlap the type without hiding it. The flower sits in `layoutFor()` in `hero-ink.js` (size and position for wide / tablet / phone); the headline is fitted to the stage width at runtime. The old three.js glass flower and its code were removed.
 
-`hero-flower.js` renders it as refractive glass (`MeshPhysicalMaterial`: transmission, IOR 1.55, dispersion, faint Orchid attenuation) in a small procedural photo-studio. The giant headline is painted into the scene background, so the glass really bends them. A hidden `<h1>` keeps the real text for screen readers / SEO / no-WebGL. Scrolling the tall hero turns the flower from face-on into its side profile and spins it (damped, `prefers-reduced-motion` aware).
+## Living ink flower
 
-- Fonts: Bodoni Moda (headline), Cormorant Garamond (paragraph), JetBrains Mono (tagline / nav).
-- Export for Spline etc.: open the console and run `exportFlowerGLB()`. The mesh exports cleanly; the glass look (transmission, IOR, dispersion, tint) is a runtime material, so recreate it in Spline's glass material.
-- three.js loads from a CDN via the import map in `index.html` (pinned `0.170.0`).
-
-`SHOW_DECOR` at the top of `hero-flower.js` (default `false`) brings back the flowing line, its dots and the floating droplets once the flower composition is final.
-
-## Living ink flower (stage 1 preview)
-
-`ink-flower/index.html` + `ink-flower/ink-flower.js`: a flower of soft, elastic black ink in plain Canvas 2D (no dependencies). Run any static server in the repo root and open `/ink-flower/`. All the knobs live in the labelled `CONFIG` block at the top of `ink-flower.js` (petal count/length/width, asymmetry, idle movement, cursor radius and push/pull strength, spring strength, damping, colours); tweak live from the console with `flower.set({ ... })`. Not yet wired into the hero.
+`ink-flower/index.html` (standalone preview) + `ink-flower/ink-flower.js`: a flower of soft, elastic black ink in plain Canvas 2D (no dependencies). Run any static server in the repo root and open `/ink-flower/`. All the knobs live in the labelled `CONFIG` block at the top of `ink-flower.js` (petal count/length/width, asymmetry, idle movement, cursor radius and push/pull strength, spring strength, damping, colours); tweak live from the console with `flower.set({ ... })`.
