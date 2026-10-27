@@ -45,28 +45,27 @@
 
 @media (max-width: 860px) { .nav-meta .nav-loc { display: none; } .site-nav { letter-spacing: 0.1em; } }
 
-/* ═════════ THE BAR GATHERS INTO A CAPSULE ═════════ */
-.site-nav .nav-links li, .site-nav > .vira-logo, .site-nav .nav-meta {
-  transition: transform .7s cubic-bezier(.3, 1.35, .5, 1) var(--d, 0ms), opacity .4s ease var(--d, 0ms);
-}
+/* ═════════ THE BAR GATHERS INTO A CAPSULE ═════════
+   The capsule sits at the top centre, where the links already are, so each link only slides a short way in. The logo stays put. */
+.site-nav .nav-links li, .site-nav .nav-meta { transition: transform .55s cubic-bezier(.3, 1.3, .5, 1) var(--d, 0ms), opacity .3s ease var(--d, 0ms); }
+.site-nav { transition: background .4s ease; }
 html.nav-gathered .site-nav { background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; pointer-events: none; }
-html.nav-gathered .site-nav .nav-links li, html.nav-gathered .site-nav > .vira-logo, html.nav-gathered .site-nav .nav-meta {
-  transform: translate(var(--fx, 0), var(--fy, 0)) scale(.15) rotate(18deg); opacity: 0; pointer-events: none;
-  transition: transform .75s cubic-bezier(.66, 0, .25, 1) var(--d, 0ms), opacity .4s ease calc(var(--d, 0ms) + .32s);
-}
-.site-nav { transition: background .5s ease; }
+html.nav-gathered .site-nav .nav-links li { transform: translate(var(--fx, 0), var(--fy, 0)) scale(.2); opacity: 0; pointer-events: none;
+  transition: transform .45s cubic-bezier(.6, 0, .3, 1) var(--d, 0ms), opacity .22s ease calc(var(--d, 0ms) + .22s); }
+html.nav-gathered .site-nav .nav-meta { transform: translateX(26px); opacity: 0; pointer-events: none; }
+/* the logo stays; once the bar is gone it gets a soft ivory pill so it never fights the page content under it */
+.site-nav > .vira-logo { transition: background .4s ease, padding .4s ease, margin .4s ease; border-radius: 999px; }
+html.nav-gathered .site-nav > .vira-logo { pointer-events: auto; background: color-mix(in srgb, var(--bg) 84%, transparent); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); padding: 4px 16px 4px 10px; margin-left: -10px; }
 
-/* the capsule: a wobbly black blob holding the mini character, a hand-drawn burger and the word "Menu" */
-.burger { position: fixed; top: 14px; right: var(--gutter, 24px); z-index: 80; margin: 0; border: 0; cursor: pointer;
-  font-size: .74rem; padding: 1.05em 1.5em 1.05em 1.05em; gap: .75em; letter-spacing: .14em; text-transform: uppercase;
-  opacity: 0; visibility: hidden; pointer-events: none; transform: scale(.3) rotate(-14deg);
-  transition: transform .35s ease, opacity .25s ease, visibility 0s .35s; }
+/* the capsule: a wobbly black blob holding a hand-drawn burger and the word "Menu" */
+.burger { position: fixed; top: 12px; left: 50%; translate: -50% 0; z-index: 80; margin: 0; border: 0; cursor: pointer;
+  font-size: .74rem; padding: 1.05em 1.55em; gap: .75em; letter-spacing: .14em; text-transform: uppercase;
+  opacity: 0; visibility: hidden; pointer-events: none; transform: scale(.35);
+  transition: transform .3s ease, opacity .2s ease, visibility 0s .3s; }
 html.nav-gathered .burger, html.menu-open .burger, .burger:focus-visible {
   opacity: 1; visibility: visible; pointer-events: auto; transform: none;
-  transition: transform .75s cubic-bezier(.3, 1.8, .5, 1) .38s, opacity .3s ease .38s, visibility 0s; }
+  transition: transform .6s cubic-bezier(.3, 1.8, .5, 1) .22s, opacity .25s ease .22s, visibility 0s; }
 .burger .wb-label { gap: .75em; }
-.burger-mark { display: inline-flex; font-size: .9rem; line-height: 1; }
-.burger-mark .vira-logo { color: var(--wb-text); --eye: var(--wb-color); font-size: inherit; cursor: pointer; transition: color .5s ease; }
 .burger .wb-shape { transition: fill .5s ease, stroke .5s ease; }
 html.menu-open .burger { --wb-color: var(--bg); --wb-text: #111; }                 /* cream capsule on the black curtain */
 .burger-icon { width: 24px; height: 17px; fill: none; stroke: var(--wb-text); transition: stroke .5s ease; stroke-width: 2.1; stroke-linecap: round; overflow: visible; }
@@ -113,6 +112,7 @@ html.menu-open { overflow: hidden; }
 @media (max-width: 720px) {
   .nav-links, .nav-meta { display: none; }
   .site-nav { grid-template-columns: 1fr auto; }
+  .burger { left: auto; right: var(--gutter, 18px); translate: none; }
   .burger, html.nav-gathered .burger { opacity: 1; visibility: visible; pointer-events: auto; transform: none; }
   .menu-inner { grid-template-columns: 1fr; align-content: center; gap: 36px; padding-top: 96px; }
   .menu-links a { font-size: clamp(2.8rem, 14vw, 4.6rem); }
@@ -120,6 +120,6 @@ html.menu-open { overflow: hidden; }
   .menu-foot { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .site-nav .nav-links li, .site-nav > .vira-logo, .site-nav .nav-meta, .burger, .menu-links a, .menu-side, .burger-icon path { transition: none !important; }
-  html.nav-gathered .site-nav .nav-links li, html.nav-gathered .site-nav > .vira-logo, html.nav-gathered .site-nav .nav-meta { transform: none; }
+  .site-nav .nav-links li, .site-nav .nav-meta, .burger, .menu-links a, .menu-side, .burger-icon path { transition: none !important; }
+  html.nav-gathered .site-nav .nav-links li { transform: none; }
 }

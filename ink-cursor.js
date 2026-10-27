@@ -9,7 +9,7 @@ const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const R = 7;                 // resting droplet radius (px)
 const TRAIL_MS = 480;        // how long a trail point lives
 const POINTS = 16;           // outline points of the droplet
-const DARK_SURFACE = '.vira-logo, .wobbly[data-variant="solid"], .tile-jelly, .footer-dark';
+const DARK_SURFACE = '.vira-logo, .wobbly[data-variant="solid"], .tile-jelly, .footer-dark, .menu';
 const INK = [17, 17, 17], CREAM = [247, 243, 239];
 const INTERACTIVE = 'a, button, [role="button"], summary, label, input, select, textarea, .wobbly, .vira-logo';
 
@@ -45,7 +45,7 @@ export function initInkCursor() {
     target.x = e.clientX; target.y = e.clientY;
     if (!visible) { head.x = target.x; head.y = target.y; head.vx = head.vy = 0; visible = true; }
     sizeT = pressed ? 0.7 : e.target.closest?.(INTERACTIVE) ? 1.6 : 1;
-    colT = e.target.closest?.(DARK_SURFACE) ? CREAM : INK;
+    colT = e.target.closest?.(DARK_SURFACE) || document.documentElement.classList.contains('menu-open') ? CREAM : INK;
     wake();
   }, { passive: true });
   addEventListener('pointerdown', () => { pressed = true; sizeT = 0.7; wake(); });

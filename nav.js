@@ -1,7 +1,7 @@
 // Navigation: the full bar "gathers together" into a compact capsule as you scroll, and the capsule's hamburger opens a full-screen menu.
 //
 //   top of page    full bar: logo · links · location
-//   scrolled       the links, location and logo fly together into the capsule (mini character · hand-drawn burger · "Menu")
+//   scrolled       the links gather towards the middle of the bar into a small capsule (hand-drawn burger · "Menu"); the logo stays put
 //   menu open      a black liquid curtain pours down with a wavy edge (like the footer's), big serif links rise in,
 //                  the burger turns into a cross. Esc / the cross / a link closes it; focus is kept inside while it is open.
 // On phones the capsule is always shown.
@@ -27,15 +27,14 @@ const CONFIG = {
 if (header && burger && menu) init();
 
 function init() {
-  // things that fly into the capsule when the bar gathers
-  const flyers = [header.querySelector('.vira-logo'), ...header.querySelectorAll('.nav-links li'), header.querySelector('.nav-meta')].filter(Boolean);
+  // the links gather into the capsule, which sits where they already are (top centre), so none of them travels far
+  const flyers = [...header.querySelectorAll('.nav-links li')];
 
   // ── gather / spread ──
   let gathered = false, menuOpen = false;
   function aim() {
-    // the capsule is scaled down while the bar is open, so aim at where it will sit: its fixed top-right spot
     const cs = getComputedStyle(burger);
-    const cx = innerWidth - (parseFloat(cs.right) || 0) - burger.offsetWidth / 2, cy = (parseFloat(cs.top) || 0) + burger.offsetHeight / 2;
+    const cx = burger.offsetLeft + burger.offsetWidth / 2 || innerWidth / 2, cy = (parseFloat(cs.top) || 0) + burger.offsetHeight / 2;
     for (const el of flyers) {
       const r = el.getBoundingClientRect();
       el.style.setProperty('--fx', `${(cx - (r.left + r.width / 2)).toFixed(0)}px`);
@@ -53,7 +52,7 @@ function init() {
   function onScroll() { const y = scrollY; if (!gathered && y > CONFIG.gatherAt) setGathered(true); else if (gathered && y < CONFIG.releaseAt) setGathered(false); }
   addEventListener('scroll', onScroll, { passive: true });
   addEventListener('resize', () => { if (gathered) aim(); });
-  flyers.forEach((el, i) => el.style.setProperty('--d', `${i * 45}ms`));       // they leave one after another
+  flyers.forEach((el, i) => el.style.setProperty('--d', `${i * 22}ms`));       // a quick ripple, not a long procession
   onScroll();
 
   // ── the liquid curtain ──
