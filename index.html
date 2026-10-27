@@ -31,15 +31,44 @@
     <a href="#top" class="vira-logo" data-text="vira"></a>
     <nav aria-label="Main">
       <ul class="nav-links">
-        <li><a href="#work">Work</a></li>
-        <li><a href="#services">Services</a></li>
-        <li><a href="#about">About</a></li>
-        <li><a href="#playground">Playground</a></li>
-        <li><a href="#contact">Contact</a></li>
+        <li style="--i:0"><a href="#work">Work</a></li>
+        <li style="--i:1"><a href="#services">Services</a></li>
+        <li style="--i:2"><a href="#about">About</a></li>
+        <li style="--i:3"><a href="#playground">Playground</a></li>
+        <li style="--i:4"><a href="#contact">Contact</a></li>
       </ul>
     </nav>
     <div class="nav-meta"><span class="nav-loc">[ Bristol, UK ]</span><span class="nav-dot" aria-hidden="true"></span></div>
   </header>
+
+  <button type="button" class="burger wobbly" data-variant="solid" aria-expanded="false" aria-controls="menu" aria-label="Menu">
+    <span class="burger-mark" aria-hidden="true"><span class="vira-logo" data-mark-only></span></span>
+    <svg class="burger-icon" viewBox="0 0 28 20" aria-hidden="true"><path d="M2 3.2 C8 1.2 17 5 26 2.2"/><path d="M2 10 C7 8 13 12 19 10"/><path d="M2 16.8 C9 14.6 18 18.8 26 15.6"/></svg>
+    <span class="burger-text">Menu</span>
+  </button>
+
+  <div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Menu" hidden>
+    <svg class="menu-curtain" aria-hidden="true"><path /></svg>
+    <div class="menu-inner">
+      <nav class="menu-links" aria-label="Menu">
+        <a href="#work" style="--i:0"><i>01</i><span>Work</span></a>
+        <a href="#services" style="--i:1"><i>02</i><span>Services</span></a>
+        <a href="#about" style="--i:2"><i>03</i><span>About</span></a>
+        <a href="#playground" style="--i:3"><i>04</i><span>Playground</span></a>
+        <a href="#contact" style="--i:4"><i>05</i><span>Contact</span></a>
+      </nav>
+      <aside class="menu-side">
+        <div class="menu-char" aria-hidden="true"><span class="vira-logo" data-mark-only></span></div>
+        <p class="hand">say hi!</p>
+        <a class="menu-mail" href="mailto:hello@viraa.me">hello@viraa.me</a>
+        <ul class="menu-social">
+          <li><a href="#" rel="noopener">Instagram</a></li><li><a href="#" rel="noopener">GitHub</a></li><li><a href="#" rel="noopener">Pinterest</a></li>
+        </ul>
+        <p class="mono">Bristol, UK</p>
+      </aside>
+      <p class="menu-foot label">Design · Code · Experiment · Repeat</p>
+    </div>
+  </div>
 
   <main id="top">
     <!-- ───────────── HERO ───────────── -->
@@ -284,5 +313,6 @@
   <script type="module" src="ink-cursor.js"></script>
   <script type="module" src="site.js"></script>
   <script type="module" src="footer.js"></script>
+  <script type="module" src="nav.js"></script>
 </body>
 </html>
