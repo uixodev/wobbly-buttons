@@ -29,7 +29,7 @@
   font-size: var(--title-size); line-height: 0.94; letter-spacing: -0.035em; color: #111;
 }
 .hero-title .line { display: block; white-space: nowrap; }
-.hero-title .ch { display: inline-block; will-change: transform; }
+.hero-title .ch { display: inline-block; will-change: transform; font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1; }
 .hero-title ::selection { background: #AD86CF; color: #111; }
 
 /* "alive." — a button on a flat, living Orchid shape (alive-blob.js) */
@@ -60,3 +60,7 @@
   .hero-title { --title-size: min(17vw, 11.5svh); }
   .hero-buttons .wobbly { white-space: nowrap; }
 }
+
+/* while the purple plays, the smaller text shifts colour too (the headline letters are driven per letter in hero-ink.js) */
+.hero-tagline, .hero-lede, .site-nav { transition: color .9s ease; }
+html.is-purple .hero-tagline, html.is-purple .hero-lede, html.is-purple .site-nav { color: #3B1A6E; }

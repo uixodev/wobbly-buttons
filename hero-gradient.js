@@ -22,6 +22,7 @@ export const GRADIENT_CONFIG = {
   fixed: false,              // true = cover the whole browser window (whole website); false = cover just the element you pass
   spreadOnLoad: false,       // true = the gradient bleeds out from "alive." when the page loads; false = wait for setOpen()/toggle()
   spreadDuration: 2.8,       // seconds for it to cover the whole hero
+  recedeDuration: 2.2,       // seconds for it to flow back in again after setOpen(false)
   spreadDelay: 0.25,         // seconds to wait before it starts
 
   // — idle flow —
@@ -122,7 +123,8 @@ void main(){
   gl_FragColor = vec4(mix(u_ivory, col, a), 1.0);
 }`;
 
-const NOOP = { open: false, set() {}, setOpen() {}, toggle() {}, replay() {}, destroy() {} };
+const easeOut = (x) => 1 - Math.pow(1 - clamp(x, 0, 1), 3);
+const NOOP = { open: false, reveal: 0, active: false, set() {}, setOpen() {}, toggle() {}, replay() {}, destroy() {} };
 
 export function createHeroGradient(stage, options = {}) {
   const cfg = { ...GRADIENT_CONFIG, ...options };
@@ -183,12 +185,11 @@ export function createHeroGradient(stage, options = {}) {
 
   function draw() {
     const o = originPx();
-    const ease = (x) => 1 - Math.pow(1 - clamp(x, 0, 1), 3);
     gl.uniform2f(U.u_res, canvas.width, canvas.height);
     gl.uniform2f(U.u_origin, o.x * k, o.y * k);
     gl.uniform2f(U.u_mouse, mouse.x * k, mouse.y * k);
     gl.uniform1f(U.u_time, reduced ? 6.0 : time);
-    gl.uniform1f(U.u_reveal, ease(progress));
+    gl.uniform1f(U.u_reveal, easeOut(progress));
     gl.uniform1f(U.u_energy, energy * cfg.stir);
     gl.uniform1f(U.u_stirR, cfg.stirRadius);
     gl.uniform1f(U.u_flow, cfg.flowSpeed);
@@ -209,7 +210,8 @@ export function createHeroGradient(stage, options = {}) {
     // spread out / back in
     if (wait > 0) wait -= dt;
     else {
-      const step = cfg.spreadDuration > 0 && !reduced ? dt / cfg.spreadDuration : 1;
+      const dur = open ? cfg.spreadDuration : cfg.recedeDuration;
+      const step = dur > 0 && !reduced ? dt / dur : 1;
       progress = clamp(progress + (open ? step : -step), 0, 1);
     }
     energy += (energyTarget - energy) * (1 - Math.exp(-dt * (energyTarget > energy ? 7 : 1.3)));
@@ -242,6 +244,8 @@ export function createHeroGradient(stage, options = {}) {
   const api = {
     config: cfg,
     get open() { return open; },
+    get reveal() { return easeOut(progress); },                         // 0 = ivory page … 1 = fully purple (eased, as drawn)
+    get active() { return open || progress > 0; },
     set(next) { Object.assign(cfg, next); if (progress > 0) draw(); },
     setOpen(v) {                                                        // true = spread across the page, false = spread back in
       open = !!v; wait = 0; wake();
