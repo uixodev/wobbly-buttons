@@ -13,13 +13,13 @@ Plain HTML, CSS and ES modules: no framework, no build step, no dependencies. Se
 | **02 / Services** | Web Design, Development, Creative Extras + a "More about services" blob |
 | **03 / Playground** | Four live experiments: jelly text (the logo), an interactive flower canvas, a physics playground, liquid type |
 | **04 / Let's work together** | "Have a *project* in mind?" + `Get in touch` (a `mailto:` link) |
-| **Footer** | Brand, navigation, services, social links, newsletter form, and the playful black band (below) |
+| **Footer** | One black band with a liquid wavy top edge, holding the brand, navigation, services, social links, the newsletter form, the copyright line and "Back to top" (all in cream) |
 
 ## Files
 
 - `site.css` — layout, type and the illustrated stand-ins. Fonts are self-hosted in `fonts/` (Instrument Serif, Newsreader, JetBrains Mono, Reenie Beanie).
 - `site.js` — scroll reveals, hand-drawn lines that draw themselves, the newsletter form (validates, but is **not connected to a service yet**).
-- `footer.js` — the black footer band: a liquid wavy top edge that bulges toward your cursor and ripples when clicked, two plucked strings you can push around, a doodle pad (press and drag; the cream ink dissolves after a few seconds), the DESIGN / CODE / EXPERIMENT / REPEAT words lighting up in turn, and the character hopping on "Back to top". Tunables in `CONFIG` at the top.
+- `footer.js` — the black footer band's wavy top edge is liquid: it drifts on its own, bulges toward your cursor and ripples when you click near it. Tunables in `CONFIG` at the top.
 - `playground.js` — the experiments. Each loop only runs while its tile is on screen; with `prefers-reduced-motion` everything is drawn once, still.
 - `vira-logo.js` / `.css` — the interactive logo and character (eyes follow the cursor, soft-body outline, hand-drawn wordmark; `data-mark-only` shows just the character; `--eye` themes its eyes).
 - `wobbly-buttons.js` / `.css` — the imperfect, spring-driven buttons (`<a class="wobbly" data-variant="solid|outline">`).
