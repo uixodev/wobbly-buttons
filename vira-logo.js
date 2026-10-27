@@ -93,7 +93,7 @@ class ViraLogo {
     this.eyeR = el('ellipse', { cx: 114, cy: 80, rx: 9.5, ry: 12.5 });
     this.eyes.append(this.eyeL, this.eyeR);
     this.body.append(this.eyes);
-    this.dot = el('path', { fill: 'currentColor' });
+    this.dot = el('path', { class: 'vira-dot' });
     this.svg.append(this.body, this.dot);
     root.replaceChildren(this.svg, word);
     root.setAttribute('aria-label', text);

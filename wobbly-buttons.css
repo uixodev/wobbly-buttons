@@ -1,4 +1,10 @@
 /* Wobbly buttons — style hooks. Shape + sparks are drawn by wobbly-buttons.js */
+:root {
+  --bg: #F7F3EF;      /* page cream */
+  --ink: #111;
+  --accent: #AD86CF;  /* Orchid */
+}
+
 .wobbly {
   --wb-color: #111;
   --wb-text: #F7F3EF;
@@ -21,19 +27,21 @@
   isolation: isolate;
 }
 .wobbly[data-variant="outline"] { color: var(--wb-color); }
-.wobbly:focus-visible { outline: 2px dashed var(--wb-color); outline-offset: 10px; }
+.wobbly:focus-visible { outline: 2px dashed var(--accent); outline-offset: 10px; }
 
 .wobbly > svg {
   position: absolute; inset: 0; width: 100%; height: 100%;
   overflow: visible; pointer-events: none; z-index: -1;
 }
 .wobbly .wb-shape { fill: var(--wb-color); stroke: var(--wb-color); stroke-width: var(--wb-stroke); stroke-linejoin: round; }
-.wobbly[data-variant="outline"] .wb-shape { fill: transparent; }
+.wobbly[data-variant="outline"] .wb-shape { fill: transparent; transition: stroke .25s ease, fill .25s ease; }
+.wobbly[data-variant="outline"][data-state="hover"] .wb-shape,
+.wobbly[data-variant="outline"][data-state="press"] .wb-shape { stroke: var(--accent); }
 
 .wobbly .wb-label { display: inline-flex; align-items: center; gap: 0.6em; transform: scale(var(--wb-scale, 1)); }
 
 /* spark marks */
-.wobbly .wb-spark { fill: none; stroke: var(--wb-color); stroke-width: 1.6; stroke-linecap: round; opacity: 0; transition: opacity .18s ease, transform .3s cubic-bezier(.2,.8,.2,1); }
+.wobbly .wb-spark { fill: none; stroke: var(--accent); stroke-width: 1.8; stroke-linecap: round; opacity: 0; transition: opacity .18s ease, transform .3s cubic-bezier(.2,.8,.2,1); }
 .wobbly[data-state="press"]   .wb-press { opacity: 1; transform: scale(1); }
 .wobbly .wb-press   { transform: scale(.7); transform-box: fill-box; transform-origin: center; }
 .wobbly[data-state="release"] .wb-release { opacity: 1; transform: scale(1.12); }
