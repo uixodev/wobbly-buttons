@@ -25,4 +25,4 @@ Run: `npx serve .` (or any static server) and open `index.html`.
 <script type="module" src="vira-logo.js"></script>
 ```
 
-The A-mark's eyes track the cursor, the body leans toward it, the dot floats away when you hover, a press squishes it and release makes it hop, and it blinks on its own. Size with `font-size`, colour with `color`.
+The A-mark is a soft-body blob with an imperfect, gently wobbling outline (like the buttons); its eyes track the cursor, the body leans and bulges toward it, the dot floats away when you hover, a press squishes it and release makes it hop, and it blinks on its own. Size with `font-size`, colour with `color`.

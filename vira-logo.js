@@ -24,7 +24,18 @@ class Springs {
   }
 }
 
-const BODY = 'M100 26C124 26 134 54 147 84C159 112 178 138 180 163C182 184 160 188 148 180C132 168 118 150 100 150C82 150 68 168 52 180C40 188 18 184 20 163C22 138 41 112 53 84C66 54 76 26 100 26Z';
+// hand-placed outline points (viewBox 200); drawn as a closed Catmull-Rom curve so the shape is soft and a bit uneven
+const BODY = [[100, 26], [125, 33], [141, 66], [157, 101], [175, 138], [181, 166], [165, 187], [147, 179], [131, 160], [115, 150], [99, 148], [84, 151], [69, 162], [52, 181], [33, 186], [19, 165], [27, 137], [44, 99], [60, 67], [76, 34]];
+const DOT = Array.from({ length: 8 }, (_, i) => [170 + 14 * Math.cos((i / 8) * Math.PI * 2), 28 + 14 * Math.sin((i / 8) * Math.PI * 2)]);
+
+const blobPath = (P) => {
+  const n = P.length; let d = `M${P[0][0].toFixed(2)} ${P[0][1].toFixed(2)}`;
+  for (let i = 0; i < n; i++) {
+    const p0 = P[(i - 1 + n) % n], p1 = P[i], p2 = P[(i + 1) % n], p3 = P[(i + 2) % n];
+    d += `C${(p1[0] + (p2[0] - p0[0]) / 6).toFixed(2)} ${(p1[1] + (p2[1] - p0[1]) / 6).toFixed(2)} ${(p2[0] - (p3[0] - p1[0]) / 6).toFixed(2)} ${(p2[1] - (p3[1] - p1[1]) / 6).toFixed(2)} ${p2[0].toFixed(2)} ${p2[1].toFixed(2)}`;
+  }
+  return d + 'Z';
+};
 
 class ViraLogo {
   constructor(root) {
@@ -39,13 +50,15 @@ class ViraLogo {
 
     this.svg = el('svg', { viewBox: '0 0 200 200', class: 'vira-mark', 'aria-hidden': 'true' });
     this.body = el('g', { class: 'vira-body' });
-    this.body.append(el('path', { d: BODY, fill: 'currentColor' }));
+    this.bodyPath = el('path', { fill: 'currentColor' });
+    this.body.append(this.bodyPath);
+    this.pts = [BODY, DOT].map((base) => ({ base, off: base.map(() => [0, 0]), vel: base.map(() => [0, 0]) }));
     this.eyes = el('g', { fill: '#faf7f0' });
     this.eyeL = el('ellipse', { cx: 86, cy: 80, rx: 9.5, ry: 12.5 });
     this.eyeR = el('ellipse', { cx: 114, cy: 80, rx: 9.5, ry: 12.5 });
     this.eyes.append(this.eyeL, this.eyeR);
     this.body.append(this.eyes);
-    this.dot = el('circle', { cx: 170, cy: 28, r: 14, fill: 'currentColor' });
+    this.dot = el('path', { fill: 'currentColor' });
     this.svg.append(this.body, this.dot);
     root.replaceChildren(this.svg, word);
     root.setAttribute('aria-label', word.textContent);
@@ -56,6 +69,7 @@ class ViraLogo {
     root.addEventListener('pointerup', () => { this.pressed = false; this.hop(); });
     window.addEventListener('pointermove', (e) => { this.pointer = { x: e.clientX, y: e.clientY }; this.kick(); }, { passive: true });
     if (!reduced) this.scheduleBlink();
+    this.kick();
   }
 
   hop() { this.s.vel.dy -= 160; this.s.vel.sy += 4; this.s.vel.sx -= 3; this.kick(); }
@@ -86,12 +100,43 @@ class ViraLogo {
     t.dy = this.hover ? -uy * 10 : uy * 4 * k;
   }
 
+  // soft-body: every outline point has its own spring; idle drift + a bulge toward the cursor
+  wobble(dt, t) {
+    if (reduced) { this.draw(); return false; }
+    const r = this.svg.getBoundingClientRect();
+    const q = this.pointer && r.width ? { x: (this.pointer.x - r.left) * 200 / r.width, y: (this.pointer.y - r.top) * 200 / r.height } : null;
+    const lean = this.pressed ? 0 : this.hover ? 1 : 0.35;
+    this.pts.forEach((g, gi) => {
+      g.base.forEach((b, i) => {
+        const amp = gi === 0 ? 1.5 : 0.7;
+        let tx = Math.sin(t * 1.2 + i * 1.9 + gi) * amp, ty = Math.cos(t * 0.95 + i * 2.3 + gi * 2) * amp;
+        if (q && gi === 0) {
+          const dx = q.x - b[0], dy = q.y - b[1], d = Math.hypot(dx, dy) || 1;
+          const k = Math.exp(-Math.pow(d / 70, 2)) * lean * Math.min(d, 40) / d * 0.4;
+          tx += dx * k; ty += dy * k;
+        }
+        const o = g.off[i], vel = g.vel[i];
+        vel[0] += (120 * (tx - o[0]) - 9 * vel[0]) * dt; vel[1] += (120 * (ty - o[1]) - 9 * vel[1]) * dt;
+        o[0] += vel[0] * dt; o[1] += vel[1] * dt;
+      });
+    });
+    this.draw();
+    return true;
+  }
+
+  draw() {
+    const pos = (g) => g.base.map((b, i) => [b[0] + g.off[i][0], b[1] + g.off[i][1]]);
+    this.bodyPath.setAttribute('d', blobPath(pos(this.pts[0])));
+    this.dot.setAttribute('d', blobPath(pos(this.pts[1])));
+  }
+
   tick(now) {
     const dt = Math.min((now - this.last) / 1000, 1 / 30); this.last = now;
     this.targets();
     const e = reduced ? 0 : this.s.step(dt);
     if (reduced) Object.assign(this.s.v, this.s.t);
     const v = this.s.v;
+    const moving = this.wobble(dt, now / 1000);
     // scale from the feet so squish feels grounded
     this.body.setAttribute('transform', `translate(100 185) rotate(${v.rot.toFixed(2)}) scale(${v.sx.toFixed(3)} ${v.sy.toFixed(3)}) translate(-100 -185)`);
     const squint = this.pressed ? 0.45 : 1;
@@ -102,7 +147,7 @@ class ViraLogo {
       eye.setAttribute('ry', ry.toFixed(2));
     }
     this.dot.setAttribute('transform', `translate(${v.dx.toFixed(2)} ${v.dy.toFixed(2)})`);
-    this.raf = e > 0.05 ? requestAnimationFrame((n) => this.tick(n)) : 0;
+    this.raf = e > 0.05 || moving ? requestAnimationFrame((n) => this.tick(n)) : 0;
   }
 }
 
