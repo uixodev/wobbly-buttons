@@ -1,0 +1,18 @@
+/* Interactive logo. Size it with font-size; colour with `color`. */
+.vira-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.18em;
+  font-size: 3.5rem;
+  color: #111;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.vira-logo:focus-visible { outline: 2px dashed currentColor; outline-offset: 8px; }
+.vira-word {
+  font: 800 1em/1 "Manrope", "Inter", system-ui, sans-serif;
+  letter-spacing: -0.04em;
+}
+.vira-mark { width: 1.9em; height: 1.9em; overflow: visible; margin-block: -0.2em; }

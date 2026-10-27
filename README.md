@@ -16,3 +16,13 @@ Vanilla JS + CSS, no dependencies, no build step.
 - Call `init(element)` (exported from `wobbly-buttons.js`) after injecting buttons dynamically.
 
 Run: `npx serve .` (or any static server) and open `index.html`.
+
+## Interactive logo
+
+```html
+<link rel="stylesheet" href="vira-logo.css" />
+<a href="#" class="vira-logo" data-text="vira"></a>
+<script type="module" src="vira-logo.js"></script>
+```
+
+The A-mark's eyes track the cursor, the body leans toward it, the dot floats away when you hover, a press squishes it and release makes it hop, and it blinks on its own. Size with `font-size`, colour with `color`.
