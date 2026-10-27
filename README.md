@@ -39,4 +39,4 @@ To use a real photo or screenshot, add an `<img src="…" alt="…">` as the **f
 - "View all projects" and the project cards link to `#work` until the project pages exist.
 - The footer says © 2024 (from the wireframe).
 
-- `services.js` — the Services section: three miniature browser windows that demonstrate each service (a wireframe becoming a polished layout, a preview assembling as code is typed, an ink shape that bends toward your cursor). Black and white, loops only while on screen, finished state with reduced motion.
+- `services.js` — the Services panels: hover one and translucent objects float up inside it and drift with your cursor (design: glass cards, type, a pen curve; development: code chips and a terminal; creative extras: a field of + marks that turn toward the cursor), and the cursor becomes the panel icon.
