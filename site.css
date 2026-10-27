@@ -262,7 +262,7 @@ a { color: inherit; }
    and your cursor becomes the panel's icon). ═════════ */
 .svc-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(12px, 1.4vw, 20px); }
 .panel { --fg: #F7F3EF; --bgp: var(--ink); position: relative; width: 100%; box-sizing: border-box; aspect-ratio: 1.42; min-height: 300px; overflow: hidden; background: var(--bgp); color: var(--fg); clip-path: var(--clip); padding: clamp(22px, 2vw, 30px); transition: opacity .9s ease, transform .9s cubic-bezier(.2, .7, .2, 1), translate .5s cubic-bezier(.3, 1.5, .5, 1), rotate .5s cubic-bezier(.3, 1.5, .5, 1); }
-.panel.pn2 { --fg: var(--ink); --bgp: var(--bg); }
+.panel.pn2, .panel.pn4 { --fg: var(--ink); --bgp: var(--bg); }
 .p-outline { position: absolute; inset: 0; width: 100%; height: 100%; fill: none; stroke: var(--ink); stroke-width: 3.2; pointer-events: none; }
 .p-outline path { vector-effect: non-scaling-stroke; }
 .panel:hover { translate: 0 -4px; rotate: -.4deg; }
@@ -277,7 +277,7 @@ html.icon-cursor .ink-cursor { opacity: 0 !important; }
 
 /* objects floating inside each panel: translucent, they appear on hover and drift with your cursor */
 .p-art { position: absolute; inset: 0; pointer-events: none; z-index: 1; --glass: rgba(255, 255, 255, .1); --edge: rgba(255, 255, 255, .5); --ink-t: rgba(255, 255, 255, .62); }
-.panel.pn2 .p-art { --glass: rgba(17, 17, 17, .05); --edge: rgba(17, 17, 17, .45); --ink-t: rgba(17, 17, 17, .6); }
+.panel.pn2 .p-art, .panel.pn4 .p-art { --glass: rgba(17, 17, 17, .05); --edge: rgba(17, 17, 17, .45); --ink-t: rgba(17, 17, 17, .6); }
 .p-art > * { position: absolute; opacity: 0; transform: translateY(18px) scale(.88) rotate(var(--r, 0deg)); transition: opacity .5s ease calc(var(--i, 0) * 70ms), transform .8s cubic-bezier(.2, .8, .2, 1) calc(var(--i, 0) * 70ms); translate: calc(var(--mx, 0) * var(--d, 0) * 1px) calc(var(--my, 0) * var(--d, 0) * 1px); }
 .panel:hover .p-art > *, .panel:focus-within .p-art > * { opacity: 1; transform: rotate(var(--r, 0deg)); }
 .glass { background: var(--glass); border: 1px solid var(--edge); border-radius: 14px 12px 15px 11px / 12px 15px 11px 14px; -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px); }
@@ -313,3 +313,17 @@ html.icon-cursor .ink-cursor { opacity: 0 !important; }
 .p-stretch::after { content: ""; position: absolute; inset: -700px; }
 .panel { cursor: pointer; }
 .p-stretch:focus-visible { outline: 2px dashed currentColor; outline-offset: 6px; }
+
+/* second row: Website Refresh · Ongoing Support */
+.svc-list-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: clamp(12px, 1.4vw, 20px); }
+.svc-list-2 .panel { aspect-ratio: 2.1; }
+.r-old { left: 16%; top: 14%; width: 22%; height: 40%; padding: 12px; --r: -5deg; --d: 14; --i: 0; border-style: dashed; }
+.r-old .glass-line { opacity: .5; }
+.r-arrow { left: 44%; top: 24%; width: 11%; --d: -10; --i: 1; fill: none; stroke: var(--ink-t); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.r-new { left: 62%; top: 10%; width: 26%; height: 46%; padding: 12px; --r: 4deg; --d: -18; --i: 2; }
+.r-new .glass-line:first-child { width: 55%; margin-top: 4px; }
+.r-chip { left: 46%; top: 56%; --r: -3deg; --d: 20; --i: 3; }
+.s-b1 { left: 30%; top: 14%; --r: -3deg; --d: 16; --i: 0; } .s-b2 { left: 44%; top: 36%; --r: 2deg; --d: -14; --i: 1; }
+.s-inf { right: 12%; top: 8%; font: italic 400 clamp(4rem, 7vw, 6.5rem)/1 var(--serif); color: var(--ink-t); --d: -20; --i: 2; }
+.s-chip { right: 8%; top: 48%; --r: 3deg; --d: 12; --i: 3; }
+@media (max-width: 900px) { .svc-list-2 { grid-template-columns: 1fr; } .svc-list-2 .panel { aspect-ratio: auto; min-height: 340px; } }

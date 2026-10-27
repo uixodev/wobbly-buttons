@@ -59,6 +59,8 @@ if (plus) {
 const ICONS = {
   pen: '<svg viewBox="0 0 24 24"><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.6 7.6"/><circle cx="11" cy="11" r="2"/></svg>',
   code: '<svg viewBox="0 0 24 24"><path d="M16 18l6-6-6-6"/><path d="M8 6l-6 6 6 6"/></svg>',
+  refresh: '<svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg>',
+  support: '<svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l1-4.5A8 8 0 1 1 21 12z"/></svg>',
   plus: '<svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/></svg>',
 };
 (() => {
@@ -70,7 +72,7 @@ const ICONS = {
   panels.forEach((p) => {
     p.addEventListener('pointerenter', (e) => {
       cur.innerHTML = ICONS[p.dataset.icon] || '';
-      cur.classList.toggle('light', !p.classList.contains('pn2'));      // light disc on the dark panels, dark disc on the light one
+      cur.classList.toggle('light', !(p.classList.contains('pn2') || p.classList.contains('pn4')));      // light disc on the dark panels, dark disc on the light one
       if (!on) { x = tx = e.clientX; y = ty = e.clientY; }
       on = true; cur.classList.add('on'); root.classList.add('icon-cursor'); if (!raf) raf = requestAnimationFrame(loop);
     });
