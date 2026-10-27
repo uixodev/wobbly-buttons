@@ -341,3 +341,11 @@ a, button, .burger, .wobbly, .panel, .vira-logo, .menu-links a, .p-stretch, .svc
 @media (hover: none) { ::selection { background: transparent; } input, textarea { -webkit-user-select: text; user-select: text; } }
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 @media (max-width: 900px) { .panel, .svc-list-2 .panel { min-height: 300px; } section[id], #top { scroll-margin-top: 72px; } }
+
+/* phones: the "Let's connect" links become a row of icons */
+@media (max-width: 640px) {
+  .social { display: flex; flex-wrap: nowrap; gap: 0 clamp(12px, 5vw, 24px); padding: 0; }
+  .social li { margin: 0; padding: 0; }
+  .social a { font-size: 0; gap: 0; padding: 10px; margin: -10px; }
+  .social svg { width: 28px; height: 28px; }
+}
