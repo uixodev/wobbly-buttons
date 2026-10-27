@@ -31,3 +31,22 @@ if (form) {
 
 // ── the playground tiles ──
 initPlayground({ reduced });
+
+// ── services: the icon blob follows the cursor over the list (pointer devices only) ──
+(() => {
+  const list = document.querySelector('.svc-list');
+  if (!list || reduced || !matchMedia('(hover: hover) and (min-width: 901px)').matches) return;
+  const peek = document.createElement('span'); peek.className = 'svc-peek'; peek.setAttribute('aria-hidden', 'true'); document.body.append(peek);
+  let tx = 0, ty = 0, x = 0, y = 0, raf = 0, active = false;
+  const loop = () => { x += (tx - x) * .16; y += (ty - y) * .16; peek.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`; raf = active || Math.abs(tx - x) > .5 ? requestAnimationFrame(loop) : 0; };
+  list.querySelectorAll('.svc').forEach((row) => {
+    row.addEventListener('pointerenter', (e) => {
+      peek.innerHTML = row.querySelector('.svc-blob .icon').outerHTML;
+      peek.classList.toggle('light', row.querySelector('.svc-blob').classList.contains('b2'));
+      if (!active) { x = tx = e.clientX + 60; y = ty = e.clientY; }
+      active = true; peek.classList.add('on'); if (!raf) raf = requestAnimationFrame(loop);
+    });
+  });
+  list.addEventListener('pointermove', (e) => { tx = e.clientX + 70; ty = e.clientY - 10; });
+  list.addEventListener('pointerleave', () => { active = false; peek.classList.remove('on'); });
+})();
