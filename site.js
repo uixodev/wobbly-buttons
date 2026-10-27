@@ -31,22 +31,3 @@ if (form) {
 
 // ── the playground tiles ──
 initPlayground({ reduced });
-
-// ── services: the big numbers drift at slightly different speeds as you scroll ──
-(() => {
-  const nums = [...document.querySelectorAll('.svc-num')];
-  if (!nums.length || reduced) return;
-  let ticking = false;
-  const update = () => {
-    ticking = false;
-    const mid = innerHeight / 2;
-    for (const n of nums) {
-      const r = n.parentElement.getBoundingClientRect();
-      if (r.bottom < -200 || r.top > innerHeight + 200) continue;
-      n.style.translate = `0 ${(((r.top + r.height / 2) - mid) * parseFloat(n.dataset.speed)).toFixed(1)}px`;
-    }
-  };
-  addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
-  addEventListener('resize', update);
-  update();
-})();

@@ -38,3 +38,5 @@ To use a real photo or screenshot, add an `<img src="…" alt="…">` as the **f
 - Hook the newsletter form up to a mailing service (the handler is in `site.js`).
 - "View all projects" and the project cards link to `#work` until the project pages exist.
 - The footer says © 2024 (from the wireframe).
+
+- `services.js` — the Services section: three miniature browser windows that demonstrate each service (a wireframe becoming a polished layout, a preview assembling as code is typed, an ink shape that bends toward your cursor). Black and white, loops only while on screen, finished state with reduced motion.
