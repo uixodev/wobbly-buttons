@@ -43,3 +43,7 @@ A living ink droplet replaces the native cursor: it lags the pointer on a spring
 | `--bg` | `#F7F3EF` | page background (cream) |
 | `--ink` | `#111` | buttons, logo, text |
 | `--accent` | `#AD86CF` (Orchid) | logo dot, hover/press fill of the solid button, logo focus ring |
+
+## Navigation bar
+
+`nav.css` + the `<header class="site-nav">` markup in `index.html`: logo on the left, mono uppercase links centred (hover lifts + turns Orchid), `[ BRISTOL, UK ]` and a softly breathing ink dot on the right. Collapses to logo + links on phones.
