@@ -6,7 +6,8 @@ if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
   const DARK = '.footer-dark, .menu, .panel.pn1, .panel.pn3, .panel.pn5, .vira-logo, .tile-jelly';
   const R = 44;
 
-  addEventListener('pointerdown', (e) => {
+  // a mouse flicks on press; a finger only on a real tap (so scrolling and swiping stay quiet)
+  const spark = (e) => {
     if (e.button > 0 || e.target.closest?.('.wobbly')) return;
     const dark = !!e.target.closest?.(DARK) || document.documentElement.classList.contains('menu-open');
     const svg = document.createElementNS(NS, 'svg');
@@ -33,5 +34,7 @@ if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
     }
     document.body.append(svg);
     setTimeout(() => svg.remove(), 800);
-  }, { passive: true });
+  };
+  addEventListener('pointerdown', (e) => { if (e.pointerType === 'mouse') spark(e); }, { passive: true });
+  addEventListener('click', (e) => { if (e.pointerType && e.pointerType !== 'mouse') spark(e); }, { passive: true });
 }

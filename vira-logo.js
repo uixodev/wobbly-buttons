@@ -104,6 +104,7 @@ class ViraLogo {
     root.addEventListener('pointerdown', () => { this.pressed = true; this.kick(); });
     root.addEventListener('pointerup', () => { this.pressed = false; this.hop(); });
     window.addEventListener('pointermove', (e) => { this.pointer = { x: e.clientX, y: e.clientY }; this.kick(); }, { passive: true });
+    for (const t of ['pointerup', 'pointercancel']) window.addEventListener(t, (e) => { if (e.pointerType !== 'mouse') { this.hover = false; this.pressed = false; this.kick(); } }, { passive: true });
     if (!reduced) this.scheduleBlink();
     this.kick();
   }

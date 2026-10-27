@@ -11,6 +11,8 @@ const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 export function initPlayground({ reduced = false } = {}) {
   const pointer = { x: -9999, y: -9999, inside: false };
   addEventListener('pointermove', (e) => { pointer.x = e.clientX; pointer.y = e.clientY; }, { passive: true });
+  // a finger leaves nothing behind: forget where it was so nothing stays leaning towards it
+  for (const t of ['pointerup', 'pointercancel']) addEventListener(t, (e) => { if (e.pointerType !== 'mouse') { pointer.x = pointer.y = -9999; } }, { passive: true });
 
   // runs `frame(now, dt)` only while `el` is visible
   function loop(el, frame, once) {

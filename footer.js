@@ -56,6 +56,7 @@ function start() {
 
   addEventListener('pointermove', (e) => { pointer.x = e.clientX; pointer.y = e.clientY; if (visible) wake(); }, { passive: true });
   document.documentElement.addEventListener('pointerleave', () => { pointer.x = pointer.y = -9999; });
+  for (const t of ['pointerup', 'pointercancel']) addEventListener(t, (e) => { if (e.pointerType !== 'mouse') pointer.x = pointer.y = -9999; }, { passive: true });
   addEventListener('scroll', settle, { passive: true });
   addEventListener('resize', settle);
   // a click near the edge sends a ripple along it

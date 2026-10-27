@@ -7,6 +7,7 @@ const STIFFNESS = 170;
 const DAMPING = 13;
 const CLOSE_RADIUS = 120;   // px around the button where the blob starts leaning
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let mouseSeen = false;
 
 const el = (name, attrs = {}) => {
   const n = document.createElementNS(SVG_NS, name);
@@ -43,15 +44,17 @@ class Wobbly {
     new ResizeObserver(() => this.measure()).observe(root);
     this.measure();
 
-    root.addEventListener('pointerenter', (e) => { this.inside = true; this.track(e); this.set('hover'); });
-    root.addEventListener('pointerleave', (e) => { this.inside = false; this.track(e); this.set(this.near() ? 'close' : 'idle'); });
+    // hover and "a cursor is close" only make sense for a mouse; a finger just presses and lets go
+    root.addEventListener('pointerenter', (e) => { if (e.pointerType !== 'mouse') return; this.inside = true; this.track(e); this.set('hover'); });
+    root.addEventListener('pointerleave', (e) => { this.inside = false; if (e.pointerType === 'mouse') this.track(e); this.set(this.near() ? 'close' : 'idle'); });
     root.addEventListener('pointerdown', () => { clearTimeout(this.releaseTimer); this.set('press'); });
     root.addEventListener('pointerup', () => this.release());
     root.addEventListener('pointercancel', () => this.set('idle'));
     root.addEventListener('keydown', (e) => { if (e.key === ' ' || e.key === 'Enter') this.set('press'); });
     root.addEventListener('keyup', (e) => { if (e.key === ' ' || e.key === 'Enter') this.release(); });
     window.addEventListener('pointermove', (e) => {
-      this.track(e);
+      if (e.pointerType !== 'mouse') return;
+      mouseSeen = true; this.track(e);
       if (this.state === 'idle' && this.near()) this.set('close');
       else if (this.state === 'close' && !this.near()) this.set('idle');
     }, { passive: true });
@@ -105,7 +108,7 @@ class Wobbly {
     const dy = Math.max(-this.pointer.y, 0, this.pointer.y - this.h);
     return Math.hypot(dx, dy);
   }
-  near() { return this.distToBox() < CLOSE_RADIUS; }
+  near() { return mouseSeen && this.distToBox() < CLOSE_RADIUS; }
 
   set(state) {
     if (this.state === state) return;
