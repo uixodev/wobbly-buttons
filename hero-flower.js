@@ -7,6 +7,8 @@ import { buildFlower, bloomBounds, exportGLB } from './glass-flower.js';
 const IVORY = '#F7F3EF';
 const INK = '#111111';
 const ORCHID = '#AD86CF';
+// Decorative extras (flowing line, dots, droplets) are parked while the composition is refined: flip to true to bring them back.
+const SHOW_DECOR = false;
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const hero = document.querySelector('.hero');
@@ -17,7 +19,7 @@ if (hero && canvas) start();
 // The dark flags are what give the glass its crisp dark edges (a uniformly bright room makes it look milky).
 function studioEnvironment() {
   const env = new THREE.Scene();
-  const room = new THREE.Mesh(new THREE.BoxGeometry(24, 16, 24), new THREE.MeshBasicMaterial({ color: new THREE.Color('#948d85'), side: THREE.BackSide }));
+  const room = new THREE.Mesh(new THREE.BoxGeometry(24, 16, 24), new THREE.MeshBasicMaterial({ color: new THREE.Color('#a39c94'), side: THREE.BackSide }));
   env.add(room);
   const panel = (w, h, color, x, y, z, ry = 0, rx = 0, power = 1) => {
     const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: new THREE.Color(color).multiplyScalar(power), side: THREE.DoubleSide }));
@@ -30,8 +32,8 @@ function studioEnvironment() {
   panel(5, 12, '#0b0a0a', -11, 0, -5, Math.PI / 2, 0, 1);            // black flags at the sides
   panel(4, 11, '#0b0a0a', 11, 0, 5, -Math.PI / 2, 0, 1);
   panel(12, 3, '#ffffff', 0, -6.5, 0, 0, Math.PI / 2, 4);            // soft bounce from below
-  panel(3.2, 12, '#AD86CF', 6, 2, 9, -Math.PI / 3, 0, 9);
-  panel(3.2, 12, '#AD86CF', -6, 1, 8, Math.PI / 3, 0, 6);             // orchid strip: the soft purple in the reflections
+  panel(2.4, 12, '#AD86CF', 6, 2, 9, -Math.PI / 3, 0, 4);                 // faint orchid reflection
+  panel(5, 12, '#2b2825', -6, 1, 8, Math.PI / 3, 0, 1);                  // smoky dark flag             // orchid strip: the soft purple in the reflections
   panel(1.6, 9, '#D0C8C0', -7, 0, -8, Math.PI / 3, 0, 4);            // warm neutral strip
   return env;
 }
@@ -54,14 +56,14 @@ async function start() {
 
   // ---- clear glass with a faint orchid tint
   const glass = new THREE.MeshPhysicalMaterial({
-    color: new THREE.Color('#ffffff').lerp(new THREE.Color(ORCHID), 0.05),
+    color: new THREE.Color('#ffffff').lerp(new THREE.Color(ORCHID), 0.025),
     roughness: 0.03,
     transmission: 1,
-    thickness: 1.1,
+    thickness: 1.0,
     ior: 1.55,
     dispersion: 0.3,
-    attenuationColor: new THREE.Color(ORCHID),
-    attenuationDistance: 8,
+    attenuationColor: new THREE.Color('#8f8596'),   // smoky grey with a breath of orchid
+    attenuationDistance: 9,
     specularIntensity: 1,
     clearcoat: 1,
     clearcoatRoughness: 0.02,
@@ -76,7 +78,7 @@ async function start() {
   window.exportFlowerGLB = () => exportGLB(flower);              // console helper: exportFlowerGLB()
 
   // two small drifting droplets
-  const droplets = [[0.31, 0.47, 0.20], [0.91, 0.80, 0.17]].map(([fx, fy, r], i) => {
+  const droplets = (SHOW_DECOR ? [[0.31, 0.47, 0.20], [0.91, 0.80, 0.17]] : []).map(([fx, fy, r], i) => {
     const m = new THREE.Mesh(new THREE.SphereGeometry(1, 48, 32), glass.clone());
     m.material.thickness = 0.25;
     m.scale.set(r, r * 0.72, r * 0.8);
@@ -100,17 +102,19 @@ async function start() {
     g.scale(dpr, dpr);
     g.fillStyle = IVORY; g.fillRect(0, 0, W, H);
 
+    if (SHOW_DECOR) {
     // thin hand-drawn line sweeping through the composition, with two dots
-    g.strokeStyle = INK; g.lineWidth = Math.max(1, W / 1500); g.lineCap = 'round';
-    g.beginPath();
-    g.moveTo(-10, H * 0.27);
-    g.bezierCurveTo(W * 0.14, H * 0.22, W * 0.2, H * 0.28, W * 0.26, H * 0.38);
-    g.bezierCurveTo(W * 0.33, H * 0.5, W * 0.36, H * 0.6, W * 0.5, H * 0.58);
-    g.bezierCurveTo(W * 0.66, H * 0.56, W * 0.76, H * 0.7, W * 0.92, H * 0.55);
-    g.bezierCurveTo(W * 0.96, H * 0.52, W * 0.99, H * 0.5, W + 10, H * 0.5);
-    g.stroke();
-    g.fillStyle = INK;
-    for (const [x, y] of [[0.05, 0.225], [0.925, 0.585]]) { g.beginPath(); g.arc(W * x, H * y, Math.max(2, W / 600), 0, 7); g.fill(); }
+      g.strokeStyle = INK; g.lineWidth = Math.max(1, W / 1500); g.lineCap = 'round';
+      g.beginPath();
+      g.moveTo(-10, H * 0.27);
+      g.bezierCurveTo(W * 0.14, H * 0.22, W * 0.2, H * 0.28, W * 0.26, H * 0.38);
+      g.bezierCurveTo(W * 0.33, H * 0.5, W * 0.36, H * 0.6, W * 0.5, H * 0.58);
+      g.bezierCurveTo(W * 0.66, H * 0.56, W * 0.76, H * 0.7, W * 0.92, H * 0.55);
+      g.bezierCurveTo(W * 0.96, H * 0.52, W * 0.99, H * 0.5, W + 10, H * 0.5);
+      g.stroke();
+      g.fillStyle = INK;
+      for (const [x, y] of [[0.05, 0.225], [0.925, 0.585]]) { g.beginPath(); g.arc(W * x, H * y, Math.max(2, W / 600), 0, 7); g.fill(); }
+    }
 
     // headline: BEAUTIFUL across the top, IDEAS lower right
     const narrow = W < 800;
@@ -138,7 +142,7 @@ async function start() {
     const aspect = W / H;
     camera.aspect = aspect;
     // world height visible at z=0: wide screens frame the flower by height, narrow ones by width
-    const visH = Math.max(4.4, 3.7 / aspect);
+    const visH = Math.max(4.5, 3.8 / aspect);
     camera.position.set(0, 0, (visH / 2) / Math.tan(THREE.MathUtils.degToRad(FOV / 2)));
     camera.updateProjectionMatrix();
     layout = { W, H, aspect, visW: visH * aspect, visH };
@@ -152,7 +156,7 @@ async function start() {
   hero.classList.add('is-loaded');
 
   // ---- scroll → pose
-  const state = { p: 0, rx: 0.95, ry: 0.4, s: 1.08, y: 0 };
+  const state = { p: 0, rx: 0.85, ry: 0.55, s: 1, y: 0 };
   const view = { ...state };
   const ease = (t) => t * t * (3 - 2 * t);
   const mix = (a, b, t) => a + (b - a) * t;
@@ -164,9 +168,9 @@ async function start() {
     state.p = p;
     // face-on (looking into the petals) → side profile → lifted three-quarter view
     const a = ease(Math.min(1, p / 0.55)), b = ease(Math.max(0, (p - 0.55) / 0.45));
-    state.rx = mix(mix(0.95, 0.04, a), 0.4, b);
-    state.ry = 0.4 + p * Math.PI * 2.1;
-    state.s = mix(1.08, 0.94, ease(p));
+    state.rx = mix(mix(0.85, 0.06, a), 0.4, b);
+    state.ry = 0.55 + p * Math.PI * 2.1;
+    state.s = mix(1, 0.92, ease(p));
     state.y = mix(0, 0.15, ease(p));
   }
   addEventListener('scroll', target, { passive: true });
@@ -180,11 +184,11 @@ async function start() {
     const k = reduced ? 1 : 1 - Math.exp(-dt * 5);
     for (const key of ['rx', 'ry', 's', 'y']) view[key] += (state[key] - view[key]) * k;
     const idle = reduced ? 0 : Math.sin(t * 0.55) * 0.035;
-    pivot.rotation.set(view.rx + idle, view.ry + (reduced ? 0 : t * 0.06), 0, 'YXZ');
+    pivot.rotation.set(view.rx + idle, view.ry + (reduced ? 0 : t * 0.06), -0.2, 'YXZ');   // slight roll keeps the silhouette off-axis
     const { visW, visH, aspect } = layout;
-    pivot.scale.setScalar(view.s * (aspect > 1.1 ? 1 : 0.85));
-    // sit right of centre on wide screens, centred on phones
-    pivot.position.set(aspect > 1.1 ? visW * 0.13 : 0, view.y + (aspect > 1.1 ? 0 : visH * 0.09), 0);
+    pivot.scale.setScalar(view.s * (aspect > 1.1 ? 1 : 0.9));
+    // high and just left of centre: it overlaps the middle of the headline
+    pivot.position.set(aspect > 1.1 ? visW * 0.01 : 0, view.y + visH * (aspect > 1.1 ? 0.1 : 0.12), 0);
     droplets.forEach((d) => {
       const { fx, fy, phase } = d.userData;
       d.position.set((fx - 0.5) * visW, (0.5 - fy) * visH + Math.sin(t * 0.8 + phase) * 0.06 + state.p * (fx < 0.5 ? 0.5 : -0.4), 0.2);
