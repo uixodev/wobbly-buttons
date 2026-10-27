@@ -128,7 +128,9 @@ class Wobbly {
     const st = this.state;
     const S = st === 'press' ? 0.9 : st === 'release' ? 1.1 : st === 'hover' ? 1.07 : st === 'close' ? 1.03 : 1;
     const sx = st === 'press' ? 0.93 : 1, sy = st === 'press' ? 0.8 : 1;
-    const lean = st === 'close' ? clamp(1 - this.distToBox() / CLOSE_RADIUS, 0, 1) : st === 'hover' ? 0.28 : 0;
+    // an outlined button shows every distortion of its line, so it keeps its shape and only squishes; solid ones may lean a little
+    const outline = this.root.dataset.variant === 'outline';
+    const lean = outline ? 0 : st === 'close' ? clamp(1 - this.distToBox() / CLOSE_RADIUS, 0, 1) : st === 'hover' ? 0.28 : 0;
     const t = performance.now() / 1000;
     return this.base.map((b, i) => {
       let x = (b.x - c.x) * (S * sx - 1), y = (b.y - c.y) * (S * sy - 1);
@@ -137,7 +139,7 @@ class Wobbly {
         const d = Math.hypot(dx, dy) || 1;
         const k = Math.exp(-Math.pow(d / 110, 2)) * lean * Math.min(d, 90) / d;
         let px = dx * k * 1.25, py = dy * k * 1.25;
-        const cap = Math.min(this.w, this.h) * (st === 'close' ? 0.3 : 0.16), len = Math.hypot(px, py);   // never stretch far enough to leave the label behind
+        const cap = Math.min(this.w, this.h) * (st === 'close' ? 0.14 : 0.09), len = Math.hypot(px, py);   // never stretch far enough to leave the label behind
         if (len > cap) { px *= cap / len; py *= cap / len; }
         x += px; y += py;
       }
