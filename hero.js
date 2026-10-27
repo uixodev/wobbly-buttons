@@ -46,13 +46,19 @@ if (story && story.classList.contains('hero-story')) {
   const reducedS = matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reducedS) story.classList.add('static');
   else {
-    const STEPS = [0.1, 0.3, 0.5, 0.7];            // progress through the story at which steps 1–4 switch on
+    const STEPS = [0.2, 0.38, 0.56, 0.74];          // progress through the story at which steps 1–4 switch on (the zoom-out finishes just before step 1)
+    const ZOOM_END = 0.17;
+    const art = story.querySelector('.hero-art');
     let ticking = false, cur = -1;
+    const ease = (t) => 1 - Math.pow(1 - t, 3);
     const update = () => {
       ticking = false;
       const r = story.getBoundingClientRect(), span = r.height - innerHeight;
       const p = span > 0 ? Math.min(1, Math.max(0, -r.top / span)) : 1;
-      const n = STEPS.filter((t) => p >= t).length;
+      // the cat starts zoomed in (cropped, filling the screen) and zooms out to the whole picture before "Hi," arrives
+      const z0 = innerWidth <= 900 ? 3.1 : 2.3, t = Math.min(1, p / ZOOM_END);
+      art.style.setProperty('--z', (z0 + (1 - z0) * ease(t)).toFixed(3));
+      const n = STEPS.filter((s) => p >= s).length;
       if (n === cur) return; cur = n;
       for (let i = 0; i <= 4; i++) story.classList.toggle('s' + i, i <= n);
       story.classList.toggle('s0', n === 0);
