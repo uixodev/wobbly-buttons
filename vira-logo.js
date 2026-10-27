@@ -46,7 +46,16 @@ class ViraLogo {
 
     const word = document.createElement('span');
     word.className = 'vira-word';
-    word.textContent = root.dataset.text || 'vira';
+    const text = root.dataset.text || 'vira';
+    word.setAttribute('aria-hidden', 'true');
+    // one span per letter so each can spring up on its own
+    this.letters = [...text].map((ch) => {
+      const span = document.createElement('span');
+      span.className = 'vira-letter'; span.textContent = ch;
+      word.appendChild(span);
+      return { el: span, y: 0, v: 0 };
+    });
+    this.word = word;
 
     this.svg = el('svg', { viewBox: '0 0 200 200', class: 'vira-mark', 'aria-hidden': 'true' });
     this.body = el('g', { class: 'vira-body' });
@@ -61,7 +70,7 @@ class ViraLogo {
     this.dot = el('path', { fill: 'currentColor' });
     this.svg.append(this.body, this.dot);
     root.replaceChildren(this.svg, word);
-    root.setAttribute('aria-label', word.textContent);
+    root.setAttribute('aria-label', text);
 
     root.addEventListener('pointerenter', () => { this.hover = true; this.kick(); });
     root.addEventListener('pointerleave', () => { this.hover = false; this.pressed = false; this.kick(); });
@@ -124,6 +133,25 @@ class ViraLogo {
     return true;
   }
 
+  // letter under the cursor hops up; its neighbours follow a little, like a soft wave
+  lift(dt) {
+    const wr = this.word.getBoundingClientRect(), p = this.pointer;
+    const over = p && p.x > wr.left - 6 && p.x < wr.right + 6 && p.y > wr.top - wr.height * 0.4 && p.y < wr.bottom + wr.height * 0.4;
+    let busy = 0;
+    for (const L of this.letters) {
+      const r = L.el.getBoundingClientRect();
+      const d = over ? (p.x - (r.left + r.width / 2)) / r.width : 9;
+      const target = -Math.exp(-d * d * 3) * 0.18;              // em: negative = up
+      if (reduced) L.y = target;
+      else {
+        L.v += (260 * (target - L.y) - 15 * L.v) * dt; L.y += L.v * dt;
+        busy |= Math.abs(L.v) > 0.002 || Math.abs(target - L.y) > 0.002;
+      }
+      L.el.style.transform = `translateY(${L.y.toFixed(4)}em)`;
+    }
+    return busy;
+  }
+
   draw() {
     const pos = (g) => g.base.map((b, i) => [b[0] + g.off[i][0], b[1] + g.off[i][1]]);
     this.bodyPath.setAttribute('d', blobPath(pos(this.pts[0])));
@@ -136,7 +164,7 @@ class ViraLogo {
     const e = reduced ? 0 : this.s.step(dt);
     if (reduced) Object.assign(this.s.v, this.s.t);
     const v = this.s.v;
-    const moving = this.wobble(dt, now / 1000);
+    const moving = this.wobble(dt, now / 1000) | this.lift(dt);
     // scale from the feet so squish feels grounded
     this.body.setAttribute('transform', `translate(100 185) rotate(${v.rot.toFixed(2)}) scale(${v.sx.toFixed(3)} ${v.sy.toFixed(3)}) translate(-100 -185)`);
     const squint = this.pressed ? 0.45 : 1;

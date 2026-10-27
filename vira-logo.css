@@ -16,3 +16,4 @@
   letter-spacing: -0.04em;
 }
 .vira-mark { width: 1.9em; height: 1.9em; overflow: visible; margin-block: -0.2em; }
+.vira-letter { display: inline-block; will-change: transform; }
