@@ -1,6 +1,6 @@
 # Viraa — website
 
-A single-page site for Viraa (web design & creative coding, Bristol), built from the wireframes: warm ivory page (`#F7F3EF`), near-black ink (`#111`), Orchid accent (`#AD86CF`).
+A single-page site for Viraa (web design & creative coding, Bristol), built from the wireframes: warm ivory page (`#F7F3EF`), near-black ink (`#111`), beige-brown accent (`#B58B66`).
 Plain HTML, CSS and ES modules: no framework, no build step, no dependencies. Serve the folder with any static server and open `index.html`
 (modules and fonts need `http://`, not `file://`), e.g. `python3 -m http.server`.
 
