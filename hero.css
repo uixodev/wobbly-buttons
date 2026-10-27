@@ -1,5 +1,5 @@
 /* Hero — "websites that feel alive."
-   A soft, slightly wonky serif headline (Fraunces: SOFT + WONK axes) on ivory; "alive." rests on a breathing Orchid blob;
+   A soft, slightly wonky serif headline (Fraunces: SOFT + WONK axes) on ivory; the purple heat-map background spreads out from "alive.";
    a living ink flower grows on the right. Letters hop away from the cursor; the flower deforms where it is touched. */
 @font-face {
   font-family: "Fraunces VF";
@@ -34,14 +34,8 @@
 .hero-title .ch { display: inline-block; will-change: transform; }
 .hero-title ::selection { background: #AD86CF; color: #111; }
 
-/* "alive." sits on a living Orchid shape (alive-blob.js draws it as an SVG outline that deforms; this CSS blob is only the no-JS fallback) */
+/* "alive." is the origin the background gradient spreads from (hero-gradient.js) */
 .hero-title .hl { position: relative; display: inline-block; }
-.hero-title .hl::before {
-  content: ""; position: absolute; z-index: -1; left: -0.07em; right: -0.08em; top: 0.14em; bottom: 0.02em;
-  background: #AD86CF; transform: rotate(-2.2deg); border-radius: 56% 44% 52% 48% / 62% 54% 46% 38%;
-}
-.hero-title .hl.has-blob::before { display: none; }
-.alive-blob { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: -1; }
 
 .hero-copy { display: grid; gap: clamp(16px, 2.8vh, 28px); width: min(30rem, 36vw); }
 .hero-lede {
