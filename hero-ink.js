@@ -7,6 +7,7 @@
 //   Pressing again while it plays makes it recede early. The little character beside the word hops on press.
 import { createAliveBlob } from './alive-blob.js';
 import { createHeroGradient } from './hero-gradient.js';
+import { createAliveSound } from './alive-sound.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CONFIGURATION — the press animation
@@ -59,12 +60,24 @@ function start() {
     origin: () => { if (!hl) return null; const r = hl.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; },
   });
 
+  // ── sound (synthesised, starts on the first press), with a small on/off switch in the nav
+  let stored = null; try { stored = localStorage.getItem('viraSound'); } catch (e) {}
+  const sound = createAliveSound({ enabled: stored !== 'off' });
+  const soundBtn = document.querySelector('.nav-sound');
+  const paintSound = () => { if (!soundBtn) return; soundBtn.setAttribute('aria-pressed', String(sound.enabled)); soundBtn.textContent = sound.enabled ? 'Sound: on' : 'Sound: off'; };
+  paintSound();
+  soundBtn?.addEventListener('click', () => {
+    sound.setEnabled(!sound.enabled); paintSound();
+    try { localStorage.setItem('viraSound', sound.enabled ? 'on' : 'off'); } catch (e) {}
+  });
+
   // ── the choreography: idle → opening → holding → closing → idle
   let phase = 'idle', holdUntil = 0;
   const root = document.documentElement;
   function openIt() {
     phase = 'opening';
     bg.setOpen(true);
+    sound.open(PRESS.spreadSeconds);
     root.classList.add('is-purple');                                      // paragraph, tagline and nav shift colour (CSS transition)
     blob?.set({ color: PRESS.blobOpenColor });
     blob?.ignite?.();
@@ -74,6 +87,7 @@ function start() {
   function closeIt() {
     phase = 'closing';
     bg.setOpen(false);
+    sound.close(PRESS.recedeSeconds);
     root.classList.remove('is-purple');
     blob?.set({ color: PRESS.blobColor });
     wake();

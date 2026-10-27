@@ -32,6 +32,12 @@
 }
 
 .nav-meta { display: flex; align-items: center; gap: 22px; justify-self: end; color: #6f6a66; white-space: nowrap; }
+.nav-sound {
+  margin: 0; padding: 8px 2px; border: 0; background: none; cursor: pointer;
+  font: inherit; letter-spacing: inherit; text-transform: inherit; color: #6f6a66;
+  transition: color .2s ease;
+}
+.nav-sound:hover, .nav-sound:focus-visible { color: var(--accent, #AD86CF); outline: none; }
 .nav-dot {
   width: 12px; height: 12px; background: var(--ink, #111);
   border-radius: 55% 45% 50% 50% / 50% 55% 45% 50%;
@@ -44,7 +50,9 @@
 
 @media (max-width: 860px) { .nav-meta .nav-loc { display: none; } .site-nav { letter-spacing: 0.1em; } }
 @media (max-width: 560px) {
-  .site-nav { grid-template-columns: 1fr; gap: 4px; }
+  .site-nav { grid-template-columns: 1fr auto; gap: 4px 12px; }
+  .site-nav > nav { grid-column: 1 / -1; grid-row: 2; }
   .nav-links { justify-content: space-between; gap: 8px; font-size: 0.68rem; }
-  .nav-meta { display: none; }
+  .nav-meta { grid-row: 1; grid-column: 2; }
+  .nav-meta .nav-dot { display: none; }                 /* the sound switch stays so people can mute on phones */
 }
