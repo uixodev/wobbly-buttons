@@ -1,57 +1,61 @@
-// Hero: a still life of six hand-cut shapes (black solids and fine outlines). Each sits on springs: they drift gently, step aside
-// as your cursor passes, and click / tap / Enter re-arranges them into the next composition. Static with prefers-reduced-motion.
+// Hero: three floating sample websites in a little 3D stage.
+//   cursor     the whole stage tilts toward it; the cards sit at different depths so they slide against each other (parallax)
+//   drag       pick a card up (mouse / pen) and move it; let go and it springs home
+//   click/tap  brings that card to the front
+// With prefers-reduced-motion nothing tilts or springs; cards still come forward on click.
 
-const root = document.getElementById('hero-ink');
+const root = document.getElementById('hero-cards');
 if (root) {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const svg = root.querySelector('svg'), count = root.querySelector('.ink-count');
-  const shapes = [...svg.querySelectorAll('.sh')];
-  // compositions: [x, y, rotation°, scale] for circle, arch, semi, blob, dot, plus
-  const LAYOUTS = [
-    [[170, 190, 0, 1.25], [268, 232, 8, 1.15], [112, 322, -8, 1], [292, 104, 14, .95], [78, 112, 0, 1], [334, 338, 12, 1]],
-    [[250, 150, 0, 1], [128, 250, -12, 1.35], [292, 316, 180, 1.05], [108, 96, -18, 1.1], [330, 236, 0, .9], [58, 340, 0, 1.1]],
-    [[130, 270, 0, 1.1], [254, 196, 0, 1.55], [120, 106, 0, .95], [320, 322, 28, 1], [214, 334, 0, 1.2], [332, 84, 45, 1.1]],
-  ];
-  const DEPTH = [10, 16, 8, 14, 22, 18];
-  const S = shapes.map((el, i) => { const t = LAYOUTS[0][i]; return { el, x: t[0], y: t[1], r: t[2], s: t[3], vx: 0, vy: 0, vr: 0, vs: 0, i }; });
-  let layout = 0;
-  const ptr = { x: 200, y: 200, active: false };
+  const stage = root.querySelector('.hc-stage'), cursorEl = root.querySelector('.hc-cursor');
+  const cards = [...root.querySelectorAll('.hc')].map((el, i) => ({ el, depth: [46, 20, 0][i], x: 0, y: 0, vx: 0, vy: 0, tx: 0, ty: 0, drag: false, z: 3 - i }));
+  const tilt = { rx: 0, ry: 0, trx: 0, try: 0 }, par = { x: 0, y: 0, tx: 0, ty: 0 };
+  let raf = 0, visible = true, ticks = 0;
 
-  const toSvg = (e) => { const r = svg.getBoundingClientRect(); return { x: ((e.clientX - r.left) / r.width) * 400, y: ((e.clientY - r.top) / r.height) * 400 }; };
-  addEventListener('pointermove', (e) => { const p = toSvg(e); ptr.x = p.x; ptr.y = p.y; ptr.active = true; wake(); }, { passive: true });
-  document.documentElement.addEventListener('pointerleave', () => { ptr.active = false; });
+  addEventListener('pointermove', (e) => {
+    if (reduced || e.pointerType === 'touch') return;
+    const r = root.getBoundingClientRect(), nx = clamp(((e.clientX - (r.left + r.width / 2)) / (innerWidth / 2)), -1, 1), ny = clamp(((e.clientY - (r.top + r.height / 2)) / (innerHeight / 2)), -1, 1);
+    tilt.try = nx * 9; tilt.trx = -ny * 7; par.tx = nx; par.ty = ny; wake();
+  }, { passive: true });
+  function clamp(v, a, b) { return Math.min(b, Math.max(a, v)); }
 
-  function shuffle() {
-    layout = (layout + 1) % LAYOUTS.length;
-    count.textContent = `0${layout + 1} / 03`;
-    if (!reduced) for (const o of S) { o.vx += (Math.random() - 0.5) * 220; o.vy += (Math.random() - 0.5) * 220; o.vr += (Math.random() - 0.5) * 260; o.vs += (Math.random() - 0.5) * 3; }
-    wake();
-  }
-  root.addEventListener('click', shuffle);
-  root.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); shuffle(); } });
+  const front = (c) => { let top = Math.max(...cards.map((o) => o.z)); if (c.z === top) return; cards.forEach((o) => { if (o.z > c.z) o.z--; }); c.z = top; cards.forEach((o) => { o.el.style.zIndex = o.z; }); };
+  cards.forEach((c) => {
+    c.el.style.zIndex = c.z;
+    let sx = 0, sy = 0, moved = false;
+    c.el.addEventListener('pointerdown', (e) => {
+      front(c); if (reduced || e.pointerType === 'touch') return;
+      c.drag = true; moved = false; sx = e.clientX - c.x; sy = e.clientY - c.y; c.el.classList.add('drag'); c.el.setPointerCapture(e.pointerId); wake();
+    });
+    c.el.addEventListener('pointermove', (e) => { if (!c.drag) return; c.tx = e.clientX - sx; c.ty = e.clientY - sy; if (Math.abs(c.tx) + Math.abs(c.ty) > 4) moved = true; });
+    const drop = () => { if (!c.drag) return; c.drag = false; c.tx = c.ty = 0; c.el.classList.remove('drag'); wake(); };
+    c.el.addEventListener('pointerup', drop); c.el.addEventListener('pointercancel', drop);
+  });
 
-  const place = (o, dx = 0, dy = 0) => o.el.setAttribute('transform', `translate(${(o.x + dx).toFixed(1)} ${(o.y + dy).toFixed(1)}) rotate(${o.r.toFixed(1)}) scale(${o.s.toFixed(3)})`);
-  let raf = 0, last = 0, time = 0, visible = true;
-  function frame(now) {
-    const dt = Math.min((now - last) / 1000, 1 / 30); last = now; time += dt;
-    const px = ptr.active ? (ptr.x - 200) / 200 : 0, py = ptr.active ? (ptr.y - 200) / 200 : 0;
-    for (const o of S) {
-      const t = LAYOUTS[layout][o.i];
-      let tx = t[0] + px * DEPTH[o.i] * -1 + Math.sin(time * .8 + o.i * 1.7) * 3, ty = t[1] + py * DEPTH[o.i] * -1 + Math.cos(time * .7 + o.i * 2.1) * 3;
-      if (ptr.active) {                         // step aside as the cursor passes
-        const dx = o.x - ptr.x, dy = o.y - ptr.y, d = Math.hypot(dx, dy) || 1, R = 100 * Math.max(.8, t[3] * .85);
-        if (d < R) { const push = (1 - d / R) * 34; tx += (dx / d) * push; ty += (dy / d) * push; }
+  function frame() {
+    ticks++;
+    tilt.rx += (tilt.trx - tilt.rx) * 0.08; tilt.ry += (tilt.try - tilt.ry) * 0.08;
+    par.x += (par.tx - par.x) * 0.08; par.y += (par.ty - par.y) * 0.08;
+    stage.style.setProperty('--rx', `${tilt.rx.toFixed(2)}deg`); stage.style.setProperty('--ry', `${tilt.ry.toFixed(2)}deg`);
+    let busy = Math.abs(tilt.trx - tilt.rx) + Math.abs(tilt.try - tilt.ry) > 0.02;
+    for (const c of cards) {
+      if (c.drag) { c.x += (c.tx - c.x) * 0.35; c.y += (c.ty - c.y) * 0.35; c.vx = c.vy = 0; busy = true; }
+      else {                                    // spring home
+        c.vx += (-90 * (c.x) - 11 * c.vx) * (1 / 60); c.vy += (-90 * (c.y) - 11 * c.vy) * (1 / 60); c.x += c.vx; c.y += c.vy;
+        if (Math.abs(c.x) + Math.abs(c.y) + Math.abs(c.vx) + Math.abs(c.vy) > 0.05) busy = true; else { c.x = c.y = c.vx = c.vy = 0; }
       }
-      const tr = t[2] + Math.sin(time * .6 + o.i) * 2.5, ts = t[3];
-      o.vx += (110 * (tx - o.x) - 11 * o.vx) * dt; o.vy += (110 * (ty - o.y) - 11 * o.vy) * dt;
-      o.vr += (90 * (tr - o.r) - 10 * o.vr) * dt; o.vs += (90 * (ts - o.s) - 10 * o.vs) * dt;
-      o.x += o.vx * dt; o.y += o.vy * dt; o.r += o.vr * dt; o.s += o.vs * dt;
-      place(o);
+      const lift = c.drag ? 40 : 0;
+      c.el.style.setProperty('--x', `${(c.x + par.x * c.depth * -0.5).toFixed(1)}px`);
+      c.el.style.setProperty('--y', `${(c.y + par.y * c.depth * -0.5).toFixed(1)}px`);
+      c.el.style.setProperty('--z', `${c.depth + lift}px`);
     }
-    raf = visible && !reduced ? requestAnimationFrame(frame) : 0;
+    // the little arrow drifts with the front card's depth
+    cursorEl.style.setProperty('--cx', `${(par.x * -26).toFixed(1)}px`); cursorEl.style.setProperty('--cy', `${(par.y * -20).toFixed(1)}px`);
+    raf = visible && busy ? requestAnimationFrame(frame) : 0;
   }
-  const wake = () => { if (!raf && visible && !reduced) { last = performance.now(); raf = requestAnimationFrame(frame); } };
+  const wake = () => { if (!raf && visible && !reduced) raf = requestAnimationFrame(frame); };
   new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) wake(); }).observe(root);
-  S.forEach((o) => place(o));
-  if (!reduced) wake();
+  addEventListener('pointerleave', () => { tilt.trx = tilt.try = par.tx = par.ty = 0; wake(); });
+  document.documentElement.addEventListener('pointerleave', () => { tilt.trx = tilt.try = par.tx = par.ty = 0; wake(); });
+  if (!reduced) { tilt.trx = -2; tilt.try = 4; wake(); setTimeout(() => { tilt.trx = tilt.try = 0; wake(); }, 900); }   // a small hello tilt
 }

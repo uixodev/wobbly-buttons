@@ -80,16 +80,35 @@
       </div>
 
       <div class="hero-art">
-        <div class="hero-ink" id="hero-ink" role="button" tabindex="0" aria-label="Rearrange the shapes">
-          <svg viewBox="0 0 400 400" aria-hidden="true">
-            <g class="sh" data-k="circle"><path class="fill" d="M-62 2 C-62 -34 -34 -62 1 -62 C36 -62 62 -34 62 1 C62 37 35 63 -1 62 C-37 62 -62 38 -62 2Z"/></g>
-            <g class="sh" data-k="arch"><path class="line" d="M-48 62 C-51 20 -52 -10 -30 -36 C-12 -56 14 -56 32 -36 C52 -12 50 24 48 62 Z"/></g>
-            <g class="sh" data-k="semi"><path class="fill" d="M-60 20 C-60 -16 -32 -38 0 -38 C32 -38 60 -16 60 20 C30 22 -30 22 -60 20Z"/></g>
-            <g class="sh" data-k="blob"><path class="line" d="M-54 -6 C-50 -42 -10 -58 24 -46 C58 -34 62 4 46 30 C30 56 -8 60 -34 42 C-52 30 -56 10 -54 -6Z"/></g>
-            <g class="sh" data-k="dot"><circle class="fill" r="15"/></g>
-            <g class="sh" data-k="plus"><path class="line" d="M0 -22 V22 M-22 0 H22"/></g>
-          </svg>
-          <p class="ink-hint"><span>Click to rearrange</span><i class="ink-count">01 / 03</i></p>
+        <div class="hero-cards" id="hero-cards">
+          <div class="hc-stage">
+            <article class="hc hc-a" data-z="3" aria-label="Ava Studio, a sample website">
+              <div class="hc-bar"><i></i><i></i><i></i><span></span></div>
+              <div class="hc-body">
+                <div class="hc-copy"><b>Ava<br />Studio</b><em>Portfolio · 2025</em></div>
+                <svg class="hc-flower" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 52 C34 44 26 24 38 12 C48 4 56 22 50 52 C58 30 74 22 84 32 C92 42 70 52 50 52 C70 60 80 78 70 88 C60 96 52 78 50 52 C44 72 28 82 18 72 C10 62 30 52 50 52Z"/></svg>
+              </div>
+            </article>
+            <article class="hc hc-b" data-z="2" aria-label="Salt, a sample website">
+              <div class="hc-bar"><i></i><i></i><i></i><span></span></div>
+              <div class="hc-body">
+                <div class="hc-img"></div>
+                <div class="hc-copy"><b class="it">Salt</b><em>Ceramics &amp; objects</em></div>
+              </div>
+            </article>
+            <article class="hc hc-c" data-z="1" aria-label="The Calm Club, a sample website">
+              <div class="hc-bar"><i></i><i></i><i></i><span></span></div>
+              <div class="hc-body">
+                <div class="hc-copy"><b>The<br />Calm<br />Club</b><em>Slow wellness</em></div>
+                <svg class="hc-plant" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 96 C50 70 48 44 52 14"/><path d="M50 70 C30 66 20 52 22 38 C40 40 48 54 50 70"/><path d="M51 52 C68 50 80 38 80 24 C62 26 52 38 51 52"/><path d="M50 82 C66 80 76 72 78 60 C62 62 52 70 50 82"/></svg>
+              </div>
+            </article>
+          </div>
+          <svg class="hc-cursor" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3 L5 19 L9.5 15 L12.5 21.5 L15 20.4 L12 14 L18 14 Z"/></svg>
+          <div class="note hc-note">
+            <p class="hand">drag<br />to explore</p>
+            <svg class="scribble draw" viewBox="0 0 80 60" aria-hidden="true"><path pathLength="1" d="M8 6 C30 2 62 14 66 42 M66 42 L58 34 M66 42 L74 34"/></svg>
+          </div>
         </div>
         <p class="scroll-hint"><span>Scroll<br />for more</span><i></i></p>
       </div>
