@@ -20,19 +20,20 @@ export const SOUND_CONFIG = {
 
   // — the click —
   click: 0.8,              // level of the click itself (0 = no click, only the magic)
-  tickHz: 3000,            // pitch of the glassy tick inside the click (higher = brighter)
+  tickHz: 1500,            // pitch of the glassy tick inside the click (higher = brighter)
 
   // — the magic —
   magic: 1.0,              // level of the bell notes and sparkle dust (0 = back to a plain click)
-  notes: [1318.51, 1661.22, 1975.53],   // E6, G#6, B6: a rising E-major flick. Edit to change the "spell"
+  notes: [659.26, 830.61, 987.77],      // E5, G#5, B5: a rising E-major flick. Edit to change the "spell" (halve the numbers = an octave lower)
   flickSeconds: 0.12,      // how fast the notes run up (smaller = quicker flick)
   dust: 0.7,               // level of the airy sparkle-dust whoosh (0 = none)
+  dustHz: [1400, 4200],    // the dust sweeps between these two frequencies (lower = softer, less shrill)
 
   // — the echo —
   echoTime: 0.21,          // seconds between echoes
   echoFeedback: 0.36,      // how much of each echo feeds the next (0 = a single repeat, 0.5 = long tail)
   echoMix: 0.55,           // how loud the echo is compared with the dry sound (0 = none)
-  echoTone: 6500,          // echoes get darker: this low-pass (Hz) is applied on every repeat
+  echoTone: 3200,          // echoes get darker: this low-pass (Hz) is applied on every repeat
 
   // — settling back —
   settleSparkle: 0.5,      // level of the gentle falling sparkle as the page returns to ivory (0 = silent)
@@ -70,7 +71,7 @@ export function createAliveSound(options = {}) {
   // a soft click: a tiny snap and a glassy tick
   function click(c, out, t, level) {
     const src = c.createBufferSource(); src.buffer = noiseBuf || (noiseBuf = makeNoise(c));
-    const hp = c.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 2200;
+    const hp = c.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 1100;
     const ng = c.createGain();
     ng.gain.setValueAtTime(0.0001, t);
     ng.gain.exponentialRampToValueAtTime(0.4 * level, t + 0.0012);
@@ -89,7 +90,7 @@ export function createAliveSound(options = {}) {
 
   // one glass-bell note: a sine with a few inharmonic partials, like a struck glass / celesta
   function bell(c, out, t, freq, level, ring = 1) {
-    const partials = [[1, 1.0, 0.9], [2.0, 0.35, 0.55], [2.76, 0.22, 0.4], [5.4, 0.08, 0.22]];   // [ratio, gain, decay seconds]
+    const partials = [[1, 1.0, 0.9], [2.0, 0.35, 0.55], [2.76, 0.18, 0.4], [5.4, 0.03, 0.18]];   // [ratio, gain, decay seconds]
     for (const [ratio, gain, decay] of partials) {
       const f = freq * ratio;
       if (f > 14000) continue;
@@ -106,8 +107,9 @@ export function createAliveSound(options = {}) {
   function dust(c, out, t, level, up = true) {
     const src = c.createBufferSource(); src.buffer = noiseBuf || (noiseBuf = makeNoise(c));
     const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 1.4;
-    bp.frequency.setValueAtTime(up ? 3500 : 9000, t);
-    bp.frequency.exponentialRampToValueAtTime(up ? 9000 : 3500, t + 0.28);
+    const [lo, hi] = cfg.dustHz;
+    bp.frequency.setValueAtTime(up ? lo : hi, t);
+    bp.frequency.exponentialRampToValueAtTime(up ? hi : lo, t + 0.28);
     const g = c.createGain();
     g.gain.setValueAtTime(0.0001, t);
     g.gain.exponentialRampToValueAtTime(0.11 * level, t + 0.05);
