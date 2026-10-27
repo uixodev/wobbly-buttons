@@ -34,7 +34,7 @@ The A-mark is a soft-body blob with an imperfect, gently wobbling outline (like 
 <script type="module" src="ink-cursor.js"></script>
 ```
 
-A living ink droplet replaces the native cursor: it lags the pointer on a spring, wobbles, stretches into a teardrop along its direction of travel, swells over links/buttons, squishes on press, and leaves a thin trail that fades in about half a second. It uses `mix-blend-mode: difference`, so it is dark on light backgrounds and flips light over dark ones (like the solid button). Only activates for fine pointers (mouse/pen), so touch devices keep their normal behaviour; with `prefers-reduced-motion` it is a plain droplet with no trail. Tune `R`, `TRAIL_MS` and the spring constants at the top of `ink-cursor.js`.
+A living ink droplet replaces the native cursor: it lags the pointer on a spring, wobbles, stretches into a teardrop along its direction of travel, swells over links/buttons, squishes on press, and leaves a thin trail that fades in about half a second. It is dark ink by default and eases to cream over the logo (`DARK_SURFACE`). Only activates for fine pointers (mouse/pen), so touch devices keep their normal behaviour; with `prefers-reduced-motion` it is a plain droplet with no trail. Tune `R`, `TRAIL_MS` and the spring constants at the top of `ink-cursor.js`.
 
 ## Colours
 
@@ -42,4 +42,4 @@ A living ink droplet replaces the native cursor: it lags the pointer on a spring
 | --- | --- | --- |
 | `--bg` | `#F7F3EF` | page background (cream) |
 | `--ink` | `#111` | buttons, logo, text |
-| `--accent` | `#AD86CF` (Orchid) | logo dot, press/release marks, outline-button hover, focus rings |
+| `--accent` | `#AD86CF` (Orchid) | logo dot, hover/press fill of the solid button, logo focus ring |

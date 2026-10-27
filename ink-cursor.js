@@ -1,7 +1,7 @@
 // Ink-droplet cursor: a living blob that lags the pointer on a spring, stretches into a teardrop
 // along its velocity, grows over interactive things, squishes on press, and leaves a thin fading trail.
-// Drawn on one fixed canvas with mix-blend-mode: difference, so it reads as dark ink on light pages
-// and flips to light on dark surfaces (e.g. the solid black buttons).
+// Drawn on one fixed canvas. It is dark ink by default and eases to cream over dark surfaces
+// (anything matching DARK_SURFACE, e.g. the logo), so it never disappears.
 
 const fine = matchMedia('(pointer: fine)').matches;
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -9,6 +9,8 @@ const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const R = 7;                 // resting droplet radius (px)
 const TRAIL_MS = 480;        // how long a trail point lives
 const POINTS = 16;           // outline points of the droplet
+const DARK_SURFACE = '.vira-logo';
+const INK = [17, 17, 17], CREAM = [247, 243, 239];
 const INTERACTIVE = 'a, button, [role="button"], summary, label, input, select, textarea, .wobbly, .vira-logo';
 
 export function initInkCursor() {
@@ -16,7 +18,7 @@ export function initInkCursor() {
 
   const canvas = document.createElement('canvas');
   canvas.className = 'ink-cursor';
-  Object.assign(canvas.style, { position: 'fixed', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 2147483647, mixBlendMode: 'difference' });
+  Object.assign(canvas.style, { position: 'fixed', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 2147483647 });
   document.body.appendChild(canvas);
   document.documentElement.classList.add('ink-cursor-on');
   const ctx = canvas.getContext('2d');
@@ -33,6 +35,7 @@ export function initInkCursor() {
   const head = { x: target.x, y: target.y, vx: 0, vy: 0 };
   const trail = [];            // {x, y, t}
   let size = 1, sizeV = 0, sizeT = 1;   // radius multiplier spring
+  const col = [...INK]; let colT = INK;
   let visible = false, alpha = 0, pressed = false, raf = 0, last = 0;
 
   const wake = () => { if (!raf) { last = performance.now(); raf = requestAnimationFrame(tick); } };
@@ -42,6 +45,7 @@ export function initInkCursor() {
     target.x = e.clientX; target.y = e.clientY;
     if (!visible) { head.x = target.x; head.y = target.y; head.vx = head.vy = 0; visible = true; }
     sizeT = pressed ? 0.7 : e.target.closest?.(INTERACTIVE) ? 2 : 1;
+    colT = e.target.closest?.(DARK_SURFACE) ? CREAM : INK;
     wake();
   }, { passive: true });
   addEventListener('pointerdown', () => { pressed = true; sizeT = 0.7; wake(); });
@@ -60,6 +64,7 @@ export function initInkCursor() {
       head.x += head.vx * dt; head.y += head.vy * dt;
     }
     sizeV += (240 * (sizeT - size) - 16 * sizeV) * dt; size += sizeV * dt;
+    for (let i = 0; i < 3; i++) col[i] += (colT[i] - col[i]) * Math.min(1, dt * 14);
     alpha += ((visible ? 1 : 0) - alpha) * Math.min(1, dt * 12);
 
     const speed = Math.hypot(head.vx, head.vy);
@@ -72,7 +77,7 @@ export function initInkCursor() {
     drawDroplet(now / 1000, speed);
 
     const settled = speed < 2 && Math.abs(target.x - head.x) < 0.2 && Math.abs(target.y - head.y) < 0.2 && Math.abs(sizeV) < 0.05 && Math.abs(sizeT - size) < 0.01;
-    raf = settled && !trail.length && Math.abs(alpha - (visible ? 1 : 0)) < 0.01 ? 0 : requestAnimationFrame(tick);
+    raf = settled && Math.abs(col[0] - colT[0]) < 0.5 && !trail.length && Math.abs(alpha - (visible ? 1 : 0)) < 0.01 ? 0 : requestAnimationFrame(tick);
   }
 
   // thin tapered ribbon (one filled polygon, so no beading): fades and narrows toward the tail
@@ -88,7 +93,8 @@ export function initInkCursor() {
       L.push([trail[i].x + nx * w, trail[i].y + ny * w]); Rr.push([trail[i].x - nx * w, trail[i].y - ny * w]);
     }
     const g = ctx.createLinearGradient(trail[0].x, trail[0].y, trail[n - 1].x, trail[n - 1].y);
-    g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(1, 'rgba(255,255,255,0.85)');
+    const rgb = col.map(Math.round).join(',');
+    g.addColorStop(0, `rgba(${rgb},0)`); g.addColorStop(1, `rgba(${rgb},0.85)`);
     ctx.fillStyle = g;
     ctx.beginPath(); ctx.moveTo(L[0][0], L[0][1]);
     for (let i = 1; i < n; i++) ctx.lineTo(L[i][0], L[i][1]);
@@ -113,7 +119,7 @@ export function initInkCursor() {
       const p2 = perp * (1 - stretch * 0.28);
       P.push([head.x + a2 * dx - p2 * dy, head.y + a2 * dy + p2 * dx]);
     }
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = `rgb(${col.map(Math.round).join(',')})`;
     ctx.beginPath();
     ctx.moveTo(P[0][0], P[0][1]);
     for (let i = 0; i < POINTS; i++) {
