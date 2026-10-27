@@ -1,6 +1,7 @@
 // Hero: the living ink flower (canvas, behind) + a playful headline whose letters hop away from the cursor.
 import { createInkFlower } from './ink-flower/ink-flower.js';
 import { createAliveBlob } from './alive-blob.js';
+import { createHeroGradient } from './hero-gradient.js';
 
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const hero = document.querySelector('.hero');
@@ -42,6 +43,15 @@ function start() {
   }
   const hl = title.querySelector('.hl');
   if (hl) createAliveBlob(hl);                                      // the living Orchid shape behind "alive."
+  // the purple heat-map background spreads across the whole hero, starting from "alive."
+  const stage = canvas.parentElement;
+  createHeroGradient(stage, {
+    origin: () => {
+      if (!hl) return null;
+      const r = hl.getBoundingClientRect(), s = stage.getBoundingClientRect();
+      return { x: r.left - s.left + r.width / 2, y: r.top - s.top + r.height / 2 };
+    },
+  });
   if (reduced) return;
 
   let pointer = null, raf = 0, last = 0;
