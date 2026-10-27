@@ -80,30 +80,17 @@
       </div>
 
       <div class="hero-art">
-        <!-- Placeholder illustration. To use a real photo, put an <img src="…" alt="…"> as the first child of the figure: it fills the shape. -->
-        <figure class="blob scene scene-sand" style="--clip:url(#shape-hero)" data-float>
-          <div class="shadows"></div>
-          <div class="laptop">
-            <div class="screen">
-              <div class="mini">
-                <div class="mini-nav"><b>Honey</b><span>HOME</span><span>ABOUT</span><span>TREATMENTS</span><span>CONTACT</span></div>
-                <div class="mini-body">
-                  <div class="mini-copy"><h4>NATURAL<br />BEAUTY<br />RITUALS</h4><span class="mini-btn">BOOK NOW</span></div>
-                  <div class="mini-photo"></div>
-                </div>
-              </div>
-            </div>
-            <div class="base"></div>
-          </div>
-          <div class="slab"></div>
-        </figure>
-        <span class="hero-dot" aria-hidden="true"></span>
-        <span class="hero-dot hero-dot-sm" aria-hidden="true"></span>
-        <div class="hero-char" aria-hidden="true"><span class="vira-logo" data-mark-only></span></div>
-
-        <div class="note note-hero">
-          <p class="hand">design<br />code<br />interact<br />create<br />with you</p>
-          <svg class="scribble draw" viewBox="0 0 80 110" aria-hidden="true"><path pathLength="1" d="M10 6 C6 38 30 46 44 64 C56 80 42 98 30 90 C20 83 32 70 50 80"/></svg>
+        <div class="hero-ink" id="hero-ink" aria-hidden="true">
+          <svg viewBox="0 0 400 400">
+            <path class="ink-ring" d="M52 214 C48 116 128 40 214 46 C318 52 364 140 350 220 C338 306 262 360 182 352 C106 344 56 292 52 214Z" />
+            <path class="ink-body" d="" />
+            <g class="ink-face">
+              <g class="ink-eye" data-eye="l"><ellipse cx="168" cy="190" rx="17" ry="23" fill="#F7F3EF"/><circle class="pupil" cx="168" cy="190" r="8.5" fill="#111"/></g>
+              <g class="ink-eye" data-eye="r"><ellipse cx="232" cy="190" rx="17" ry="23" fill="#F7F3EF"/><circle class="pupil" cx="232" cy="190" r="8.5" fill="#111"/></g>
+            </g>
+            <circle class="ink-orbit" r="7" cx="0" cy="0" />
+          </svg>
+          <p class="hand ink-say">hi!</p>
         </div>
         <p class="scroll-hint"><span>Scroll<br />for more</span><i></i></p>
       </div>
@@ -320,6 +307,7 @@
   <script type="module" src="ink-cursor.js"></script>
   <script type="module" src="site.js"></script>
   <script type="module" src="services.js"></script>
+  <script type="module" src="hero.js"></script>
   <script type="module" src="footer.js"></script>
   <script type="module" src="nav.js"></script>
   <script type="module" src="click-sparks.js"></script>

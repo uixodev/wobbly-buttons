@@ -63,18 +63,14 @@ a { color: inherit; }
 .hero-copy .label { margin-bottom: clamp(18px, 3vh, 34px); color: #3d3935; }
 .hero h1 { margin: 0 0 clamp(18px, 3vh, 30px); font: 400 clamp(2.7rem, 5.2vw, 5.6rem)/1.02 var(--serif); letter-spacing: -.015em; }
 .hero-art { position: relative; }
-.hero-art .blob { aspect-ratio: 1 / .9; }
 .hero-dot { position: absolute; right: 1%; top: 33%; width: clamp(34px, 4.2vw, 60px); aspect-ratio: 1; border-radius: 50%; background: var(--ink); animation: bob 6s ease-in-out infinite; }
 .hero-dot-sm { right: auto; left: 25%; top: auto; bottom: 36%; width: clamp(16px, 1.9vw, 26px); animation-delay: -2s; }
-.hero-char { position: absolute; left: 6%; bottom: 14%; font-size: clamp(2.2rem, 4.6vw, 4.4rem); line-height: 1; z-index: 2; }
-.hero-char .vira-logo, .contact-char .vira-logo { font-size: inherit; cursor: default; }
+.contact-char .vira-logo { font-size: inherit; cursor: default; }
 .scribble { pointer-events: none; flex: none; }
 
 /* A note and its arrow live together in one flex group, so the arrow always sits right beside its text (never through it). */
 .note { position: absolute; display: flex; gap: 8px; z-index: 3; }
 .note .hand { margin: 0; white-space: nowrap; }
-.note-hero { left: -3%; top: 1%; flex-direction: column; align-items: flex-start; transform: rotate(-9deg); }
-.note-hero .scribble { width: clamp(34px, 4.4vw, 64px); margin: 4px 0 0 clamp(54px, 5.6vw, 84px); }
 .note-play { left: 12%; bottom: 3%; align-items: flex-end; transform: rotate(-7deg); }
 .note-play .scribble { width: clamp(46px, 5.2vw, 76px); margin: 0 0 14px 4px; }
 .note-contact { right: -1%; top: -9%; align-items: flex-start; transform: rotate(5deg); }
@@ -233,8 +229,7 @@ a { color: inherit; }
   .hero, .contact, .playground { grid-template-columns: 1fr; }
   .hero { min-height: 0; padding-top: 18px; }
   .hero-art { max-width: 640px; margin-inline: auto; width: 100%; }
-  .note-hero { left: 2%; top: -5%; }
-  .scroll-hint { display: none; }
+    .scroll-hint { display: none; }
     .play-copy { padding-bottom: 30px; } .note-play { display: none; }
   .scribble-contact { display: none; }
   .contact-art { max-width: 640px; margin-inline: auto; width: 100%; }
@@ -344,3 +339,16 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   .social a { font-size: 0; gap: 0; padding: 10px; margin: -10px; }
   .social svg { width: 28px; height: 28px; }
 }
+
+/* ═════════ HERO: one living ink shape. It leans toward your cursor, its eyes follow you, click it to say hi ═════════ */
+.hero-ink { position: relative; width: min(100%, 580px); margin-inline: auto; aspect-ratio: 1; cursor: pointer; }
+.hero-ink svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.ink-ring { fill: none; stroke: var(--ink); stroke-width: 1.1; stroke-dasharray: 2 7; stroke-linecap: round; opacity: .55; }
+.ink-body { fill: var(--ink); }
+.ink-orbit { fill: var(--ink); }
+.ink-eye { transform-box: fill-box; transform-origin: center; transition: transform .12s ease; }
+.ink-eye.blink { transform: scaleY(.08); }
+.ink-eye .pupil { transition: r .2s ease; }
+.hero-ink.hi .ink-eye .pupil { r: 11; }
+.ink-say { position: absolute; left: 62%; top: 12%; margin: 0; font-size: clamp(1.6rem, 3vw, 2.6rem); transform: rotate(-8deg) scale(.6); opacity: 0; transition: opacity .3s ease, transform .5s cubic-bezier(.3, 1.7, .5, 1); pointer-events: none; }
+.hero-ink.hi .ink-say { opacity: 1; transform: rotate(-8deg) scale(1); }
