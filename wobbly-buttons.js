@@ -34,7 +34,6 @@ class Wobbly {
     this.shape = el('path', { class: 'wb-shape' });
     this.sparks = {
       hover: el('g', { class: 'wb-spark wb-hover' }),
-      close: el('g', { class: 'wb-spark wb-close' }),
       press: el('g', { class: 'wb-spark wb-press' }),
       release: el('g', { class: 'wb-spark wb-release' }),
     };
@@ -119,22 +118,12 @@ class Wobbly {
     if (this.state === state) return;
     this.state = state;
     this.root.dataset.state = state;
-    if (state === 'close') this.placeCloseSparks();
     this.kick();
   }
   release() {
     if (this.state !== 'press') return;
     this.set('release');
     this.releaseTimer = setTimeout(() => this.set(this.inside ? 'hover' : this.near() ? 'close' : 'idle'), 420);
-  }
-  placeCloseSparks() {
-    if (!this.pointer) return;
-    const { w, h } = this, p = this.pointer;
-    const bx = clamp(p.x, 0, w), by = clamp(p.y, 0, h);
-    const ang = Math.atan2(p.y - h / 2, p.x - w / 2) * 180 / Math.PI;
-    const g = this.sparks.close;
-    g.replaceChildren(el('path', { d: 'M0 -14Q12 0 0 14' }), el('path', { d: 'M8 -20Q26 0 8 20' }));
-    g.setAttribute('transform', `translate(${bx} ${by}) rotate(${ang})`);
   }
 
   // spring targets per state

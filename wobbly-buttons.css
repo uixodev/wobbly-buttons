@@ -38,7 +38,6 @@
 .wobbly[data-state="hover"]   .wb-hover,
 .wobbly[data-state="press"]   .wb-hover { opacity: 1; transform: scale(1); }
 .wobbly[data-state="press"]   .wb-hover { opacity: 0; }
-.wobbly[data-state="close"]   .wb-close { opacity: 1; }
 .wobbly[data-state="press"]   .wb-press { opacity: 1; transform: scale(1); }
 .wobbly .wb-press   { transform: scale(.7); transform-box: fill-box; transform-origin: center; }
 .wobbly[data-state="release"] .wb-release { opacity: 1; transform: scale(1.12); }
