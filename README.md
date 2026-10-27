@@ -48,9 +48,13 @@ A living ink droplet replaces the native cursor: it lags the pointer on a spring
 
 `nav.css` + the `<header class="site-nav">` markup in `index.html`: logo on the left, mono uppercase links centred (hover lifts + turns Orchid), `[ BRISTOL, UK ]` and a softly breathing ink dot on the right. Collapses to logo + links on phones.
 
-## Hero
+## Hero — "websites that feel alive."
 
-`hero-ink.js` + `hero.css` + the `<section class="hero">` in `index.html`: the living ink flower (`ink-flower/ink-flower.js`) behind a real, selectable HTML headline. Where the headline crosses the ink it inverts to ivory (`mix-blend-mode: difference`, colour `#E6E2DE`, so ivory − that = brand ink `#111`), which lets the flower overlap the type without hiding it. The flower sits in `layoutFor()` in `hero-ink.js` (size and position for wide / tablet / phone); the headline is fitted to the stage width at runtime. The old three.js glass flower and its code were removed.
+`hero.css`, `hero-ink.js` and the `<section class="hero">` in `index.html`.
+
+- **Headline:** real, selectable HTML text in Fraunces (self-hosted variable font in `fonts/`, set to its SOFT + WONK axes for soft, slightly imperfect letterforms). "alive." rests on a slowly breathing Orchid blob. Each letter is a small spring: letters hop and lean away from the cursor (off for touch and `prefers-reduced-motion`; the `<h1>` keeps a plain-text `aria-label`).
+- **Artwork:** the living ink flower (`ink-flower/ink-flower.js`) grows on the right on wide screens. On phones and portrait tablets the layout stacks and the flower floats in the free band above the headline, sized from the available height so it never lands behind the type. Sizes and positions live in `layoutFor()` in `hero-ink.js`.
+- Kept from the brand: ivory `#F7F3EF`, ink `#111`, Orchid `#AD86CF`, the logo, nav, wobbly buttons and ink cursor.
 
 ## Living ink flower
 

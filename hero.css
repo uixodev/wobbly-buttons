@@ -1,41 +1,66 @@
-/* Hero: editorial headline over a living ink flower */
+/* Hero — "websites that feel alive."
+   A soft, slightly wonky serif headline (Fraunces: SOFT + WONK axes) on ivory; "alive." rests on a breathing Orchid blob;
+   a living ink flower grows on the right. Letters hop away from the cursor; the flower deforms where it is touched. */
+@font-face {
+  font-family: "Fraunces VF";
+  src: url("fonts/fraunces-var.woff2") format("woff2");
+  font-weight: 300 900;
+  font-display: swap;
+}
+
 .hero { position: relative; background: var(--bg, #F7F3EF); }
 .hero-stage {
-  position: relative; isolation: isolate;                       /* own stacking context so the headline can blend with the flower */
-  height: calc(100svh - var(--nav-h, 64px)); min-height: 560px; overflow: hidden;
-  background: var(--bg, #F7F3EF);
+  position: relative; isolation: isolate; overflow: hidden; box-sizing: border-box;
+  height: calc(100svh - var(--nav-h, 64px)); min-height: 600px;
+  display: grid; grid-template-rows: auto 1fr auto;
+  padding: clamp(16px, 3vh, 32px) clamp(16px, 4vw, 44px) clamp(24px, 5vh, 56px);
 }
-.hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; opacity: 0; transition: opacity .9s ease; }
+.hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; z-index: -1; opacity: 0; transition: opacity 1s ease; }
 .hero.is-ready .hero-canvas { opacity: 1; }
 
-/* Headline: black on ivory, and ivory wherever it crosses black ink (difference blend) */
-.hero-title {
-  position: absolute; inset: 0; margin: 0; z-index: 1; pointer-events: none;
-  font: 600 var(--title-size, 12vw)/0.72 "Bodoni Moda", "Playfair Display", Didot, serif;
-  text-transform: uppercase; color: #E6E2DE; mix-blend-mode: difference;   /* ivory − #E6E2DE = ink #111 on paper; over ink it flips to light */ white-space: nowrap;
+.hero-tagline {
+  margin: 0; font: 400 0.78rem/1.55 "JetBrains Mono", ui-monospace, monospace;
+  letter-spacing: .16em; text-transform: uppercase; color: #5f5a56;
 }
-.hero-title span { position: absolute; display: block; }
-.hero-title .l1 { left: 12.5%; top: 11%; }
-.hero-title .l2 { left: 34%; bottom: 4%; }
+
+/* the headline */
+.hero-title {
+  align-self: center; margin: 0; max-width: 62vw;
+  font-family: "Fraunces VF", "Fraunces", Georgia, serif; font-weight: 560;
+  font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
+  font-size: min(9.6vw, 13.6svh); line-height: 0.94; letter-spacing: -0.035em; color: #111;
+}
+.hero-title .line { display: block; white-space: nowrap; }
+.hero-title .ch { display: inline-block; will-change: transform; }
 .hero-title ::selection { background: #AD86CF; color: #111; }
 
-.hero-tagline {
-  position: absolute; z-index: 2; top: clamp(16px, 3vh, 32px); left: clamp(16px, 4vw, 44px); margin: 0;
-  font: 400 0.78rem/1.55 "JetBrains Mono", ui-monospace, monospace; letter-spacing: .16em; text-transform: uppercase; color: #5f5a56;
+/* "alive." sits on a hand-made Orchid blob that slowly breathes */
+.hero-title .hl { position: relative; display: inline-block; }
+.hero-title .hl::before {
+  content: ""; position: absolute; z-index: -1; left: -0.07em; right: -0.08em; top: 0.14em; bottom: 0.02em;
+  background: #AD86CF; transform: rotate(-2.2deg);
+  border-radius: 56% 44% 52% 48% / 62% 54% 46% 38%;
+  animation: blob 9s ease-in-out infinite;
 }
-.hero-copy {
-  position: absolute; z-index: 2; left: clamp(16px, 4vw, 44px); bottom: clamp(24px, 6vh, 64px);
-  width: min(28rem, 33vw); display: grid; gap: clamp(20px, 4vh, 40px);
+@keyframes blob {
+  50% { border-radius: 44% 56% 46% 54% / 48% 40% 60% 52%; transform: rotate(-0.8deg) scale(1.03, 1.06); }
 }
-.hero-lede { margin: 0; font: 500 clamp(1.05rem, 1.55vw, 1.55rem)/1.45 "Cormorant Garamond", Georgia, serif; color: #1c1a19; }
+
+.hero-copy { display: grid; gap: clamp(16px, 2.8vh, 28px); width: min(30rem, 36vw); }
+.hero-lede {
+  margin: 0; color: #1c1a19;
+  font: 400 clamp(1rem, 1.3vw, 1.3rem)/1.5 "Fraunces VF", "Fraunces", Georgia, serif;
+  font-variation-settings: "opsz" 18, "SOFT" 100, "WONK" 0;
+}
 .hero-buttons { display: flex; flex-wrap: wrap; align-items: center; gap: clamp(20px, 2.6vw, 36px); }
 .hero-buttons .wobbly { font-size: 0.82rem; padding: 1.4em 2em; }
 
-@media (max-width: 800px) {
+@media (prefers-reduced-motion: reduce) { .hero-title .hl::before { animation: none; } }
+
+/* phones and portrait tablets: stacked. The title sits above the copy and the flower floats in the free band above it */
+@media (max-width: 800px), (max-aspect-ratio: 11/10) {
   .hero-stage { min-height: 640px; }
-  .hero-title .l1 { left: 4%; top: 15%; }
-  .hero-title .l2 { left: auto; right: 4%; bottom: auto; top: calc(15% + var(--title-size, 12vw) * 0.8); }
-  .hero-copy { width: auto; right: clamp(16px, 4vw, 44px); bottom: clamp(20px, 4vh, 40px); gap: 18px; }
-  .hero-lede { font-size: 1rem; max-width: 24rem; }
+  .hero-title { align-self: end; max-width: none; font-size: min(17vw, 11svh); margin-bottom: clamp(18px, 3vh, 32px); }
+  .hero-copy { width: auto; max-width: 28rem; }
   .hero-buttons .wobbly { white-space: nowrap; }
 }

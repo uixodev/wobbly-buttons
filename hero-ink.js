@@ -1,44 +1,69 @@
-// Hero: the living ink flower (ink-flower/ink-flower.js) sits behind the editorial headline.
-// The headline is real, selectable HTML text; where it crosses the ink it inverts to ivory (mix-blend-mode: difference in hero.css),
-// so the flower can overlap the type on purpose without hiding it.
+// Hero: the living ink flower (canvas, behind) + a playful headline whose letters hop away from the cursor.
 import { createInkFlower } from './ink-flower/ink-flower.js';
 
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const hero = document.querySelector('.hero');
 const canvas = document.querySelector('.hero-canvas');
-const line1 = document.querySelector('.hero-title .l1');
-
+const title = document.querySelector('.hero-title');
 if (hero && canvas) start();
 
-async function start() {
-  // flower size / position depend on the viewport shape
+function start() {
+  // ── the flower: size and position per screen shape
   const layoutFor = (w, h) => {
-    if (w / h > 1.1) return { mode: 'wide',   scale: 0.34, centerX: 0.58, centerY: 0.5 };
-    if (w < 600)     return { mode: 'phone',  scale: 0.42, centerX: 0.5,  centerY: 0.43 };
-    return                  { mode: 'tablet', scale: 0.30, centerX: 0.5,  centerY: 0.46 };
+    if (w / h > 1.1) return { mode: 'wide', scale: 0.35, centerX: 0.77, centerY: 0.52 };
+    // stacked layouts: size the flower from the free band above the headline so it never lands behind the type
+    return { mode: 'stacked', scale: (0.118 * h) / Math.min(w, h), centerX: 0.68, centerY: 0.23 };
   };
-
   let { mode, ...opts } = layoutFor(canvas.clientWidth || 1, canvas.clientHeight || 1);
   const flower = createInkFlower(canvas, opts);
   hero.classList.add('is-ready');
-
-  // headline: fit BEAUTIFUL to a fixed share of the stage width, whatever the font ends up being
-  function fit() {
-    const stage = canvas.clientWidth;
-    if (!stage || !line1) return;
-    hero.style.setProperty('--title-size', '100px');
-    const w100 = line1.getBoundingClientRect().width;
-    const target = stage * (stage < 800 ? 0.92 : 0.86);
-    hero.style.setProperty('--title-size', `${(100 * target) / w100}px`);
-  }
-
-  function onResize() {
-    fit();
+  new ResizeObserver(() => {
     const next = layoutFor(canvas.clientWidth, canvas.clientHeight);
-    if (next.mode !== mode) { mode = next.mode; const { mode: _m, ...o } = next; flower.set(o); }
+    if (next.mode !== mode || mode === 'stacked') { mode = next.mode; const { mode: _m, ...o } = next; flower.set(o); }
+  }).observe(canvas);
+
+  // ── the headline: split into letters (the h1 keeps its plain-text aria-label), each a little spring
+  if (!title) return;
+  const letters = [];
+  const walker = document.createTreeWalker(title, NodeFilter.SHOW_TEXT);
+  const textNodes = [];
+  while (walker.nextNode()) if (walker.currentNode.textContent.trim()) textNodes.push(walker.currentNode);
+  textNodes.forEach(splitText);
+  function splitText(textNode) {
+    const frag = document.createDocumentFragment();
+    for (const ch of textNode.textContent) {
+      if (ch === ' ') { frag.append(' '); continue; }
+      const s = document.createElement('span');
+      s.className = 'ch'; s.setAttribute('aria-hidden', 'true'); s.textContent = ch;
+      frag.append(s); letters.push({ el: s, y: 0, v: 0, r: 0, rv: 0 });
+    }
+    textNode.replaceWith(frag);
   }
-  new ResizeObserver(onResize).observe(canvas);
-  if (document.fonts?.load) {
-    await Promise.race([Promise.all([document.fonts.load('600 100px "Bodoni Moda"'), document.fonts.ready]), new Promise((r) => setTimeout(r, 2500))]);
+  if (reduced) return;
+
+  let pointer = null, raf = 0, last = 0;
+  addEventListener('pointermove', (e) => { if (e.pointerType === 'touch') return; pointer = { x: e.clientX, y: e.clientY }; wake(); }, { passive: true });
+  document.documentElement.addEventListener('pointerleave', () => { pointer = null; wake(); });
+  const wake = () => { if (!raf) { last = performance.now(); raf = requestAnimationFrame(tick); } };
+
+  function tick(now) {
+    const dt = Math.min((now - last) / 1000, 1 / 30); last = now;
+    let busy = false;
+    for (const L of letters) {
+      const r = L.el.getBoundingClientRect();
+      let ty = 0, tr = 0;
+      if (pointer) {
+        const dx = pointer.x - (r.left + r.width / 2), dy = pointer.y - (r.top + r.height / 2);
+        const d = Math.hypot(dx, dy), reach = r.height * 1.1;
+        const f = Math.exp(-(d * d) / (reach * reach));            // smooth falloff, no hard edge
+        ty = -f * r.height * 0.13;                                  // hop up…
+        tr = -(dx / (reach || 1)) * f * 5;                          // …and lean away from the cursor
+      }
+      L.v += (210 * (ty - L.y) - 13 * L.v) * dt; L.y += L.v * dt;
+      L.rv += (210 * (tr - L.r) - 13 * L.rv) * dt; L.r += L.rv * dt;
+      L.el.style.transform = `translateY(${L.y.toFixed(2)}px) rotate(${L.r.toFixed(2)}deg)`;
+      busy = busy || Math.abs(L.v) > 0.05 || Math.abs(L.y - ty) > 0.05 || Math.abs(L.rv) > 0.05 || Math.abs(L.r - tr) > 0.05;
+    }
+    raf = busy ? requestAnimationFrame(tick) : 0;
   }
-  fit();
 }
