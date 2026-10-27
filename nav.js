@@ -1,10 +1,6 @@
-// Navigation: the full bar "gathers together" into a compact capsule as you scroll, and the capsule's hamburger opens a full-screen menu.
-//
-//   top of page    full bar: logo · links · location
-//   scrolled       the links gather towards the middle of the bar into a small capsule (hand-drawn burger · "Menu"); the logo stays put
-//   menu open      a black liquid curtain pours down with a wavy edge (like the footer's), big serif links rise in,
-//                  the burger turns into a cross. Esc / the cross / a link closes it; focus is kept inside while it is open.
-// On phones the capsule is always shown.
+// Navigation: the logo sits top left and a hand-drawn hamburger capsule sits top right, on every screen size and scroll position.
+// It opens a full-screen menu: a black liquid curtain pours down with a wavy edge (like the footer's), big serif links rise in,
+// the burger turns into a cross. Esc / the cross / a link closes it; focus is kept inside while it is open.
 
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const root = document.documentElement;
@@ -17,8 +13,6 @@ const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 // CONFIGURATION
 // ─────────────────────────────────────────────────────────────────────────────
 const CONFIG = {
-  gatherAt: 90,        // scroll distance (px) at which the bar gathers into the capsule
-  releaseAt: 24,       // scroll distance below which it spreads back out (a gap avoids flicker)
   curtainSpring: 62,   // how fast the menu curtain pours (higher = quicker)
   curtainDamping: 9,   // lower = a bouncier, wobblier edge
   curtainWave: 70,     // how wavy the leading edge is while it moves (px)
@@ -27,33 +21,7 @@ const CONFIG = {
 if (header && burger && menu) init();
 
 function init() {
-  // the links gather into the capsule, which sits where they already are (top centre), so none of them travels far
-  const flyers = [...header.querySelectorAll('.nav-links li')];
-
-  // ── gather / spread ──
-  let gathered = false, menuOpen = false;
-  function aim() {
-    const cs = getComputedStyle(burger);
-    const cx = burger.offsetLeft + burger.offsetWidth / 2 || innerWidth / 2, cy = (parseFloat(cs.top) || 0) + burger.offsetHeight / 2;
-    for (const el of flyers) {
-      const r = el.getBoundingClientRect();
-      el.style.setProperty('--fx', `${(cx - (r.left + r.width / 2)).toFixed(0)}px`);
-      el.style.setProperty('--fy', `${(cy - (r.top + r.height / 2)).toFixed(0)}px`);
-    }
-  }
-  function setGathered(v) {
-    if (v === gathered) return;
-    if (v) aim();
-    gathered = v;
-    root.classList.toggle('nav-gathered', v);
-    header.querySelector('nav').inert = v;                                  // gathered links can't be tabbed to
-    if (!v && menuOpen) closeMenu();
-  }
-  function onScroll() { const y = scrollY; if (!gathered && y > CONFIG.gatherAt) setGathered(true); else if (gathered && y < CONFIG.releaseAt) setGathered(false); }
-  addEventListener('scroll', onScroll, { passive: true });
-  addEventListener('resize', () => { if (gathered) aim(); });
-  flyers.forEach((el, i) => el.style.setProperty('--d', `${i * 22}ms`));       // a quick ripple, not a long procession
-  onScroll();
+  let menuOpen = false;
 
   // ── the liquid curtain ──
   const path = menu.querySelector('.menu-curtain path');
