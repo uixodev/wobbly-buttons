@@ -59,9 +59,6 @@ a { color: inherit; }
 }
 
 /* ═════════ HERO ═════════ */
-.hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr); gap: clamp(24px, 4vw, 70px); align-items: center; padding-block: clamp(28px, 5vh, 64px) clamp(50px, 8vh, 100px); min-height: calc(100svh - 64px); }
-.hero-copy .label { margin-bottom: clamp(18px, 3vh, 34px); color: #3d3935; }
-.hero h1 { margin: 0 0 clamp(18px, 3vh, 30px); font: 400 clamp(2.7rem, 5.2vw, 5.6rem)/1.02 var(--serif); letter-spacing: -.015em; }
 .hero-art { position: relative; }
 .hero-dot { position: absolute; right: 1%; top: 33%; width: clamp(34px, 4.2vw, 60px); aspect-ratio: 1; border-radius: 50%; background: var(--ink); animation: bob 6s ease-in-out infinite; }
 .hero-dot-sm { right: auto; left: 25%; top: auto; bottom: 36%; width: clamp(16px, 1.9vw, 26px); animation-delay: -2s; }
@@ -366,7 +363,7 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .hero-cat .meow { font: 400 54px var(--hand); fill: var(--ink); opacity: 0; transform-box: fill-box; transform-origin: left bottom; }
 .hero-cat.said .meow { animation: cat-meow 1.5s ease both; }
 @keyframes cat-meow { 0% { opacity: 0; scale: .5; } 15%, 75% { opacity: 1; scale: 1; } 100% { opacity: 0; scale: 1; translate: 0 -14px; } }
-.hero-cat.said @media (max-width: 900px) { .hero-cat { width: 100%; margin-left: 0; } }
+@media (max-width: 900px) { .hero-cat { width: 100%; margin-left: 0; } }
 @media (prefers-reduced-motion: reduce) { .hero-cat *, .hero-cat .look { animation: none !important; transition: none !important; } }
 
 /* meow: the whole drawing swaps between three traced poses (ears up, ears a little down, ears down) so the ears bend smoothly with no seams */
@@ -393,3 +390,40 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .a-spk { animation: cat-spark 2.4s steps(1) infinite; }
 .contact-cat.said .a-fish { animation-duration: .35s; } .contact-cat.said .a-spk { animation-duration: .5s; }
 @media (prefers-reduced-motion: reduce) { .contact-cat *, .contact-cat .look { animation: none !important; transition: none !important; } }
+
+/* ═════════ HERO LAYOUT: "Hi, I'm Vira." — a huge name on the left, the cat at its desk on the right, intro and buttons tucked under the name ═════════ */
+.hero { display: grid; grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); grid-template-areas: "meta meta" "title art" "copy art"; column-gap: clamp(20px, 3vw, 56px); row-gap: 0; align-content: center; align-items: end; padding-block: clamp(22px, 4vh, 48px) clamp(50px, 8vh, 96px); min-height: calc(100svh - 64px); }
+.hero-meta { grid-area: meta; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-bottom: clamp(18px, 4vh, 40px); }
+.hero-meta .label { color: #3d3935; }
+.avail { display: inline-flex; align-items: center; gap: 10px; }
+.pulse { width: 10px; height: 10px; border-radius: 50%; background: var(--ink); position: relative; }
+.pulse::after { content: ""; position: absolute; inset: -5px; border-radius: 50%; border: 1.5px solid var(--ink); animation: pulse 2.2s ease-out infinite; }
+@keyframes pulse { from { transform: scale(.5); opacity: .8; } to { transform: scale(1.5); opacity: 0; } }
+.hero h1 { grid-area: title; margin: 0; align-self: end; font-family: var(--serif); font-weight: 400; letter-spacing: -.02em; }
+.h-hi { display: block; font-size: clamp(2.6rem, 5.4vw, 5.2rem); line-height: 1; margin-bottom: clamp(-12px, -.6vw, -4px); position: relative; z-index: 1; }
+.h-hi em { font-style: italic; }
+.h-name { position: relative; display: inline-block; font-size: clamp(7rem, 19vw, 18.5rem); line-height: .82; letter-spacing: -.045em; padding-bottom: .09em; }
+.h-dot { display: inline-block; transform-origin: 50% 85%; animation: dot-bounce 2.6s ease-in-out infinite; }
+@keyframes dot-bounce { 0%, 80%, 100% { transform: translateY(0) scale(1, 1); } 86% { transform: translateY(-.12em) scale(.94, 1.1); } 92% { transform: translateY(0) scale(1.08, .9); } }
+.h-under { position: absolute; left: 2%; right: 8%; bottom: .02em; width: 90%; height: .1em; fill: none; stroke: var(--ink); stroke-width: 2.4; stroke-linecap: round; overflow: visible; }
+.h-under path { vector-effect: non-scaling-stroke; }
+.hero-copy { grid-area: copy; align-self: start; padding-top: clamp(22px, 4vh, 40px); }
+.hero-copy .lede { max-width: 31rem; }
+.hero-art { grid-area: art; position: relative; align-self: center; }
+.hero-art .hero-cat { margin-bottom: 0; }
+.hero-note { left: 14%; bottom: -17%; flex-direction: row; align-items: flex-end; transform: rotate(-3deg); pointer-events: none; }
+.hero-note .hand { font-size: clamp(1.1rem, 1.7vw, 1.45rem); line-height: 1.05; margin: 0; }
+.hero-note .scribble { width: clamp(26px, 3vw, 44px); margin: 0 0 14px 0; }
+.hero .scroll-hint { right: 0; bottom: -20%; }
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; grid-template-areas: "meta" "title" "art" "copy"; min-height: 0; padding-top: 18px; row-gap: 14px; }
+  .hero-meta { padding-bottom: 8px; }
+  .h-name { font-size: clamp(6.4rem, 31vw, 11rem); }
+  .hero-art { max-width: 640px; margin-inline: auto; width: 100%; }
+  .hero-note { left: 4%; bottom: -31%; }
+  .hero-art { margin-bottom: 46px; }
+  .hero { padding-bottom: 60px; }
+  .hero-copy { padding-top: 6px; }
+}
+@media (max-width: 520px) { .hero-meta .avail { font-size: .62rem; } }
+@media (prefers-reduced-motion: reduce) { .h-dot, .pulse::after { animation: none; } }
