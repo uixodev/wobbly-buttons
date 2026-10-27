@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Wobbly buttons</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="wobbly-buttons.css" />
+  <style>
+    body { margin: 0; min-height: 100vh; display: grid; place-content: center; gap: 72px; background: #faf7f0; padding: 80px 24px; }
+    .row { display: flex; flex-wrap: wrap; gap: 64px; justify-content: center; }
+  </style>
+</head>
+<body>
+  <div class="row">
+    <a href="#work" class="wobbly" data-variant="solid">View my work <span aria-hidden="true">→</span></a>
+    <a href="#talk" class="wobbly" data-variant="outline">Let’s talk <span aria-hidden="true">→</span></a>
+  </div>
+  <script type="module" src="wobbly-buttons.js"></script>
+</body>
+</html>

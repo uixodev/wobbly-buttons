@@ -1,0 +1,49 @@
+/* Wobbly buttons — style hooks. Shape + sparks are drawn by wobbly-buttons.js */
+.wobbly {
+  --wb-color: #111;
+  --wb-text: #faf7f0;
+  --wb-stroke: 2px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6em;
+  padding: 1.6em 2.6em;
+  font: 500 1.05rem/1 "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.01em;
+  color: var(--wb-text);
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  background: none;
+  border: 0;
+  isolation: isolate;
+}
+.wobbly[data-variant="outline"] { color: var(--wb-color); }
+.wobbly:focus-visible { outline: 2px dashed var(--wb-color); outline-offset: 10px; }
+
+.wobbly > svg {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  overflow: visible; pointer-events: none; z-index: -1;
+}
+.wobbly .wb-shape { fill: var(--wb-color); stroke: var(--wb-color); stroke-width: var(--wb-stroke); stroke-linejoin: round; }
+.wobbly[data-variant="outline"] .wb-shape { fill: transparent; }
+
+.wobbly .wb-label { display: inline-flex; align-items: center; gap: 0.6em; transform: scale(var(--wb-scale, 1)); }
+
+/* spark marks */
+.wobbly .wb-spark { fill: none; stroke: var(--wb-color); stroke-width: 1.6; stroke-linecap: round; opacity: 0; transition: opacity .18s ease, transform .3s cubic-bezier(.2,.8,.2,1); }
+.wobbly .wb-hover   { transform: scale(.85); transform-box: fill-box; transform-origin: center; }
+.wobbly[data-state="hover"]   .wb-hover,
+.wobbly[data-state="press"]   .wb-hover { opacity: 1; transform: scale(1); }
+.wobbly[data-state="press"]   .wb-hover { opacity: 0; }
+.wobbly[data-state="close"]   .wb-close { opacity: 1; }
+.wobbly[data-state="press"]   .wb-press { opacity: 1; transform: scale(1); }
+.wobbly .wb-press   { transform: scale(.7); transform-box: fill-box; transform-origin: center; }
+.wobbly[data-state="release"] .wb-release { opacity: 1; transform: scale(1.12); }
+.wobbly .wb-release { transform: scale(.8); transform-box: fill-box; transform-origin: center; }
+
+@media (prefers-reduced-motion: reduce) {
+  .wobbly .wb-spark { transition: none; }
+}
