@@ -38,3 +38,27 @@ if (cc) {
   let t2 = 0;
   cc.addEventListener('click', () => { cc.classList.add('said'); clearTimeout(t2); t2 = setTimeout(() => cc.classList.remove('said'), 1400); });
 }
+
+// Hero scroll story: the section is tall and its content is pinned. How far you have scrolled through it decides how many steps are on:
+// 0 cat alone · 1 "Hi," · 2 "I'm Vira." · 3 intro · 4 buttons. It runs both ways (scroll back up and they leave again).
+const story = document.getElementById('hero');
+if (story && story.classList.contains('hero-story')) {
+  const reducedS = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reducedS) story.classList.add('static');
+  else {
+    const STEPS = [0.1, 0.3, 0.5, 0.7];            // progress through the story at which steps 1–4 switch on
+    let ticking = false, cur = -1;
+    const update = () => {
+      ticking = false;
+      const r = story.getBoundingClientRect(), span = r.height - innerHeight;
+      const p = span > 0 ? Math.min(1, Math.max(0, -r.top / span)) : 1;
+      const n = STEPS.filter((t) => p >= t).length;
+      if (n === cur) return; cur = n;
+      for (let i = 0; i <= 4; i++) story.classList.toggle('s' + i, i <= n);
+      story.classList.toggle('s0', n === 0);
+    };
+    addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } }, { passive: true });
+    addEventListener('resize', update);
+    update();
+  }
+}
