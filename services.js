@@ -56,6 +56,11 @@ if (plus) {
 }
 
 // ── the cursor becomes the panel's icon while you hover a panel ──
+const ICONS = {
+  pen: '<svg viewBox="0 0 24 24"><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.6 7.6"/><circle cx="11" cy="11" r="2"/></svg>',
+  code: '<svg viewBox="0 0 24 24"><path d="M16 18l6-6-6-6"/><path d="M8 6l-6 6 6 6"/></svg>',
+  plus: '<svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/></svg>',
+};
 (() => {
   if (!panels.length || !matchMedia('(hover: hover)').matches) return;
   const cur = document.createElement('span'); cur.className = 'icon-cur'; cur.setAttribute('aria-hidden', 'true'); document.body.append(cur);
@@ -64,7 +69,7 @@ if (plus) {
   const loop = () => { x += (tx - x) * (reduced ? 1 : .28); y += (ty - y) * (reduced ? 1 : .28); cur.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`; raf = on || Math.abs(tx - x) + Math.abs(ty - y) > .5 ? requestAnimationFrame(loop) : 0; };
   panels.forEach((p) => {
     p.addEventListener('pointerenter', (e) => {
-      cur.innerHTML = p.querySelector('.p-icon').outerHTML.replace('p-icon', '');
+      cur.innerHTML = ICONS[p.dataset.icon] || '';
       cur.classList.toggle('light', !p.classList.contains('pn2'));      // light disc on the dark panels, dark disc on the light one
       if (!on) { x = tx = e.clientX; y = ty = e.clientY; }
       on = true; cur.classList.add('on'); root.classList.add('icon-cursor'); if (!raf) raf = requestAnimationFrame(loop);
