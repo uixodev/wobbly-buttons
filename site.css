@@ -340,15 +340,11 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   .social svg { width: 28px; height: 28px; }
 }
 
-/* ═════════ HERO: one living ink shape. It leans toward your cursor, its eyes follow you, click it to say hi ═════════ */
-.hero-ink { position: relative; width: min(100%, 580px); margin-inline: auto; aspect-ratio: 1; cursor: pointer; }
-.hero-ink svg { display: block; width: 100%; height: 100%; overflow: visible; }
-.ink-ring { fill: none; stroke: var(--ink); stroke-width: 1.1; stroke-dasharray: 2 7; stroke-linecap: round; opacity: .55; }
-.ink-body { fill: var(--ink); }
-.ink-orbit { fill: var(--ink); }
-.ink-eye { transform-box: fill-box; transform-origin: center; transition: transform .12s ease; }
-.ink-eye.blink { transform: scaleY(.08); }
-.ink-eye .pupil { transition: r .2s ease; }
-.hero-ink.hi .ink-eye .pupil { r: 11; }
-.ink-say { position: absolute; left: 62%; top: 12%; margin: 0; font-size: clamp(1.6rem, 3vw, 2.6rem); transform: rotate(-8deg) scale(.6); opacity: 0; transition: opacity .3s ease, transform .5s cubic-bezier(.3, 1.7, .5, 1); pointer-events: none; }
-.hero-ink.hi .ink-say { opacity: 1; transform: rotate(-8deg) scale(1); }
+/* ═════════ HERO: a small still life of hand-cut shapes. They drift, step away from your cursor, and re-arrange when you click ═════════ */
+.hero-ink { position: relative; width: min(100%, 560px); margin-inline: auto; cursor: pointer; outline: none; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+.hero-ink svg { display: block; width: 100%; aspect-ratio: 1; overflow: visible; }
+.hero-ink .fill { fill: var(--ink); }
+.hero-ink .line { fill: none; stroke: var(--ink); stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
+.hero-ink:focus-visible { outline: 2px dashed var(--ink); outline-offset: 10px; }
+.ink-hint { display: flex; justify-content: flex-start; gap: 22px; margin: 10px 4px 0; font: 400 .7rem/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: rgba(17, 17, 17, .55); }
+.ink-hint i { font-style: normal; }

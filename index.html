@@ -80,17 +80,16 @@
       </div>
 
       <div class="hero-art">
-        <div class="hero-ink" id="hero-ink" aria-hidden="true">
-          <svg viewBox="0 0 400 400">
-            <path class="ink-ring" d="M52 214 C48 116 128 40 214 46 C318 52 364 140 350 220 C338 306 262 360 182 352 C106 344 56 292 52 214Z" />
-            <path class="ink-body" d="" />
-            <g class="ink-face">
-              <g class="ink-eye" data-eye="l"><ellipse cx="168" cy="190" rx="17" ry="23" fill="#F7F3EF"/><circle class="pupil" cx="168" cy="190" r="8.5" fill="#111"/></g>
-              <g class="ink-eye" data-eye="r"><ellipse cx="232" cy="190" rx="17" ry="23" fill="#F7F3EF"/><circle class="pupil" cx="232" cy="190" r="8.5" fill="#111"/></g>
-            </g>
-            <circle class="ink-orbit" r="7" cx="0" cy="0" />
+        <div class="hero-ink" id="hero-ink" role="button" tabindex="0" aria-label="Rearrange the shapes">
+          <svg viewBox="0 0 400 400" aria-hidden="true">
+            <g class="sh" data-k="circle"><path class="fill" d="M-62 2 C-62 -34 -34 -62 1 -62 C36 -62 62 -34 62 1 C62 37 35 63 -1 62 C-37 62 -62 38 -62 2Z"/></g>
+            <g class="sh" data-k="arch"><path class="line" d="M-48 62 C-51 20 -52 -10 -30 -36 C-12 -56 14 -56 32 -36 C52 -12 50 24 48 62 Z"/></g>
+            <g class="sh" data-k="semi"><path class="fill" d="M-60 20 C-60 -16 -32 -38 0 -38 C32 -38 60 -16 60 20 C30 22 -30 22 -60 20Z"/></g>
+            <g class="sh" data-k="blob"><path class="line" d="M-54 -6 C-50 -42 -10 -58 24 -46 C58 -34 62 4 46 30 C30 56 -8 60 -34 42 C-52 30 -56 10 -54 -6Z"/></g>
+            <g class="sh" data-k="dot"><circle class="fill" r="15"/></g>
+            <g class="sh" data-k="plus"><path class="line" d="M0 -22 V22 M-22 0 H22"/></g>
           </svg>
-          <p class="hand ink-say">hi!</p>
+          <p class="ink-hint"><span>Click to rearrange</span><i class="ink-count">01 / 03</i></p>
         </div>
         <p class="scroll-hint"><span>Scroll<br />for more</span><i></i></p>
       </div>

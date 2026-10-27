@@ -1,78 +1,57 @@
-// Hero: a single living ink shape (a closed curve on springs). It leans toward your cursor wherever it is on the page, its eyes follow you and
-// blink, and clicking it squashes it and makes it say hi. A dot drifts round a hand-drawn dotted ring. Static with prefers-reduced-motion.
+// Hero: a still life of six hand-cut shapes (black solids and fine outlines). Each sits on springs: they drift gently, step aside
+// as your cursor passes, and click / tap / Enter re-arranges them into the next composition. Static with prefers-reduced-motion.
 
 const root = document.getElementById('hero-ink');
 if (root) {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const svg = root.querySelector('svg'), body = svg.querySelector('.ink-body'), face = svg.querySelector('.ink-face');
-  const eyes = [...svg.querySelectorAll('.ink-eye')], pupils = [...svg.querySelectorAll('.pupil')];
-  const orbit = svg.querySelector('.ink-orbit'), ring = svg.querySelector('.ink-ring'), say = root.querySelector('.ink-say');
-  const N = 18, CX = 200, CY = 208, R = 118;
-  const pts = Array.from({ length: N }, (_, i) => {
-    const a = (i / N) * Math.PI * 2 - Math.PI / 2, r = R * (1 + 0.11 * Math.sin(i * 2.3 + 1) + 0.07 * Math.cos(i * 3.7));
-    const x = CX + Math.cos(a) * r * 1.02, y = CY + Math.sin(a) * r * 0.96;
-    return { bx: x, by: y, x, y, vx: 0, vy: 0 };
-  });
-  const ptr = { x: CX, y: CY, active: false };
-  const off = { x: 0, y: 0 };                       // whole-body lean
-  const L = ring.getTotalLength?.() || 1;
+  const svg = root.querySelector('svg'), count = root.querySelector('.ink-count');
+  const shapes = [...svg.querySelectorAll('.sh')];
+  // compositions: [x, y, rotation°, scale] for circle, arch, semi, blob, dot, plus
+  const LAYOUTS = [
+    [[170, 190, 0, 1.25], [268, 232, 8, 1.15], [112, 322, -8, 1], [292, 104, 14, .95], [78, 112, 0, 1], [334, 338, 12, 1]],
+    [[250, 150, 0, 1], [128, 250, -12, 1.35], [292, 316, 180, 1.05], [108, 96, -18, 1.1], [330, 236, 0, .9], [58, 340, 0, 1.1]],
+    [[130, 270, 0, 1.1], [254, 196, 0, 1.55], [120, 106, 0, .95], [320, 322, 28, 1], [214, 334, 0, 1.2], [332, 84, 45, 1.1]],
+  ];
+  const DEPTH = [10, 16, 8, 14, 22, 18];
+  const S = shapes.map((el, i) => { const t = LAYOUTS[0][i]; return { el, x: t[0], y: t[1], r: t[2], s: t[3], vx: 0, vy: 0, vr: 0, vs: 0, i }; });
+  let layout = 0;
+  const ptr = { x: 200, y: 200, active: false };
 
   const toSvg = (e) => { const r = svg.getBoundingClientRect(); return { x: ((e.clientX - r.left) / r.width) * 400, y: ((e.clientY - r.top) / r.height) * 400 }; };
   addEventListener('pointermove', (e) => { const p = toSvg(e); ptr.x = p.x; ptr.y = p.y; ptr.active = true; wake(); }, { passive: true });
-  addEventListener('pointerleave', () => { ptr.active = false; }, { passive: true });
   document.documentElement.addEventListener('pointerleave', () => { ptr.active = false; });
 
-  const SAYS = ['hi!', 'hello!', 'hey you', 'boo!'];
-  let sayI = 0, sayTimer = 0;
-  root.addEventListener('pointerdown', (e) => {
-    if (reduced) return;
-    const p = toSvg(e); ptr.x = p.x; ptr.y = p.y;
-    for (const q of pts) { q.vx += (CX - q.x) * 7 + (Math.random() - 0.5) * 60; q.vy += (CY - q.y) * 7 + (Math.random() - 0.5) * 60; }   // squash, then spring back
-    say.textContent = SAYS[sayI++ % SAYS.length]; root.classList.add('hi'); clearTimeout(sayTimer); sayTimer = setTimeout(() => root.classList.remove('hi'), 1500);
+  function shuffle() {
+    layout = (layout + 1) % LAYOUTS.length;
+    count.textContent = `0${layout + 1} / 03`;
+    if (!reduced) for (const o of S) { o.vx += (Math.random() - 0.5) * 220; o.vy += (Math.random() - 0.5) * 220; o.vr += (Math.random() - 0.5) * 260; o.vs += (Math.random() - 0.5) * 3; }
     wake();
-  });
-
-  let raf = 0, last = 0, time = 0, visible = true, nextBlink = 2.2;
-  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
-  function draw() {
-    let d = '';
-    for (let i = 0; i < N; i++) {
-      const p0 = pts[(i + N - 1) % N], p1 = pts[i], p2 = pts[(i + 1) % N], p3 = pts[(i + 2) % N];
-      if (!i) d += `M${p1.x.toFixed(1)} ${p1.y.toFixed(1)}`;
-      d += `C${(p1.x + (p2.x - p0.x) / 6).toFixed(1)} ${(p1.y + (p2.y - p0.y) / 6).toFixed(1)} ${(p2.x - (p3.x - p1.x) / 6).toFixed(1)} ${(p2.y - (p3.y - p1.y) / 6).toFixed(1)} ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
-    }
-    body.setAttribute('d', d + 'Z');
   }
+  root.addEventListener('click', shuffle);
+  root.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); shuffle(); } });
+
+  const place = (o, dx = 0, dy = 0) => o.el.setAttribute('transform', `translate(${(o.x + dx).toFixed(1)} ${(o.y + dy).toFixed(1)}) rotate(${o.r.toFixed(1)}) scale(${o.s.toFixed(3)})`);
+  let raf = 0, last = 0, time = 0, visible = true;
   function frame(now) {
     const dt = Math.min((now - last) / 1000, 1 / 30); last = now; time += dt;
-    const dx = ptr.x - CX, dy = ptr.y - CY, dist = Math.hypot(dx, dy) || 1;
-    // whole body leans a little toward the cursor
-    const wantX = ptr.active ? clamp(dx * 0.06, -14, 14) : 0, wantY = ptr.active ? clamp(dy * 0.06, -14, 14) : 0;
-    off.x += (wantX - off.x) * Math.min(1, dt * 5); off.y += (wantY - off.y) * Math.min(1, dt * 5);
-    for (let i = 0; i < N; i++) {
-      const p = pts[i];
-      let tx = p.bx + off.x + (reduced ? 0 : Math.sin(time * 1.2 + i * 1.3) * 2.2), ty = p.by + off.y + (reduced ? 0 : Math.cos(time * 1.0 + i * 1.9) * 2.2);
-      if (ptr.active && !reduced) {                // the side nearest the cursor stretches toward it
-        const ex = ptr.x - p.bx, ey = ptr.y - p.by, d = Math.hypot(ex, ey) || 1, pull = Math.max(0, 1 - d / 460);
-        const reach = Math.min(d, 70) * Math.pow(pull, 0.7) * 0.62;
-        tx += (ex / d) * reach; ty += (ey / d) * reach;
+    const px = ptr.active ? (ptr.x - 200) / 200 : 0, py = ptr.active ? (ptr.y - 200) / 200 : 0;
+    for (const o of S) {
+      const t = LAYOUTS[layout][o.i];
+      let tx = t[0] + px * DEPTH[o.i] * -1 + Math.sin(time * .8 + o.i * 1.7) * 3, ty = t[1] + py * DEPTH[o.i] * -1 + Math.cos(time * .7 + o.i * 2.1) * 3;
+      if (ptr.active) {                         // step aside as the cursor passes
+        const dx = o.x - ptr.x, dy = o.y - ptr.y, d = Math.hypot(dx, dy) || 1, R = 100 * Math.max(.8, t[3] * .85);
+        if (d < R) { const push = (1 - d / R) * 34; tx += (dx / d) * push; ty += (dy / d) * push; }
       }
-      p.vx += (130 * (tx - p.x) - 8 * p.vx) * dt; p.vy += (130 * (ty - p.y) - 8 * p.vy) * dt;
-      p.x += p.vx * dt; p.y += p.vy * dt;
+      const tr = t[2] + Math.sin(time * .6 + o.i) * 2.5, ts = t[3];
+      o.vx += (110 * (tx - o.x) - 11 * o.vx) * dt; o.vy += (110 * (ty - o.y) - 11 * o.vy) * dt;
+      o.vr += (90 * (tr - o.r) - 10 * o.vr) * dt; o.vs += (90 * (ts - o.s) - 10 * o.vs) * dt;
+      o.x += o.vx * dt; o.y += o.vy * dt; o.r += o.vr * dt; o.s += o.vs * dt;
+      place(o);
     }
-    draw();
-    // face turns toward the cursor, pupils look at it
-    const fx = off.x * 1.8 + clamp(dx * 0.05, -12, 12) * (ptr.active ? 1 : 0), fy = off.y * 1.8 + clamp(dy * 0.05, -10, 10) * (ptr.active ? 1 : 0);
-    face.setAttribute('transform', `translate(${fx.toFixed(1)} ${fy.toFixed(1)})`);
-    const ang = Math.atan2(dy, dx), look = ptr.active ? Math.min(7, dist * 0.04) : 0;
-    pupils.forEach((p) => p.setAttribute('transform', `translate(${(Math.cos(ang) * look).toFixed(1)} ${(Math.sin(ang) * look * 1.2).toFixed(1)})`));
-    // blink
-    if (time > nextBlink) { eyes.forEach((e) => e.classList.add('blink')); setTimeout(() => eyes.forEach((e) => e.classList.remove('blink')), 130); nextBlink = time + 2.4 + Math.random() * 3; }
-    // a dot drifts round the dotted ring
-    if (L > 1) { const pt = ring.getPointAtLength(((time * 0.05) % 1) * L); orbit.setAttribute('cx', pt.x.toFixed(1)); orbit.setAttribute('cy', pt.y.toFixed(1)); }
     raf = visible && !reduced ? requestAnimationFrame(frame) : 0;
   }
   const wake = () => { if (!raf && visible && !reduced) { last = performance.now(); raf = requestAnimationFrame(frame); } };
-  new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) wake(); }, { threshold: 0 }).observe(root);
-  if (reduced) { frame(performance.now()); draw(); } else wake();
+  new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) wake(); }).observe(root);
+  S.forEach((o) => place(o));
+  if (!reduced) wake();
 }
