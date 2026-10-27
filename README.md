@@ -40,4 +40,4 @@ To use a real photo or screenshot, add an `<img src="…" alt="…">` as the **f
 - The footer says © 2024 (from the wireframe).
 
 - `services.js` — the Services panels: hover one and translucent objects float up inside it and drift with your cursor (design: glass cards, type, a pen curve; development: code chips and a terminal; creative extras: a field of + marks that turn toward the cursor), and the cursor becomes the panel icon.
-- `click-sparks.js` — click anywhere and a few short hand-drawn lines flick out from the point (like the marks round a pressed button; cream on dark surfaces). Skipped on buttons and with reduced motion.
+- `click-sparks.js` — click anywhere and a few short hand-drawn lines flick out from the point (like the marks round a pressed button; cream on dark surfaces). Mouse only: skipped on buttons, on touch screens and with reduced motion.

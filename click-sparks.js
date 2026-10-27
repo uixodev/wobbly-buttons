@@ -1,12 +1,12 @@
-// Click anywhere and a few short, hand-drawn lines flick out from the point, like the marks round a pressed button.
-// (Buttons draw their own marks, so clicks on them are skipped.) Cream on dark surfaces, ink elsewhere. Off with reduced motion.
+// Click (mouse) anywhere and a few short, hand-drawn lines flick out from the point, like the marks round a pressed button.
+// (Buttons draw their own marks, so clicks on them are skipped.) Cream on dark surfaces, ink elsewhere. Off on touch and with reduced motion.
 
-if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+// Mouse only: touch screens (and reduced motion) never get the marks.
+if (!matchMedia('(prefers-reduced-motion: reduce)').matches && matchMedia('(hover: hover) and (pointer: fine)').matches) {
   const NS = 'http://www.w3.org/2000/svg';
   const DARK = '.footer-dark, .menu, .panel.pn1, .panel.pn3, .panel.pn5, .vira-logo, .tile-jelly';
   const R = 44;
 
-  // a mouse flicks on press; a finger only on a real tap (so scrolling and swiping stay quiet)
   const spark = (e) => {
     if (e.button > 0 || e.target.closest?.('.wobbly')) return;
     const dark = !!e.target.closest?.(DARK) || document.documentElement.classList.contains('menu-open');
@@ -36,5 +36,4 @@ if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
     setTimeout(() => svg.remove(), 800);
   };
   addEventListener('pointerdown', (e) => { if (e.pointerType === 'mouse') spark(e); }, { passive: true });
-  addEventListener('click', (e) => { if (e.pointerType && e.pointerType !== 'mouse') spark(e); }, { passive: true });
 }
