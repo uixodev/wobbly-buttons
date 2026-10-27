@@ -1,7 +1,7 @@
 /* Wobbly buttons — style hooks. Shape + sparks are drawn by wobbly-buttons.js */
 .wobbly {
   --wb-color: #111;
-  --wb-text: #faf7f0;
+  --wb-text: #F7F3EF;
   --wb-stroke: 2px;
   position: relative;
   display: inline-flex;
