@@ -9,7 +9,7 @@ const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const R = 7;                 // resting droplet radius (px)
 const TRAIL_MS = 480;        // how long a trail point lives
 const POINTS = 16;           // outline points of the droplet
-const DARK_SURFACE = '.vira-logo';
+const DARK_SURFACE = '.vira-logo, .wobbly[data-variant="solid"], .tile-jelly, .footer-dark';
 const INK = [17, 17, 17], CREAM = [247, 243, 239];
 const INTERACTIVE = 'a, button, [role="button"], summary, label, input, select, textarea, .wobbly, .vira-logo';
 
@@ -44,12 +44,12 @@ export function initInkCursor() {
     if (e.pointerType !== 'mouse' && e.pointerType !== 'pen') return;
     target.x = e.clientX; target.y = e.clientY;
     if (!visible) { head.x = target.x; head.y = target.y; head.vx = head.vy = 0; visible = true; }
-    sizeT = pressed ? 0.7 : e.target.closest?.(INTERACTIVE) ? 2 : 1;
+    sizeT = pressed ? 0.7 : e.target.closest?.(INTERACTIVE) ? 1.6 : 1;
     colT = e.target.closest?.(DARK_SURFACE) ? CREAM : INK;
     wake();
   }, { passive: true });
   addEventListener('pointerdown', () => { pressed = true; sizeT = 0.7; wake(); });
-  addEventListener('pointerup', (e) => { pressed = false; sizeT = e.target.closest?.(INTERACTIVE) ? 2 : 1; sizeV += 9; wake(); }); // little rebound
+  addEventListener('pointerup', (e) => { pressed = false; sizeT = e.target.closest?.(INTERACTIVE) ? 1.6 : 1; sizeV += 9; wake(); }); // little rebound
   document.documentElement.addEventListener('pointerleave', () => { visible = false; wake(); });
   document.documentElement.addEventListener('pointerenter', () => { visible = true; wake(); });
 
@@ -82,24 +82,37 @@ export function initInkCursor() {
 
   // thin tapered ribbon (one filled polygon, so no beading): fades and narrows toward the tail
   function drawTrail(now) {
-    const n = trail.length;
-    if (n < 3) return;
-    const L = [], Rr = [];
-    for (let i = 0; i < n; i++) {
-      const a = trail[Math.max(i - 1, 0)], b = trail[Math.min(i + 1, n - 1)];
-      let nx = -(b.y - a.y), ny = b.x - a.x; const m = Math.hypot(nx, ny) || 1; nx /= m; ny /= m;
-      const life = 1 - (now - trail[i].t) / TRAIL_MS;
-      const w = Math.max(0.15, R * 0.4 * life * size);
-      L.push([trail[i].x + nx * w, trail[i].y + ny * w]); Rr.push([trail[i].x - nx * w, trail[i].y - ny * w]);
+    // split the trail wherever the pointer turns sharply, so the ribbon never folds over itself
+    const runs = []; let run = [];
+    for (let i = 0; i < trail.length; i++) {
+      if (run.length >= 2) {
+        const a = run[run.length - 2], b = run[run.length - 1], c = trail[i];
+        const ux = b.x - a.x, uy = b.y - a.y, vx = c.x - b.x, vy = c.y - b.y;
+        if ((ux * vx + uy * vy) / ((Math.hypot(ux, uy) * Math.hypot(vx, vy)) || 1) < 0.35) { runs.push(run); run = [b]; }
+      }
+      run.push(trail[i]);
     }
-    const g = ctx.createLinearGradient(trail[0].x, trail[0].y, trail[n - 1].x, trail[n - 1].y);
+    runs.push(run);
     const rgb = col.map(Math.round).join(',');
-    g.addColorStop(0, `rgba(${rgb},0)`); g.addColorStop(1, `rgba(${rgb},0.85)`);
-    ctx.fillStyle = g;
-    ctx.beginPath(); ctx.moveTo(L[0][0], L[0][1]);
-    for (let i = 1; i < n; i++) ctx.lineTo(L[i][0], L[i][1]);
-    for (let i = n - 1; i >= 0; i--) ctx.lineTo(Rr[i][0], Rr[i][1]);
-    ctx.closePath(); ctx.fill();
+    for (const pts of runs) {
+      const n = pts.length;
+      if (n < 3) continue;
+      const L = [], Rr = [];
+      for (let i = 0; i < n; i++) {
+        const a = pts[Math.max(i - 1, 0)], b = pts[Math.min(i + 1, n - 1)];
+        let nx = -(b.y - a.y), ny = b.x - a.x; const m = Math.hypot(nx, ny) || 1; nx /= m; ny /= m;
+        const life = 1 - (now - pts[i].t) / TRAIL_MS;
+        const w = Math.max(0.15, R * 0.35 * life * size);
+        L.push([pts[i].x + nx * w, pts[i].y + ny * w]); Rr.push([pts[i].x - nx * w, pts[i].y - ny * w]);
+      }
+      const g = ctx.createLinearGradient(pts[0].x, pts[0].y, pts[n - 1].x, pts[n - 1].y);
+      g.addColorStop(0, `rgba(${rgb},0)`); g.addColorStop(1, `rgba(${rgb},0.85)`);
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.moveTo(L[0][0], L[0][1]);
+      for (let i = 1; i < n; i++) ctx.lineTo(L[i][0], L[i][1]);
+      for (let i = n - 1; i >= 0; i--) ctx.lineTo(Rr[i][0], Rr[i][1]);
+      ctx.closePath(); ctx.fill();
+    }
   }
 
   function drawDroplet(t, speed) {

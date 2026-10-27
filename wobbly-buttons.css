@@ -37,10 +37,6 @@
 .wobbly[data-variant="outline"] .wb-shape { fill: transparent; }
 
 
-.wobbly .wb-shape { transition: fill .25s ease, stroke .25s ease; }
-.wobbly[data-variant="solid"] { transition: color .25s ease; }
-.wobbly[data-variant="solid"]:is([data-state="hover"], [data-state="press"], [data-state="release"]) { color: var(--ink); }
-.wobbly[data-variant="solid"]:is([data-state="hover"], [data-state="press"], [data-state="release"]) .wb-shape { fill: var(--accent); stroke: var(--accent); }
 
 .wobbly .wb-label { display: inline-flex; align-items: center; gap: 0.6em; transform: scale(var(--wb-scale, 1)); }
 

@@ -133,7 +133,10 @@ class Wobbly {
         const dx = this.pointer.x - b.x, dy = this.pointer.y - b.y;
         const d = Math.hypot(dx, dy) || 1;
         const k = Math.exp(-Math.pow(d / 110, 2)) * lean * Math.min(d, 90) / d;
-        x += dx * k * 1.25; y += dy * k * 1.25;
+        let px = dx * k * 1.25, py = dy * k * 1.25;
+        const cap = Math.min(this.w, this.h) * (st === 'close' ? 0.3 : 0.16), len = Math.hypot(px, py);   // never stretch far enough to leave the label behind
+        if (len > cap) { px *= cap / len; py *= cap / len; }
+        x += px; y += py;
       }
       if (!reduced) { x += Math.sin(t * 1.3 + i * 1.7) * 1.1; y += Math.cos(t * 1.1 + i * 2.1) * 1.1; }
       return { x, y };
