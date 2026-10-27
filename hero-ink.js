@@ -8,6 +8,7 @@
 import { createAliveBlob } from './alive-blob.js';
 import { createHeroGradient } from './hero-gradient.js';
 import { createAliveSound } from './alive-sound.js';
+import { createDoodles } from './hero-doodles.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CONFIGURATION — the press animation
@@ -51,6 +52,9 @@ function start() {
     fixed: true, fadeTop: 0, spreadDuration: PRESS.spreadSeconds, recedeDuration: PRESS.recedeSeconds,
     origin: () => { if (!hl) return null; const r = hl.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; },
   });
+
+  // ── web-design doodles in the page colour down both sides: invisible on ivory, they draw themselves as the purple reaches them
+  const doodles = createDoodles(document.querySelector('.doodles'));
 
   // ── sound (synthesised, starts on the first press), with a small on/off switch in the nav
   let stored = null; try { stored = localStorage.getItem('viraSound'); } catch (e) {}
@@ -105,6 +109,8 @@ function start() {
     if (phase === 'holding' && now >= holdUntil) closeIt();
     if (phase === 'closing' && !bg.active) phase = 'idle';
 
+    const ob = hl ? hl.getBoundingClientRect() : null;
+    doodles.update(bg.reveal, ob ? { x: ob.left + ob.width / 2, y: ob.top + ob.height / 2 } : { x: innerWidth / 2, y: innerHeight / 2 });
     let busy = phase !== 'idle';
 
     letters.forEach((L) => {

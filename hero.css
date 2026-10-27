@@ -60,3 +60,8 @@
   .hero-title { --title-size: min(17vw, 11.5svh); }
   .hero-buttons .wobbly { white-space: nowrap; }
 }
+
+/* Doodles: drawn in the page's own colour, so they are invisible on the ivory page and only show up against the purple (hero-doodles.js) */
+.doodles { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.doodle { position: absolute; width: calc(var(--s, 1) * clamp(64px, 9vw, 150px)); height: calc(var(--s, 1) * clamp(64px, 9vw, 150px)); overflow: visible; }
+.doodle path { fill: none; stroke: var(--bg, #F7F3EF); stroke-linecap: round; stroke-linejoin: round; }
