@@ -258,23 +258,38 @@ a { color: inherit; }
 
 #playground { border-top: 0; }
 
-/* ═════════ SERVICES: three miniature browser windows, each demonstrating the thing (black and white, fine outlines) ═════════ */
-.svc-list { margin-top: clamp(26px, 3vw, 44px); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(22px, 3.2vw, 52px); align-items: start; }
-.svc:nth-child(2) { margin-top: clamp(0px, 3vw, 44px); }
-.win { background: #fff; border: 1.5px solid var(--ink); border-radius: 14px 12px 16px 11px / 12px 15px 11px 14px; overflow: hidden; transition: transform .5s cubic-bezier(.3, 1.5, .5, 1); box-shadow: 5px 6px 0 var(--ink); }
-.svc:nth-child(1) .win { rotate: -1deg; } .svc:nth-child(2) .win { rotate: .8deg; } .svc:nth-child(3) .win { rotate: -.5deg; }
-.svc:hover .win { transform: translateY(-4px); }
-.win-bar { display: flex; align-items: center; gap: 12px; padding: 9px 12px; border-bottom: 1.5px solid var(--ink); }
-.dots { display: flex; gap: 5px; } .dots i { width: 8px; height: 8px; border: 1.3px solid var(--ink); border-radius: 50%; }
-.win-url { flex: 1; text-align: center; font: 400 .62rem/1 var(--mono); letter-spacing: .08em; padding: 4px 8px; border: 1px solid var(--ink); border-radius: 99px; max-width: 70%; margin-inline: auto; }
+/* ═════════ SERVICES: "the exhibition". Three panels; hover one and it comes alive (a miniature browser rises out of it
+   and your cursor becomes the panel's icon). ═════════ */
+.svc-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(12px, 1.4vw, 20px); }
+.panel { --fg: #F7F3EF; --bgp: var(--ink); position: relative; width: 100%; box-sizing: border-box; aspect-ratio: 1.42; min-height: 300px; overflow: hidden; background: var(--bgp); color: var(--fg); border: 1.5px solid var(--ink); border-radius: 16px 13px 17px 12px / 13px 17px 12px 15px; padding: clamp(18px, 1.7vw, 26px); transition: opacity .9s ease, transform .9s cubic-bezier(.2, .7, .2, 1), translate .5s cubic-bezier(.3, 1.5, .5, 1), rotate .5s cubic-bezier(.3, 1.5, .5, 1); }
+.panel.pn2 { --fg: var(--ink); --bgp: var(--bg); }
+.panel:hover { translate: 0 -4px; rotate: -.4deg; }
+.p-no { position: absolute; top: clamp(18px, 1.7vw, 26px); left: clamp(18px, 1.7vw, 26px); font: 400 .8rem/1 var(--mono); letter-spacing: .1em; }
+.p-icon { position: absolute; left: clamp(18px, 1.7vw, 26px); top: 50%; translate: 0 -50%; width: 34px; height: 34px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: opacity .3s ease; }
+.p-text { position: absolute; left: clamp(18px, 1.7vw, 26px); right: 64px; bottom: clamp(18px, 1.7vw, 26px); z-index: 2; }
+.p-text h3 { margin: 0; font: 400 clamp(1.15rem, 1.5vw, 1.4rem)/1.2 var(--body); letter-spacing: -.005em; }
+.p-text p { margin: 6px 0 0; font-size: .86rem; line-height: 1.4; opacity: .62; }
+.p-link { position: absolute; right: clamp(18px, 1.7vw, 26px); bottom: clamp(18px, 1.7vw, 26px); z-index: 2; width: 38px; height: 38px; display: grid; place-items: center; border: 1.5px solid currentColor; border-radius: 50% 46% 52% 48% / 48% 52% 46% 50%; color: inherit; text-decoration: none; font: 400 1rem/1 var(--mono); transition: background .25s ease, color .25s ease, transform .4s cubic-bezier(.3, 1.6, .5, 1); }
+.p-link:hover, .p-link:focus-visible { background: var(--fg); color: var(--bgp); transform: rotate(-8deg) scale(1.1); outline: none; }
+.svc-cap { margin: 20px 0 0; color: var(--muted); font-size: 1.02rem; }
+
+/* the miniature browser rises out of the panel on hover */
+.panel .win { position: absolute; left: 50%; top: 14%; width: 52%; translate: -50% 38px; opacity: 0; pointer-events: none; background: #fff; color: var(--ink); border: 1.5px solid var(--fg); border-radius: 10px 9px 11px 8px / 9px 11px 8px 10px; box-shadow: none; rotate: none; transition: opacity .35s ease, translate .6s cubic-bezier(.2, .8, .2, 1); }
+.panel:hover .win, .panel:focus-within .win { opacity: 1; translate: -50% 0; pointer-events: auto; }
+.panel:hover .p-icon, .panel:focus-within .p-icon { opacity: 0; }
+.win-bar { display: flex; align-items: center; gap: 10px; padding: 6px 9px; border-bottom: 1.5px solid var(--ink); }
+.dots { display: flex; gap: 4px; } .dots i { width: 6px; height: 6px; border: 1.2px solid var(--ink); border-radius: 50%; }
+.win-url { flex: 1; text-align: center; font: 400 .5rem/1 var(--mono); letter-spacing: .08em; padding: 3px 6px; border: 1px solid var(--ink); border-radius: 99px; max-width: 70%; margin-inline: auto; }
 .win-view { position: relative; aspect-ratio: 300 / 190; container-type: inline-size; background: #fff; }
 .win-view svg { display: block; width: 100%; height: 100%; }
-.svc-info { padding: 26px 4px 0; }
-.svc-no { display: block; font: 400 .72rem/1 var(--mono); letter-spacing: .14em; color: rgba(17, 17, 17, .55); margin-bottom: 12px; }
-.svc h3 { margin: 0 0 10px; font: 400 clamp(1.8rem, 2.5vw, 2.4rem)/1.1 var(--serif); }
-.svc p { margin: 0; color: #4f4944; font-size: 1.04rem; line-height: 1.6; max-width: 24rem; }
-.svc-pill { margin-top: 22px; display: inline-flex; gap: .6em; align-items: center; padding: .85em 1.5em; border: 1.5px solid var(--ink); border-radius: 999px 940px 999px 960px / 880px 999px 940px 999px; color: var(--ink); text-decoration: none; font: 400 .76rem/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; transition: background .25s ease, color .25s ease, transform .4s cubic-bezier(.3, 1.6, .5, 1); }
-.svc-pill:hover, .svc-pill:focus-visible { background: var(--ink); color: var(--bg); transform: rotate(-2deg) scale(1.04); outline: none; }
+@media (hover: none) { .panel .win { opacity: 1; translate: -50% 0; } .p-icon { opacity: 0; } }
+
+/* the cursor becomes the panel's icon while you are over a panel */
+.icon-cur { position: fixed; left: 0; top: 0; z-index: 9999; width: 64px; height: 60px; margin: -30px 0 0 -32px; display: grid; place-items: center; pointer-events: none; border-radius: 58% 42% 55% 45% / 48% 58% 42% 52%; background: var(--ink); opacity: 0; scale: .3; transition: opacity .2s ease, scale .45s cubic-bezier(.3, 1.7, .5, 1), background .25s ease; }
+.icon-cur svg { width: 28px; height: 28px; fill: none; stroke: var(--bg); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.icon-cur.on { opacity: 1; scale: 1; } .icon-cur.light { background: var(--bg); } .icon-cur.light svg { stroke: var(--ink); }
+html.icon-cursor .ink-cursor { opacity: 0 !important; }
+@media (hover: none) { .icon-cur { display: none; } }
 
 /* 01 — wireframe → polished */
 .demo-design { fill: none; stroke: var(--ink); stroke-width: 1; }
@@ -306,5 +321,5 @@ a { color: inherit; }
 /* 03 — an ink shape that leans toward your cursor */
 .demo-ink { cursor: none; } .demo-ink .ink { fill: var(--ink); } .demo-ink .hint { font: 400 7px var(--mono); letter-spacing: .12em; text-anchor: middle; text-transform: uppercase; fill: rgba(17, 17, 17, .5); }
 
-@media (max-width: 900px) { .svc-list { grid-template-columns: 1fr; gap: 44px; } .svc:nth-child(2) { margin-top: 0; } .svc-info { padding-top: 22px; } }
-@media (prefers-reduced-motion: reduce) { .win, .demo-design .w, .demo-design .p > *, .pv > * { transition: none; } .code .c::after { animation: none; } }
+@media (max-width: 900px) { .svc-list { grid-template-columns: 1fr; } .panel { aspect-ratio: auto; min-height: 340px; } .panel .win { width: 62%; top: 16%; } }
+@media (prefers-reduced-motion: reduce) { .panel, .panel .win, .demo-design .w, .demo-design .p > *, .pv > * { transition: none; } .code .c::after { animation: none; } }

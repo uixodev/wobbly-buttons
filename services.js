@@ -21,8 +21,9 @@ if (wins.design) {
   if (reduced) svg.classList.add('polished');
   else {
     whenVisible(wins.design, () => { if (!timer) { setTimeout(flip, 500); timer = setInterval(() => { if (!held) flip(); }, 3200); } }, () => { clearInterval(timer); timer = 0; });
-    wins.design.addEventListener('pointerenter', () => { held = true; svg.classList.add('polished'); });
-    wins.design.addEventListener('pointerleave', () => { held = false; });
+    const panel = wins.design.closest('.panel');
+    panel.addEventListener('pointerenter', () => { held = true; svg.classList.remove('polished'); setTimeout(() => { if (held) svg.classList.add('polished'); }, 650); });
+    panel.addEventListener('pointerleave', () => { held = false; });
   }
 }
 
@@ -54,6 +55,7 @@ if (wins.dev) {
       if (id === run && alive) play(id);
     }
     whenVisible(wins.dev, () => { alive = true; play(++run); }, () => { alive = false; run++; });
+    wins.dev.closest('.panel').addEventListener('pointerenter', () => { if (alive) play(++run); });
   }
 }
 
@@ -100,3 +102,23 @@ if (wins.ink) {
   whenVisible(wins.ink, () => { visible = true; wake(); }, () => { visible = false; });
   draw();
 }
+
+// ── the cursor becomes the panel's icon while you hover a panel ──
+(() => {
+  const panels = [...document.querySelectorAll('.panel')];
+  if (!panels.length || !matchMedia('(hover: hover)').matches) return;
+  const cur = document.createElement('span'); cur.className = 'icon-cur'; cur.setAttribute('aria-hidden', 'true'); document.body.append(cur);
+  const root = document.documentElement;
+  let tx = 0, ty = 0, x = 0, y = 0, raf = 0, on = false;
+  const loop = () => { x += (tx - x) * (reduced ? 1 : .28); y += (ty - y) * (reduced ? 1 : .28); cur.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`; raf = on || Math.abs(tx - x) + Math.abs(ty - y) > .5 ? requestAnimationFrame(loop) : 0; };
+  panels.forEach((p) => {
+    p.addEventListener('pointerenter', (e) => {
+      cur.innerHTML = p.querySelector('.p-icon').outerHTML.replace('p-icon', '');
+      cur.classList.toggle('light', !p.classList.contains('pn2'));      // light disc on the dark panels, dark disc on the light one
+      if (!on) { x = tx = e.clientX; y = ty = e.clientY; }
+      on = true; cur.classList.add('on'); root.classList.add('icon-cursor'); if (!raf) raf = requestAnimationFrame(loop);
+    });
+    p.addEventListener('pointermove', (e) => { tx = e.clientX; ty = e.clientY; });
+    p.addEventListener('pointerleave', () => { on = false; cur.classList.remove('on'); root.classList.remove('icon-cursor'); });
+  });
+})();
