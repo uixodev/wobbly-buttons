@@ -399,7 +399,7 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .pulse { width: 10px; height: 10px; border-radius: 50%; background: var(--ink); position: relative; }
 .pulse::after { content: ""; position: absolute; inset: -5px; border-radius: 50%; border: 1.5px solid var(--ink); animation: pulse 2.2s ease-out infinite; }
 @keyframes pulse { from { transform: scale(.5); opacity: .8; } to { transform: scale(1.5); opacity: 0; } }
-.hero h1 { grid-area: title; margin: 0; align-self: end; margin-top: 0; font-family: var(--serif); font-weight: 400; letter-spacing: -.02em; }
+.hero h1 { grid-area: title; margin: 0; align-self: end; font-family: var(--serif); font-weight: 400; letter-spacing: -.02em; }
 .h-hi { display: block; font-size: clamp(2.6rem, 5.4vw, 5.2rem); line-height: 1; margin-bottom: clamp(-12px, -.6vw, -4px); position: relative; z-index: 1; }
 .h-hi em { font-style: italic; }
 .h-name { position: relative; display: inline-block; font-size: clamp(7rem, 19vw, 18.5rem); line-height: .82; letter-spacing: -.045em; padding-bottom: .09em; }
