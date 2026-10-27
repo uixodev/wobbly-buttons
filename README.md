@@ -52,7 +52,7 @@ A living ink droplet replaces the native cursor: it lags the pointer on a spring
 
 `hero.css`, `hero-ink.js` and the `<section class="hero">` in `index.html`.
 
-- **Headline:** real, selectable HTML text in Fraunces (self-hosted variable font in `fonts/`, set to its SOFT + WONK axes for soft, slightly imperfect letterforms). "alive." rests on a slowly breathing Orchid blob. Each letter is a small spring: letters hop and lean away from the cursor (off for touch and `prefers-reduced-motion`; the `<h1>` keeps a plain-text `aria-label`).
+- **Headline:** real, selectable HTML text in Fraunces (self-hosted variable font in `fonts/`, set to its SOFT + WONK axes for soft, slightly imperfect letterforms). "alive." rests on a living Orchid shape: `alive-blob.js` draws it as an SVG outline of ~24 spring-driven points that drift slowly and never exactly repeat, stretch towards the cursor locally, and spring back with a wobble (all knobs in the labelled `ALIVE_CONFIG` at the top of that file). Each letter is a small spring: letters hop and lean away from the cursor (off for touch and `prefers-reduced-motion`; the `<h1>` keeps a plain-text `aria-label`).
 - **Artwork:** the living ink flower (`ink-flower/ink-flower.js`) grows on the right on wide screens. On phones and portrait tablets the layout stacks and the flower floats in the free band above the headline, sized from the available height so it never lands behind the type. Sizes and positions live in `layoutFor()` in `hero-ink.js`.
 - Kept from the brand: ivory `#F7F3EF`, ink `#111`, Orchid `#AD86CF`, the logo, nav, wobbly buttons and ink cursor.
 

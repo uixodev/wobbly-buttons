@@ -1,5 +1,6 @@
 // Hero: the living ink flower (canvas, behind) + a playful headline whose letters hop away from the cursor.
 import { createInkFlower } from './ink-flower/ink-flower.js';
+import { createAliveBlob } from './alive-blob.js';
 
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const hero = document.querySelector('.hero');
@@ -39,6 +40,8 @@ function start() {
     }
     textNode.replaceWith(frag);
   }
+  const hl = title.querySelector('.hl');
+  if (hl) createAliveBlob(hl);                                      // the living Orchid shape behind "alive."
   if (reduced) return;
 
   let pointer = null, raf = 0, last = 0;
