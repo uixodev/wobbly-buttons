@@ -434,3 +434,23 @@ html:not(.js) .hero-story { height: auto; } html:not(.js) .hero-story .hero-pin 
 .hero-story .scroll-down span { font: 400 clamp(.78rem, 1vw, .9rem)/1 var(--mono); letter-spacing: .2em; text-transform: uppercase; color: var(--ink); background: color-mix(in srgb, var(--bg) 88%, transparent); padding: 8px 14px; border-radius: 999px; border: 1.5px solid var(--ink); }
 .hero-story .scroll-down i { height: 34px; }
 @media (max-width: 900px) { .hero-story .scroll-down { bottom: 22px; } }
+
+/* ═════════ SERVICES on phones: the same five panels become a deck. Swipe the top card away and it slips back under the pile ═════════ */
+.svc-swipe { display: none; }
+@media (max-width: 900px) {
+  .svc-wrap { position: relative; width: 100%; max-width: 440px; margin: 8px auto 0; aspect-ratio: .98; }
+  .svc-wrap .svc-list, .svc-wrap .svc-list-2 { display: contents; }
+  .svc-wrap .panel { --p: 0; --sign: 1; position: absolute; left: 0; top: 18px; width: 86%; height: 86%; min-height: 0; aspect-ratio: auto; margin: 0; z-index: calc(10 - var(--p)); touch-action: pan-y;
+    translate: calc(var(--p) * 15px + var(--dx, 0px)) calc(var(--p) * -12px + var(--dy, 0px)); rotate: calc(var(--p) * var(--sign) * 2deg + var(--dr, 0deg)); scale: calc(1 - var(--p) * .035);
+    transition: translate .5s cubic-bezier(.3, 1.3, .5, 1), rotate .5s cubic-bezier(.3, 1.3, .5, 1), scale .5s ease, opacity .35s ease; opacity: 1; }
+  .svc-wrap .panel:nth-of-type(even) { --sign: -1; }
+  .svc-wrap .panel:hover { translate: calc(var(--p) * 15px + var(--dx, 0px)) calc(var(--p) * -12px + var(--dy, 0px)); rotate: calc(var(--p) * var(--sign) * 2deg + var(--dr, 0deg)); }
+  .svc-wrap .panel:not(.top) { pointer-events: none; }
+  .svc-wrap .panel:not(.top) .p-stretch { pointer-events: none; }
+  .svc-wrap .panel.drag { transition: none; cursor: grabbing; }
+  .svc-wrap .panel.fly { transition: translate .38s cubic-bezier(.4, 0, .8, .4), rotate .38s ease, opacity .38s ease; opacity: 0; }
+  .svc-wrap .p-art > * { opacity: 1; }
+  .svc-swipe { display: block; margin: 12px 0 0; text-align: center; font: 400 .66rem/1.4 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: rgba(17, 17, 17, .55); }
+  .svc-cap { display: none; }
+  .svc-wrap .p-stretch::after { inset: -2px; }
+}
