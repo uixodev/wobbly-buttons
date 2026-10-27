@@ -8,7 +8,7 @@
   align-items: center;
   gap: 24px;
   padding: 10px clamp(16px, 4vw, 44px);
-  background: var(--bg, #F7F3EF);
+  background: transparent;                      /* the page (ivory, or the purple gradient) shows through */
   font: 400 0.75rem/1 "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   letter-spacing: 0.14em;
   text-transform: uppercase;

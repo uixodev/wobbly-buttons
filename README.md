@@ -50,11 +50,12 @@ A living ink droplet replaces the native cursor: it lags the pointer on a spring
 
 ## Hero — "websites that feel alive."
 
-`hero.css`, `hero-ink.js` and the `<section class="hero">` in `index.html`.
+`hero.css`, `hero-ink.js` and the `<section class="hero">` in `index.html`. Everything is centred on warm ivory.
 
-- **Headline:** real, selectable HTML text in Fraunces (self-hosted variable font in `fonts/`, set to its SOFT + WONK axes for soft, slightly imperfect letterforms). "alive." is the point the background gradient spreads out from. Each letter is a small spring: letters hop and lean away from the cursor (off for touch and `prefers-reduced-motion`; the `<h1>` keeps a plain-text `aria-label`).
-- **Background:** `hero-gradient.js` is a full-hero WebGL canvas behind the type: a flowing purple heat-map (warped noise through a deep-orchid → pale-lilac palette, thin contour lines, fine flecks). On load it spreads outward from "alive." until the whole hero is covered, then keeps drifting like liquid; moving the cursor stirs it and deepens the colour where it passes. Kept pale so the black type stays readable. Plain ivory if WebGL is unavailable; a still frame with reduced motion. Knobs: `GRADIENT_CONFIG` at the top of that file (`paleness`, `flowSpeed`, `warp`, `bands`, `spreadDuration`…).
-- **Artwork:** the living ink flower (`ink-flower/ink-flower.js`) grows on the right on wide screens. On phones and portrait tablets the layout stacks and the flower floats in the free band above the headline, sized from the available height so it never lands behind the type. Sizes and positions live in `layoutFor()` in `hero-ink.js`.
+- **Headline:** real, selectable HTML text in Fraunces (self-hosted variable font in `fonts/`, SOFT + WONK axes for soft, slightly imperfect letterforms). Letters hop and lean away from the cursor (off for touch and `prefers-reduced-motion`; the `<h1>` keeps a plain-text `aria-label`).
+- **"alive." is a button** (`aria-pressed`, keyboard-focusable). It sits on a flat Orchid shape drawn by `alive-blob.js`: an outline of ~24 spring-driven points that drift slowly, stretch towards the cursor locally and spring back with a wobble (knobs in `ALIVE_CONFIG`; the file can also fill it with a shader gradient via `gradient: true`, unused here).
+- **Press "alive."** and `hero-gradient.js` spreads a flowing purple heat-map from the word across the WHOLE website (a fixed full-window WebGL canvas behind everything, nav included); press again and it recedes. While it is open the cursor stirs it. Ivory page when closed (no GPU use). Knobs: `GRADIENT_CONFIG` (`paleness`, `flowSpeed`, `warp`, `bands`, `spreadDuration`…). No WebGL: the press simply does nothing visible; reduced motion: instant, still.
+- **The character** beside "alive." is the logo mark (`<span class="vira-logo" data-mark-only>`): its eyes follow the cursor and it hops when you press "alive.".
 - Kept from the brand: ivory `#F7F3EF`, ink `#111`, Orchid `#AD86CF`, the logo, nav, wobbly buttons and ink cursor.
 
 ## Living ink flower

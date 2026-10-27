@@ -1,6 +1,5 @@
-/* Hero — "websites that feel alive."
-   A soft, slightly wonky serif headline (Fraunces: SOFT + WONK axes) on ivory; the purple heat-map background spreads out from "alive.";
-   a living ink flower grows on the right. Letters hop away from the cursor; the flower deforms where it is touched. */
+/* Hero — "websites that feel alive."  Centred, on ivory.
+   "alive." is a button: press it and the whole website floods with the purple heat-map gradient (hero-gradient.js); press again to let it recede. */
 @font-face {
   font-family: "Fraunces VF";
   src: url("fonts/fraunces-var.woff2") format("woff2");
@@ -8,15 +7,13 @@
   font-display: swap;
 }
 
-.hero { position: relative; background: var(--bg, #F7F3EF); }
+.hero { position: relative; }
 .hero-stage {
   position: relative; isolation: isolate; overflow: hidden; box-sizing: border-box;
   height: calc(100svh - var(--nav-h, 64px)); min-height: 600px;
-  display: grid; grid-template-rows: auto 1fr auto;
+  display: grid; grid-template-rows: auto 1fr auto; justify-items: center; text-align: center;
   padding: clamp(16px, 3vh, 32px) clamp(16px, 4vw, 44px) clamp(24px, 5vh, 56px);
 }
-.hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; z-index: -1; opacity: 0; transition: opacity 1s ease; }
-.hero.is-ready .hero-canvas { opacity: 1; }
 
 .hero-tagline {
   margin: 0; font: 400 0.78rem/1.55 "JetBrains Mono", ui-monospace, monospace;
@@ -25,31 +22,41 @@
 
 /* the headline */
 .hero-title {
-  align-self: center; margin: 0; max-width: 62vw;
+  --title-size: min(12.5vw, 15.5svh);
+  align-self: center; margin: 0;
   font-family: "Fraunces VF", "Fraunces", Georgia, serif; font-weight: 560;
   font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1;
-  font-size: min(9.6vw, 13.6svh); line-height: 0.94; letter-spacing: -0.035em; color: #111;
+  font-size: var(--title-size); line-height: 0.94; letter-spacing: -0.035em; color: #111;
 }
 .hero-title .line { display: block; white-space: nowrap; }
 .hero-title .ch { display: inline-block; will-change: transform; }
 .hero-title ::selection { background: #AD86CF; color: #111; }
 
-/* "alive." is the origin the background gradient spreads from (hero-gradient.js) */
-.hero-title .hl { position: relative; display: inline-block; }
+/* "alive." — a button on a flat, living Orchid shape (alive-blob.js) */
+.hl-wrap { position: relative; display: inline-block; }
+.hl {
+  position: relative; display: inline-block; margin: 0; padding: 0; border: 0; background: none;
+  font: inherit; letter-spacing: inherit; color: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.hl:focus-visible { outline: 2px dashed #111; outline-offset: 0.1em; border-radius: 0.3em; }
+.alive-blob { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: -1; }
+.alive-blob path { transition: fill .7s ease; }
 
-.hero-copy { display: grid; gap: clamp(16px, 2.8vh, 28px); width: min(30rem, 36vw); }
+/* the little character, perched beside "alive." (the existing logo mark; its eyes follow the cursor) */
+.hero-char { position: absolute; left: 100%; bottom: -0.06em; margin-left: 0.04em; font-size: calc(var(--title-size) * 0.3); line-height: 1; }
+.hero-char .vira-logo { font-size: inherit; cursor: default; }
+
+.hero-copy { display: grid; justify-items: center; gap: clamp(16px, 2.8vh, 28px); width: min(40rem, 100%); }
 .hero-lede {
   margin: 0; color: #1c1a19;
   font: 400 clamp(1rem, 1.3vw, 1.3rem)/1.5 "Fraunces VF", "Fraunces", Georgia, serif;
   font-variation-settings: "opsz" 18, "SOFT" 100, "WONK" 0;
 }
-.hero-buttons { display: flex; flex-wrap: wrap; align-items: center; gap: clamp(20px, 2.6vw, 36px); }
+.hero-buttons { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: clamp(20px, 2.6vw, 36px); }
 .hero-buttons .wobbly { font-size: 0.82rem; padding: 1.4em 2em; }
 
-/* phones and portrait tablets: stacked. The title sits above the copy and the flower floats in the free band above it */
 @media (max-width: 800px), (max-aspect-ratio: 11/10) {
   .hero-stage { min-height: 640px; }
-  .hero-title { align-self: end; max-width: none; font-size: min(17vw, 11svh); margin-bottom: clamp(18px, 3vh, 32px); }
-  .hero-copy { width: auto; max-width: 28rem; }
+  .hero-title { --title-size: min(17vw, 11.5svh); }
   .hero-buttons .wobbly { white-space: nowrap; }
 }

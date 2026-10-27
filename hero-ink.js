@@ -1,30 +1,19 @@
-// Hero: the living ink flower (canvas, behind) + a playful headline whose letters hop away from the cursor.
-import { createInkFlower } from './ink-flower/ink-flower.js';
+// Hero: a centred headline whose word "alive." is a button.
+//   • "alive." sits on a flat, living Orchid shape (alive-blob.js).
+//   • Press it and the purple heat-map gradient (hero-gradient.js) spreads from the word across the WHOLE website; press again and it recedes.
+//   • The little character beside it (the logo mark) watches the cursor and hops when you press.
+//   • Letters of the headline hop away from the cursor.
+import { createAliveBlob } from './alive-blob.js';
 import { createHeroGradient } from './hero-gradient.js';
 
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const hero = document.querySelector('.hero');
-const canvas = document.querySelector('.hero-canvas');
 const title = document.querySelector('.hero-title');
-if (hero && canvas) start();
+const hl = title?.querySelector('.hl');
+const character = document.querySelector('.hero-char .vira-logo');
+if (title) start();
 
 function start() {
-  // ── the flower: size and position per screen shape
-  const layoutFor = (w, h) => {
-    if (w / h > 1.1) return { mode: 'wide', scale: 0.35, centerX: 0.77, centerY: 0.52 };
-    // stacked layouts: size the flower from the free band above the headline so it never lands behind the type
-    return { mode: 'stacked', scale: (0.118 * h) / Math.min(w, h), centerX: 0.68, centerY: 0.23 };
-  };
-  let { mode, ...opts } = layoutFor(canvas.clientWidth || 1, canvas.clientHeight || 1);
-  const flower = createInkFlower(canvas, opts);
-  hero.classList.add('is-ready');
-  new ResizeObserver(() => {
-    const next = layoutFor(canvas.clientWidth, canvas.clientHeight);
-    if (next.mode !== mode || mode === 'stacked') { mode = next.mode; const { mode: _m, ...o } = next; flower.set(o); }
-  }).observe(canvas);
-
-  // ── the headline: split into letters (the h1 keeps its plain-text aria-label), each a little spring
-  if (!title) return;
+  // ── headline letters: split into spans (the h1 keeps a plain-text aria-label), each a little spring
   const letters = [];
   const walker = document.createTreeWalker(title, NodeFilter.SHOW_TEXT);
   const textNodes = [];
@@ -40,16 +29,24 @@ function start() {
     }
     textNode.replaceWith(frag);
   }
-  const hl = title.querySelector('.hl');
-  // the purple heat-map background spreads across the whole hero, starting from "alive."
-  const stage = canvas.parentElement;
-  createHeroGradient(stage, {
-    origin: () => {
-      if (!hl) return null;
-      const r = hl.getBoundingClientRect(), s = stage.getBoundingClientRect();
-      return { x: r.left - s.left + r.width / 2, y: r.top - s.top + r.height / 2 };
-    },
+
+  // ── the flat Orchid shape behind "alive."
+  const blob = hl ? createAliveBlob(hl, { gradient: false }) : null;
+
+  // ── the whole-page purple background, switched by pressing "alive."
+  const bg = createHeroGradient(document.body, {
+    fixed: true, fadeTop: 0,
+    origin: () => { if (!hl) return null; const r = hl.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; },
   });
+  hl?.addEventListener('click', () => {
+    const open = bg.toggle();
+    hl.setAttribute('aria-pressed', String(open));
+    document.documentElement.classList.toggle('is-purple', open);
+    blob?.set({ color: open ? '#F7F3EF' : '#AD86CF' });          // on the purple page the shape flips to ivory so "alive." stays crisp
+    blob?.ignite?.();
+    character?._vl?.hop();
+  });
+
   if (reduced) return;
 
   let pointer = null, raf = 0, last = 0;

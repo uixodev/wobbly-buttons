@@ -95,7 +95,8 @@ class ViraLogo {
     this.body.append(this.eyes);
     this.dot = el('path', { class: 'vira-dot' });
     this.svg.append(this.body, this.dot);
-    root.replaceChildren(this.svg, word);
+    this.markOnly = root.hasAttribute('data-mark-only');            // the character without its wordmark
+    root.replaceChildren(...(this.markOnly ? [this.svg] : [this.svg, word]));
     root.setAttribute('aria-label', text);
 
     root.addEventListener('pointerenter', () => { this.hover = true; this.kick(); });
@@ -161,6 +162,7 @@ class ViraLogo {
 
   // letter under the cursor hops up; its neighbours follow a little, like a soft wave
   lift(dt) {
+    if (this.markOnly) return 0;
     const wr = this.word.getBoundingClientRect(), p = this.pointer, t = performance.now() / 1000;
     const over = p && p.x > wr.left - 6 && p.x < wr.right + 6 && p.y > wr.top - wr.height * 0.4 && p.y < wr.bottom + wr.height * 0.4;
     let busy = 0;

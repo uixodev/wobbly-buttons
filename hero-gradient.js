@@ -1,9 +1,10 @@
 /*
  * HERO GRADIENT — a flowing purple "heat map" that spreads across the whole hero background.
  *
- * One full-hero WebGL canvas behind the type. A warped noise field is mapped through a purple palette (deep orchid → orchid →
+ * One full-size WebGL canvas behind the page (position: fixed when `fixed: true`, so it colours the WHOLE website). A warped noise field is mapped through a purple palette (deep orchid → orchid →
  * lilac → pale), with thin contour lines and fine flecks, drifting slowly like liquid.
- *   • On load it SPREADS outward from the word "alive." until the whole background is covered, then keeps flowing.
+ *   • It SPREADS outward from the word "alive." until the whole background is covered, then keeps flowing, and can spread
+ *     back in again. Use setOpen(true/false) or toggle(); set `spreadOnLoad: true` to open it automatically.
  *   • Moving the cursor stirs it: the field warps and ripples around the pointer and deepens to orchid where it passes.
  *   • Mostly pale, so the black headline, paragraph and buttons stay perfectly readable.
  * Falls back to the plain ivory page if WebGL is unavailable; with reduced motion it is a still, fully-spread frame.
@@ -18,7 +19,8 @@
 // ─────────────────────────────────────────────────────────────────────────────
 export const GRADIENT_CONFIG = {
   // — spreading —
-  spreadOnLoad: true,        // the gradient bleeds out from "alive." when the page loads
+  fixed: false,              // true = cover the whole browser window (whole website); false = cover just the element you pass
+  spreadOnLoad: false,       // true = the gradient bleeds out from "alive." when the page loads; false = wait for setOpen()/toggle()
   spreadDuration: 2.8,       // seconds for it to cover the whole hero
   spreadDelay: 0.25,         // seconds to wait before it starts
 
@@ -120,6 +122,8 @@ void main(){
   gl_FragColor = vec4(mix(u_ivory, col, a), 1.0);
 }`;
 
+const NOOP = { open: false, set() {}, setOpen() {}, toggle() {}, replay() {}, destroy() {} };
+
 export function createHeroGradient(stage, options = {}) {
   const cfg = { ...GRADIENT_CONFIG, ...options };
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -128,7 +132,7 @@ export function createHeroGradient(stage, options = {}) {
   canvas.className = 'hero-bg';
   canvas.setAttribute('aria-hidden', 'true');
   const gl = canvas.getContext('webgl', { antialias: false, alpha: false });
-  if (!gl) return { set() {}, replay() {}, destroy() {} };            // plain ivory page
+  if (!gl) return NOOP;                                                 // plain ivory page
 
   const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; };
   let prog;
@@ -137,7 +141,7 @@ export function createHeroGradient(stage, options = {}) {
     gl.attachShader(prog, sh(gl.VERTEX_SHADER, VERT)); gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FRAG));
     gl.linkProgram(prog);
     if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
-  } catch (e) { console.warn('hero gradient disabled:', e.message); return { set() {}, replay() {}, destroy() {} }; }
+  } catch (e) { console.warn('hero gradient disabled:', e.message); return NOOP; }
   gl.useProgram(prog);
   const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
@@ -145,36 +149,46 @@ export function createHeroGradient(stage, options = {}) {
   const U = {};
   for (const n of ['u_res', 'u_origin', 'u_mouse', 'u_time', 'u_reveal', 'u_energy', 'u_stirR', 'u_flow', 'u_warp', 'u_scale', 'u_pale', 'u_bands', 'u_speckle', 'u_fadeTop', 'u_pal[0]', 'u_ivory']) U[n] = gl.getUniformLocation(prog, n);
 
-  stage.prepend(canvas);
-  Object.assign(canvas.style, { position: 'absolute', inset: '0', width: '100%', height: '100%', zIndex: '-2', pointerEvents: 'none', display: 'block' });
+  // `fixed` = cover the whole browser window (the whole website). Otherwise cover just `stage`.
+  if (cfg.fixed) {
+    document.body.prepend(canvas);
+    Object.assign(canvas.style, { position: 'fixed', inset: '0', width: '100%', height: '100%', zIndex: '-1', pointerEvents: 'none', display: 'none' });
+  } else {
+    stage.prepend(canvas);
+    Object.assign(canvas.style, { position: 'absolute', inset: '0', width: '100%', height: '100%', zIndex: '-2', pointerEvents: 'none', display: 'none' });
+  }
 
   let W = 1, H = 1, k = 1;
   let mouse = { x: -9999, y: -9999 }, prev = null, energy = 0, energyTarget = 0;
-  let raf = 0, last = 0, time = 0, revealT = cfg.spreadOnLoad && !reduced ? -cfg.spreadDelay : cfg.spreadDuration, visible = true, running = true;
+  let raf = 0, last = 0, time = 0, visible = true, running = true;
+  let open = false, progress = 0, wait = 0;                              // progress 0 = ivory page, 1 = fully purple
+
+  // the canvas's top-left corner in viewport coordinates, so pointer / origin positions can be converted
+  const box = () => (cfg.fixed ? { left: 0, top: 0, width: innerWidth, height: innerHeight } : stage.getBoundingClientRect());
 
   function resize() {
-    const r = stage.getBoundingClientRect();
+    const r = box();
     W = Math.max(1, r.width); H = Math.max(1, r.height);
     k = clamp(cfg.renderScale, 0.3, 1) * Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = Math.round(W * k); canvas.height = Math.round(H * k);
     gl.viewport(0, 0, canvas.width, canvas.height);
-    draw();
+    if (progress > 0) draw();
   }
 
+  // where the spread starts, in canvas pixels (default: the middle)
   const originPx = () => {
-    if (typeof cfg.origin === 'function') { const o = cfg.origin(); if (o) return o; }
+    if (typeof cfg.origin === 'function') { const o = cfg.origin(); if (o) { const r = box(); return cfg.fixed ? { x: o.x - r.left, y: o.y - r.top } : o; } }
     return { x: W / 2, y: H / 2 };
   };
 
   function draw() {
     const o = originPx();
     const ease = (x) => 1 - Math.pow(1 - clamp(x, 0, 1), 3);
-    const reveal = ease(revealT / cfg.spreadDuration);
     gl.uniform2f(U.u_res, canvas.width, canvas.height);
     gl.uniform2f(U.u_origin, o.x * k, o.y * k);
     gl.uniform2f(U.u_mouse, mouse.x * k, mouse.y * k);
     gl.uniform1f(U.u_time, reduced ? 6.0 : time);
-    gl.uniform1f(U.u_reveal, reveal);
+    gl.uniform1f(U.u_reveal, ease(progress));
     gl.uniform1f(U.u_energy, energy * cfg.stir);
     gl.uniform1f(U.u_stirR, cfg.stirRadius);
     gl.uniform1f(U.u_flow, cfg.flowSpeed);
@@ -191,17 +205,25 @@ export function createHeroGradient(stage, options = {}) {
 
   function frame(now) {
     const dt = Math.min((now - last) / 1000, 1 / 30); last = now;
-    time += dt; revealT += dt;
+    time += dt;
+    // spread out / back in
+    if (wait > 0) wait -= dt;
+    else {
+      const step = cfg.spreadDuration > 0 && !reduced ? dt / cfg.spreadDuration : 1;
+      progress = clamp(progress + (open ? step : -step), 0, 1);
+    }
     energy += (energyTarget - energy) * (1 - Math.exp(-dt * (energyTarget > energy ? 7 : 1.3)));
     energyTarget *= Math.exp(-dt * 2.2);                                // stirring fades unless the pointer keeps moving
-    draw();
-    raf = running && visible && !reduced ? requestAnimationFrame(frame) : 0;
+    if (progress > 0) { canvas.style.display = 'block'; draw(); } else canvas.style.display = 'none';
+    // keep animating while it is open or still moving; sleep completely when it is closed (no GPU use)
+    const busy = open || progress > 0;
+    raf = running && visible && busy && !(reduced && progress === (open ? 1 : 0)) ? requestAnimationFrame(frame) : 0;
   }
   const wake = () => { if (!raf && running) { last = performance.now(); raf = requestAnimationFrame(frame); } };
 
   function onMove(e) {
-    if (e.pointerType === 'touch') return;
-    const r = stage.getBoundingClientRect();
+    if (e.pointerType === 'touch' || progress === 0) return;
+    const r = box();
     const x = e.clientX - r.left, y = e.clientY - r.top;
     const speed = prev ? Math.hypot(x - prev.x, y - prev.y) : 0;
     prev = { x, y }; mouse = { x, y };
@@ -210,22 +232,28 @@ export function createHeroGradient(stage, options = {}) {
   }
   const onLeave = () => { prev = null; mouse = { x: -9999, y: -9999 }; };
 
-  const ro = new ResizeObserver(resize); ro.observe(stage);
-  const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) wake(); }); io.observe(stage);
+  const ro = new ResizeObserver(resize); ro.observe(cfg.fixed ? document.documentElement : stage);
+  const io = cfg.fixed ? null : new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) wake(); });
+  io?.observe(stage);
   addEventListener('pointermove', onMove, { passive: true });
   document.documentElement.addEventListener('pointerleave', onLeave);
   resize();
-  last = performance.now();
-  wake();
 
-  return {
+  const api = {
     config: cfg,
-    set(next) { Object.assign(cfg, next); if (!raf) draw(); },
-    replay() { revealT = -cfg.spreadDelay; wake(); },                    // spread out from "alive." again
+    get open() { return open; },
+    set(next) { Object.assign(cfg, next); if (progress > 0) draw(); },
+    setOpen(v) {                                                        // true = spread across the page, false = spread back in
+      open = !!v; wait = 0; wake();
+    },
+    toggle() { api.setOpen(!open); return open; },
+    replay() { progress = 0; open = true; wait = cfg.spreadDelay; wake(); },
     destroy() {
-      running = false; cancelAnimationFrame(raf); ro.disconnect(); io.disconnect();
+      running = false; cancelAnimationFrame(raf); ro.disconnect(); io?.disconnect();
       removeEventListener('pointermove', onMove); document.documentElement.removeEventListener('pointerleave', onLeave);
       canvas.remove();
     },
   };
+  if (cfg.spreadOnLoad) { open = true; wait = cfg.spreadDelay; wake(); }
+  return api;
 }
