@@ -88,7 +88,7 @@ class ViraLogo {
     this.bodyPath = el('path', { fill: 'currentColor' });
     this.body.append(this.bodyPath);
     this.pts = [BODY, DOT].map((base) => ({ base, off: base.map(() => [0, 0]), vel: base.map(() => [0, 0]) }));
-    this.eyes = el('g', { fill: '#F7F3EF' });
+    this.eyes = el('g', { class: 'vira-eyes' });
     this.eyeL = el('ellipse', { cx: 86, cy: 80, rx: 9.5, ry: 12.5 });
     this.eyeR = el('ellipse', { cx: 114, cy: 80, rx: 9.5, ry: 12.5 });
     this.eyes.append(this.eyeL, this.eyeR);
