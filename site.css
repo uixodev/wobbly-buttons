@@ -369,7 +369,10 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .hero-cat .meow { font: 400 54px var(--hand); fill: var(--ink); opacity: 0; transform-box: fill-box; transform-origin: left bottom; }
 .hero-cat.said .meow { animation: cat-meow 1.5s ease both; }
 @keyframes cat-meow { 0% { opacity: 0; scale: .5; } 15%, 75% { opacity: 1; scale: 1; } 100% { opacity: 0; scale: 1; translate: 0 -14px; } }
-.hero-cat.said .a-tail { animation-duration: .5s; } .hero-cat.said .a-ear { animation: cat-ear-fast .6s 2; }
-@keyframes cat-ear-fast { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(-8deg); } }
+.hero-cat.said .a-tail { animation-duration: .5s; }
+.a-earl { transform-origin: 700px 232px; }
+.hero-cat.said .a-ear { animation: cat-ear-down-r 1.6s ease both; } .hero-cat.said .a-earl { animation: cat-ear-down-l 1.6s ease both; }
+@keyframes cat-ear-down-r { 0% { transform: rotate(0); } 14%, 78% { transform: rotate(13deg); } 100% { transform: rotate(0); } }
+@keyframes cat-ear-down-l { 0% { transform: rotate(0); } 14%, 78% { transform: rotate(-12deg); } 100% { transform: rotate(0); } }
 @media (max-width: 900px) { .hero-cat { width: 100%; margin-left: 0; } }
 @media (prefers-reduced-motion: reduce) { .hero-cat *, .hero-cat .look { animation: none !important; transition: none !important; } }
