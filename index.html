@@ -260,17 +260,20 @@
     </div>
 
     <div class="footer-dark">
+      <canvas class="dark-canvas" aria-hidden="true"></canvas>
       <svg class="wave" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true"><path d="M0 70 C140 20 260 20 400 56 C520 86 600 70 700 52 C820 30 930 18 1060 46 C1180 72 1290 56 1440 6 L1440 120 L0 120Z"/></svg>
       <div class="dark-inner wrap">
         <div class="note note-explore">
           <p class="hand">still<br />exploring<br />new ideas…</p>
           <svg class="scribble draw" viewBox="0 0 70 60" aria-hidden="true"><path pathLength="1" d="M6 6 C34 8 56 22 54 50 M54 50 L47 40 M54 50 L63 41"/></svg>
         </div>
-        <svg class="swirl swirl-left draw" viewBox="0 0 520 140" aria-hidden="true"><path pathLength="1" d="M0 96 C80 40 180 58 240 100 C268 120 296 124 300 98 C304 70 260 58 270 100 C282 150 380 120 520 28"/></svg>
+        <!-- the two swirls are the geometry for the plucked strings drawn on the canvas (hidden here) -->
+        <svg class="swirl swirl-left" data-rope viewBox="0 0 520 140" aria-hidden="true"><path d="M0 96 C80 40 180 58 240 100 C268 120 296 124 300 98 C304 70 260 58 270 100 C282 150 380 120 520 28"/></svg>
         <div class="dark-char" aria-hidden="true"><span class="vira-logo" data-mark-only></span></div>
-        <p class="mono dark-list">DESIGN<br />CODE<br />EXPERIMENT<br />REPEAT<br />—</p>
-        <svg class="swirl swirl-right draw" viewBox="0 0 560 150" aria-hidden="true"><path pathLength="1" d="M0 90 C90 60 220 60 330 84 C430 106 520 70 530 40 C540 6 480 4 470 34 C458 70 520 100 560 120"/></svg>
+        <p class="mono dark-list" aria-hidden="true"><span>DESIGN</span><span>CODE</span><span>EXPERIMENT</span><span>REPEAT</span><span>—</span></p>
+        <svg class="swirl swirl-right" data-rope viewBox="0 0 560 150" aria-hidden="true"><path d="M0 90 C90 60 220 60 330 84 C430 106 520 70 530 40 C540 6 480 4 470 34 C458 70 520 100 560 120"/></svg>
         <a href="#top" class="to-top"><span class="label">Back to top</span><i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 19 V5 M6 11 L12 5 L18 11"/></svg></i></a>
+        <p class="mono dark-hint" aria-hidden="true">↳ click &amp; drag anywhere here to doodle</p>
         <p class="legal label"><span>© 2024 Viraa. All rights reserved.</span><span>Made with <b aria-hidden="true">♡</b> in Bristol — for beautiful ideas.</span></p>
       </div>
     </div>
@@ -280,5 +283,6 @@
   <script type="module" src="vira-logo.js"></script>
   <script type="module" src="ink-cursor.js"></script>
   <script type="module" src="site.js"></script>
+  <script type="module" src="footer.js"></script>
 </body>
 </html>
