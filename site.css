@@ -624,5 +624,8 @@ html:not(.js) .ink-layer.drop, .project .blob.static .ink-layer.drop { display: 
 .logo-obj.drag { z-index: 12; }
 .logo-obj.logo-master { width: clamp(110px, 13vw, 170px); }
 .logo-obj.logo-bristol { width: clamp(80px, 9vw, 120px); }
-.proto-tag { position: absolute; left: 0; top: 0; z-index: 13; text-shadow: 0 0 6px var(--bg), 0 0 6px var(--bg); font-size: clamp(1.2rem, 1.6vw, 1.5rem); line-height: 1; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity .2s ease; }
+.proto-tag { position: absolute; left: 0; top: 0; z-index: 13; display: flex; align-items: flex-end; gap: 4px; font-size: clamp(1.5rem, 2vw, 1.9rem); line-height: 1; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity .2s ease; }
 .proto-tag.on { opacity: 1; }
+.proto-tag svg { display: none; width: 40px; height: 28px; fill: none; stroke: var(--ink); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; margin-bottom: 2px; }
+.proto-tag.flip { flex-direction: row-reverse; } .proto-tag.flip svg { transform: scaleX(-1); }
+.proto-tag span { text-shadow: 0 0 5px var(--bg), 0 0 5px var(--bg), 0 0 9px var(--bg); }

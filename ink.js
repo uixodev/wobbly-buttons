@@ -39,7 +39,7 @@ function init() {
   }
 
   const PROTO = new Set([3]);
-  const tag = document.createElement('span'); tag.className = 'proto-tag hand'; tag.textContent = 'prototype'; tag.setAttribute('aria-hidden', 'true'); stage.append(tag);
+  const tag = document.createElement('span'); tag.className = 'proto-tag hand'; tag.innerHTML = '<svg viewBox="0 0 44 30" aria-hidden="true"><path d="M40 24 C28 26 12 22 6 8 M6 8 L5 19 M6 8 L16 11"/></svg><span>prototype</span>'; tag.setAttribute('aria-hidden', 'true'); stage.append(tag);
   const visit = (k) => { window.open(URLS[k.i], '_blank', 'noopener'); k.vsc -= 3; };
 
   // ── drag ──
@@ -75,19 +75,19 @@ function init() {
   const G = 2100, REST = 0.42;
   const rad = (k) => Math.min(k.w, k.h) * 0.46;
   function step(k, dt) {
-    if (k.drag) { k.x += (k.tx - k.x) * Math.min(1, dt * 24); k.y += (k.ty - k.y) * Math.min(1, dt * 24); k.x = clamp(k.x, k.w / 2, W - k.w / 2); k.y = clamp(k.y, k.h / 2, H - k.h / 2); k.vx = k.vy = 0; k.rest = false; }
+    if (k.drag) { k.x += (k.tx - k.x) * Math.min(1, dt * 24); k.y += (k.ty - k.y) * Math.min(1, dt * 24); k.x = clamp(k.x, k.w / 2, W - k.w / 2); k.y = clamp(k.y, k.h / 2, H - k.h / 2 - (k.i === 3 ? 38 : 0)); k.vx = k.vy = 0; k.rest = false; }
     else if (!started) { /* waiting to fall */ }
     else {
       k.vy += G * dt;
       if (openLogo && win._rect && k !== openLogo) { const r = win._rect, g = 26, hw = k.w / 2, hh = k.h / 2;   // an open window is a solid block: logos slide off it
         if (k.x > r.x - g - hw && k.x < r.x + r.w + g + hw && k.y > r.y - g - hh && k.y < r.y + r.h + g + hh) { const dl = k.x - (r.x - g - hw), dr = r.x + r.w + g + hw - k.x; k.vx += (dl < dr ? -1 : 1) * 900 * dt; } }
       k.x += k.vx * dt; k.y += k.vy * dt;
-      const hw = k.w / 2, hh = k.h / 2, floor = H - hh - 6;
+      const hw = k.w / 2, hh = k.h / 2, floor = H - hh - 6 - (k.i === 3 ? 38 : 0);
       if (k.y > floor) { k.y = floor; if (k.vy > 160) { k.vrot += (Math.random() - 0.5) * k.vy * 0.04; k.vsc -= Math.min(k.vy, 1500) * 0.0035; } k.vy = k.vy > 160 ? -k.vy * REST : 0; k.vx *= Math.pow(0.05, dt); if (Math.abs(k.vx) < 6) k.vx = 0; }   // bounce, scuff and slide to a stop
       if (k.x < hw) { k.x = hw; k.vx = Math.abs(k.vx) * REST; } if (k.x > W - hw) { k.x = W - hw; k.vx = -Math.abs(k.vx) * REST; }
       if (k.y < hh) { k.y = hh; k.vy = Math.abs(k.vy) * REST; }
     }
-    const grounded = !k.drag && started && k.y >= H - k.h / 2 - 8;
+    const grounded = !k.drag && started && k.y >= H - k.h / 2 - 8 - (k.i === 3 ? 38 : 0);
     const target = grounded ? ([2, -3, 1, -2][k.i]) : clamp(k.vx * 0.012, -18, 18);          // upright when resting, leaning into the fall
     k.vrot += (46 * (target - k.rot) - 5 * k.vrot) * dt; k.rot += k.vrot * dt;
     k.vsc += (90 * ((k.drag ? 1.08 : 1) - k.sc) - 7 * k.vsc) * dt; k.sc += k.vsc * dt;
@@ -104,7 +104,7 @@ function init() {
   }
   function draw() {
     for (const k of logos) {
-      if (PROTO.has(k.i)) { tag.style.transform = `translate(${clamp(k.x - tag.offsetWidth / 2, 4, W - tag.offsetWidth - 4).toFixed(1)}px, ${Math.min(k.y + k.h / 2 + 10, H - tag.offsetHeight - 4).toFixed(1)}px) rotate(-3deg)`; tag.classList.toggle('on', cur.on === k.i && !openLogo); }
+      if (PROTO.has(k.i)) { const tw = tag.offsetWidth, th = tag.offsetHeight; tag.classList.remove('flip'); tag.style.transform = `translate(${clamp(k.x - tw / 2 + 14, 4, W - tw - 4).toFixed(1)}px, ${Math.min(k.y + k.el.offsetHeight * k.sc / 2 + 12, H - th - 2).toFixed(1)}px) rotate(-3deg)`; tag.classList.toggle('on', cur.on === k.i && !openLogo); }
       const bob = 0;
       k.el.style.transform = `translate(${(k.x - k.w / 2).toFixed(1)}px, ${(k.y - k.h / 2 + bob).toFixed(1)}px) rotate(${k.rot.toFixed(2)}deg) scale(${k.sc.toFixed(3)})`;
     }
@@ -190,10 +190,11 @@ function init() {
     const L = { l: k.x - k.w * 0.46, r: k.x + k.w * 0.46, t: k.y - k.h * 0.46, b: k.y + k.h * 0.46 };
     const others = logos.filter((o) => o !== k && !o.gone).map((o) => ({ l: o.x - o.w * 0.5, r: o.x + o.w * 0.5, t: o.y - o.h * 0.5, b: o.y + o.h * 0.5 }));
     const hint = stage.querySelector('.ink-hint'), sb = stage.getBoundingClientRect(), hb = hint ? hint.getBoundingClientRect() : null, HINT = hb ? { l: hb.left - sb.left - 8, r: hb.right - sb.left + 8, t: hb.top - sb.top - 8, b: hb.bottom - sb.top + 8 } : null;
+    const TAGR = PROTO.has(i) ? { l: k.x - 80, r: k.x + 120, t: k.y + k.h / 2 - 4, b: k.y + k.h / 2 + 44 } : null;
     const hit = (a, b) => a.l < b.r + g * 0.6 && a.r > b.l - g * 0.6 && a.t < b.b + g * 0.6 && a.b > b.t - g * 0.6;
     const cache = layoutCache[i];                                               // keep the previous arrangement while it is still valid (no flip-flopping between equal choices)
     if (cache) { const rs = cache.out.map((o) => ({ l: o.cx - o.w / 2, r: o.cx + o.w / 2, t: o.cy - o.h / 2, b: o.cy + o.h / 2 }));
-      const okc = rs.every((r, a) => r.l >= m - 1 && r.t >= m - 1 && r.r <= W - m + 1 && r.b <= H - m + 1 && !hit(r, L) && (cache.pass > 0 || !others.some((o) => hit(r, o))) && (cache.pass > 1 || !HINT || !hit(r, HINT)) && (cache.pass > 1 || rs.every((q, b) => b === a || !hit(r, q))));
+      const okc = rs.every((r, a) => r.l >= m - 1 && r.t >= m - 1 && r.r <= W - m + 1 && r.b <= H - m + 1 && !hit(r, L) && (cache.pass > 0 || !others.some((o) => hit(r, o))) && (cache.pass > 1 || !HINT || !hit(r, HINT)) && (!TAGR || !hit(r, TAGR)) && (cache.pass > 1 || rs.every((q, b) => b === a || !hit(r, q))));
       const near = rs.some((r) => Math.max(0, L.l - r.r, r.l - L.r) + Math.max(0, L.t - r.b, r.t - L.b) < 90);
       if (okc && near) return cache.out; }
     // pass 0: clear of both logos and of each other. pass 1: may cover the other logo. pass 2: may also overlap each other a little (never the logo itself)
@@ -212,7 +213,7 @@ function init() {
         for (const [x, y] of cands) {
           const r = { l: x, r: x + w, t: y, b: y + h };
           if (r.l < m || r.t < m || r.r > W - m || r.b > H - m) continue;
-          if (hit(r, L) || (pass < 2 && HINT && hit(r, HINT)) || (pass === 0 && others.some((o) => hit(r, o))) || (pass < 2 && placed.some((p) => hit(r, p.rect)))) continue;
+          if (hit(r, L) || (pass < 3 && TAGR && hit(r, TAGR)) || (pass < 2 && HINT && hit(r, HINT)) || (pass === 0 && others.some((o) => hit(r, o))) || (pass < 2 && placed.some((p) => hit(r, p.rect)))) continue;
           const sco = Math.hypot((r.l + r.r) / 2 - k.x, (r.t + r.b) / 2 - k.y); if (sco < bs) { bs = sco; best = r; }
         }
         if (!best) { ok = false; break; }
@@ -255,6 +256,7 @@ function init() {
   new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) wake(); }, { rootMargin: '120px' }).observe(stage);
   new IntersectionObserver(([e]) => { if (e.isIntersecting && !started) { started = true; wake(); } }, { threshold: 0.45 }).observe(stage);
   addEventListener('resize', () => { resize(); draw(); });
+  els.forEach((el) => { const im = el.querySelector('img'); if (im && !im.complete) im.addEventListener('load', () => { resize(); }); });
 
   document.documentElement.classList.add('ink-ready');
   resize(); place(); resize(); draw();
