@@ -164,7 +164,7 @@ function init() {
   const shotEls = SHOTS.map((list, i) => list.map((src, n) => { const a = document.createElement('a'); a.className = 'shot'; a.href = URLS[i]; a.target = '_blank'; a.rel = 'noopener'; a.tabIndex = -1; a.setAttribute('aria-label', `Visit ${projects[i].title} website`); a.style.backgroundImage = `url(${src})`; a.dataset.pinNopin = 'true'; const pre = new Image(); pre.src = src; (pre.decode ? pre.decode() : Promise.resolve()).catch(() => {}); stage.append(a); a.addEventListener('pointerenter', () => { holdShots(i); }); a.addEventListener('pointerleave', () => { releaseShots(i); }); return { el: a, n, x: 0, y: 0, s: 0, vs: 0, ready: false }; }));
   const cur = { x: 0, y: 0, on: -1 }; let shotsOn = false, shotTimer = 0;
   const holdShots = (i) => { clearTimeout(shotTimer); if (cur.on !== i && !openLogo) { cur.on = i; wake(); } };
-  const releaseShots = (i) => { clearTimeout(shotTimer); shotTimer = setTimeout(() => { if (cur.on === i) cur.on = -1; wake(); }, 130); };
+  const releaseShots = (i) => { clearTimeout(shotTimer); if (cur.on === i) cur.on = -1; wake(); };
   logos.forEach((k, i) => {
     k.el.addEventListener('pointerenter', (e) => { if (e.pointerType !== 'mouse' || openLogo || k.drag) return; clearTimeout(shotTimer); const b = stage.getBoundingClientRect(); cur.x = e.clientX - b.left; cur.y = e.clientY - b.top; cur.on = i; shotsOn = true; shotEls[i].forEach((s) => { s.x = cur.x; s.y = cur.y; s.ready = true; }); wake(); });
     k.el.addEventListener('pointerleave', () => releaseShots(i));
@@ -203,7 +203,7 @@ function init() {
         if (p > 0.001) {
           any = true;
           const x = k.x + (s.tx - k.x) * p, y = k.y + (s.ty - k.y) * p, scale = 0.35 + 0.65 * p;
-          s.el.style.cssText = `background-image:url(${SHOTS[i][n]});width:${w.toFixed(1)}px;height:${h.toFixed(1)}px;z-index:${LAYER[i][n]};opacity:${Math.min(1, p * 1.6).toFixed(2)};transform:translate3d(${(x - w / 2).toFixed(1)}px,${(y - h / 2).toFixed(1)}px,0) rotate(${(TILT[i][n] * p).toFixed(2)}deg) scale(${scale.toFixed(3)});pointer-events:${p > 0.85 && on ? 'auto' : 'none'}`;
+          s.el.style.cssText = `background-image:url(${SHOTS[i][n]});width:${w.toFixed(1)}px;height:${h.toFixed(1)}px;z-index:${LAYER[i][n]};opacity:${Math.min(1, p * 1.6).toFixed(2)};transform:translate3d(${(x - w / 2).toFixed(1)}px,${(y - h / 2).toFixed(1)}px,0) rotate(${(TILT[i][n] * p).toFixed(2)}deg) scale(${scale.toFixed(3)});pointer-events:none`;
         } else if (s.el.style.opacity !== '0') s.el.style.cssText = 'opacity:0;pointer-events:none';
       });
     });
