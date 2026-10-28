@@ -1,6 +1,6 @@
 // Ink-droplet cursor: a living blob that lags the pointer on a spring, stretches into a teardrop
 // along its velocity, grows over interactive things, squishes on press, and leaves a thin fading trail.
-// Drawn on one fixed canvas. It is dark ink by default and eases to cream over dark surfaces
+// Drawn on one fixed canvas. It is Orchid purple (set INK / CREAM below to change it)
 // (anything matching DARK_SURFACE, e.g. the logo), so it never disappears.
 
 const fine = matchMedia('(pointer: fine)').matches;
@@ -10,7 +10,7 @@ const R = 7;                 // resting droplet radius (px)
 const TRAIL_MS = 480;        // how long a trail point lives
 const POINTS = 16;           // outline points of the droplet
 const DARK_SURFACE = '.vira-logo, .wobbly[data-variant="solid"], .tile-jelly, .footer-dark, .menu';
-const INK = [17, 17, 17], CREAM = [247, 243, 239];
+const INK = [173, 134, 207], CREAM = [173, 134, 207];   // Orchid purple everywhere (on dark surfaces too)
 const INTERACTIVE = 'a, button, [role="button"], summary, label, input, select, textarea, .wobbly, .vira-logo';
 
 export function initInkCursor() {
