@@ -618,3 +618,7 @@ html:not(.js) .ink-layer.drop, .project .blob.static .ink-layer.drop { display: 
 
 /* panels are black / white; the doodles are the Orchid purple */
 .dd * { stroke: var(--accent); stroke-width: 3.2; }
+
+/* logos always sit above their screenshots, so a logo is never hidden under them */
+.logo-obj { z-index: 11; }
+.logo-obj.drag { z-index: 12; }

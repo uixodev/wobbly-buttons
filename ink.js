@@ -180,14 +180,15 @@ function init() {
     const k = logos[i], g = 12, m = 6, baseSc = Math.min(1, (W - 24) / 1120) * (W < 700 ? 0.72 : 1);
     const L = { l: k.x - k.w * 0.46, r: k.x + k.w * 0.46, t: k.y - k.h * 0.46, b: k.y + k.h * 0.46 };
     const others = logos.filter((o) => o !== k && !o.gone).map((o) => ({ l: o.x - o.w * 0.5, r: o.x + o.w * 0.5, t: o.y - o.h * 0.5, b: o.y + o.h * 0.5 }));
+    const hint = stage.querySelector('.ink-hint'), sb = stage.getBoundingClientRect(), hb = hint ? hint.getBoundingClientRect() : null, HINT = hb ? { l: hb.left - sb.left - 8, r: hb.right - sb.left + 8, t: hb.top - sb.top - 8, b: hb.bottom - sb.top + 8 } : null;
     const hit = (a, b) => a.l < b.r + g * 0.6 && a.r > b.l - g * 0.6 && a.t < b.b + g * 0.6 && a.b > b.t - g * 0.6;
     const cache = layoutCache[i];                                               // keep the previous arrangement while it is still valid (no flip-flopping between equal choices)
     if (cache) { const rs = cache.out.map((o) => ({ l: o.cx - o.w / 2, r: o.cx + o.w / 2, t: o.cy - o.h / 2, b: o.cy + o.h / 2 }));
-      const okc = rs.every((r, a) => r.l >= m - 1 && r.t >= m - 1 && r.r <= W - m + 1 && r.b <= H - m + 1 && !hit(r, L) && (cache.pass > 0 || !others.some((o) => hit(r, o))) && (cache.pass > 1 || rs.every((q, b) => b === a || !hit(r, q))));
+      const okc = rs.every((r, a) => r.l >= m - 1 && r.t >= m - 1 && r.r <= W - m + 1 && r.b <= H - m + 1 && !hit(r, L) && (cache.pass > 0 || !others.some((o) => hit(r, o))) && (cache.pass > 1 || !HINT || !hit(r, HINT)) && (cache.pass > 1 || rs.every((q, b) => b === a || !hit(r, q))));
       const near = rs.some((r) => Math.max(0, L.l - r.r, r.l - L.r) + Math.max(0, L.t - r.b, r.t - L.b) < 90);
       if (okc && near) return cache.out; }
     // pass 0: clear of both logos and of each other. pass 1: may cover the other logo. pass 2: may also overlap each other a little (never the logo itself)
-    for (let pass = 0; pass < 3; pass++) for (let f = 1; f >= 0.4; f -= 0.06) {
+    for (let pass = 0; pass < 3; pass++) for (let f = 1; f >= 0.3; f -= 0.05) {
       const sc = baseSc * f, placed = [], out = [];
       const size = (n) => { const w = (i === 0 && n === 3 ? 470 : 232) * sc; return [w, w * ASPECT(i, n)]; };
       let ok = true;
@@ -202,7 +203,7 @@ function init() {
         for (const [x, y] of cands) {
           const r = { l: x, r: x + w, t: y, b: y + h };
           if (r.l < m || r.t < m || r.r > W - m || r.b > H - m) continue;
-          if (hit(r, L) || (pass === 0 && others.some((o) => hit(r, o))) || (pass < 2 && placed.some((p) => hit(r, p.rect)))) continue;
+          if (hit(r, L) || (pass < 2 && HINT && hit(r, HINT)) || (pass === 0 && others.some((o) => hit(r, o))) || (pass < 2 && placed.some((p) => hit(r, p.rect)))) continue;
           const sco = Math.hypot((r.l + r.r) / 2 - k.x, (r.t + r.b) / 2 - k.y); if (sco < bs) { bs = sco; best = r; }
         }
         if (!best) { ok = false; break; }
