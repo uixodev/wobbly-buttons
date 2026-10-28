@@ -550,3 +550,8 @@ html:not(.js) .hs-say { opacity: 1; transform: none; }
 /* project covers sit on a Figma-style dot grid instead of a coloured backdrop */
 .project .blob { background: #FDFDFC radial-gradient(circle, rgba(17, 17, 17, .2) 1.3px, transparent 1.7px) 0 0 / 26px 26px; }
 .scene-tablet, .scene-pink { background: #FDFDFC radial-gradient(circle, rgba(17, 17, 17, .2) 1.3px, transparent 1.7px) 0 0 / 26px 26px; }
+/* project hover cursor: a bigger black ink ball with a cream arrow */
+.proj-cur { width: 92px; height: 88px; margin: -44px 0 0 -46px; background: #111; border-radius: 52% 48% 55% 45% / 48% 54% 46% 52%; animation: ink-wobble 3s ease-in-out infinite alternate; }
+.proj-cur svg { width: 40px; height: 40px; fill: none; stroke: #F7F3EF; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+@keyframes ink-wobble { to { border-radius: 46% 54% 48% 52% / 54% 46% 56% 44%; } }
+@media (prefers-reduced-motion: reduce) { .proj-cur { animation: none; } }
