@@ -629,3 +629,4 @@ html:not(.js) .ink-layer.drop, .project .blob.static .ink-layer.drop { display: 
 .proto-tag svg { display: none; width: 40px; height: 28px; fill: none; stroke: var(--ink); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; margin-bottom: 2px; }
 .proto-tag.flip { flex-direction: row-reverse; } .proto-tag.flip svg { transform: scaleX(-1); }
 .proto-tag span { text-shadow: 0 0 5px var(--bg), 0 0 5px var(--bg), 0 0 9px var(--bg); }
+.logo-obj.logo-jakub { width: clamp(100px, 11vw, 150px); }
