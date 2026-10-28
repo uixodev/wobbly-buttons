@@ -630,3 +630,12 @@ html:not(.js) .ink-layer.drop, .project .blob.static .ink-layer.drop { display: 
 /* every project logo sits on a white ball */
 .logo-obj { width: clamp(118px, 13vw, 168px); aspect-ratio: 1; border-radius: 50%; background: #fff; display: grid; place-items: center; box-shadow: 0 14px 22px -12px rgba(17, 17, 17, .28), inset 0 0 0 1.5px rgba(17, 17, 17, .08); }
 .logo-obj img { width: 62%; height: 62%; object-fit: contain; }
+
+/* black, hand-drawn (never perfectly round) balls */
+.logo-obj { background: #111; box-shadow: 0 14px 22px -12px rgba(17, 17, 17, .5); }
+.logo-obj[data-i="0"] { border-radius: 56% 44% 52% 48% / 47% 55% 45% 53%; }
+.logo-obj[data-i="1"] { border-radius: 47% 53% 44% 56% / 54% 46% 55% 45%; }
+.logo-obj[data-i="2"] { border-radius: 52% 48% 57% 43% / 45% 57% 43% 55%; }
+.logo-obj[data-i="3"] { border-radius: 45% 55% 49% 51% / 56% 44% 56% 44%; }
+.logo-obj[data-i="4"] { border-radius: 54% 46% 43% 57% / 50% 52% 48% 50%; }
+.logo-obj.logo-oksana img, .logo-obj.logo-master img { filter: brightness(0) invert(1); }
