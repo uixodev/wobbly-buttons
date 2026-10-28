@@ -2,7 +2,7 @@
 :root {
   --bg: #F7F3EF;      /* page cream */
   --ink: #111;
-  --accent: #B58B66;  /* warm beige-brown */
+  --accent: #AD86CF;  /* Orchid */
 }
 
 .wobbly {
@@ -46,6 +46,12 @@
 .wobbly .wb-press   { transform: scale(.7); transform-box: fill-box; transform-origin: center; }
 .wobbly[data-state="release"] .wb-release { opacity: 1; transform: scale(1.12); }
 .wobbly .wb-release { transform: scale(.8); transform-box: fill-box; transform-origin: center; }
+
+/* solid buttons turn Orchid on hover (the label flips to ink so it stays readable) */
+.wobbly[data-variant="solid"]:not(.burger) .wb-shape { transition: fill .3s ease, stroke .3s ease; }
+.wobbly[data-variant="solid"]:not(.burger) { transition: color .3s ease; }
+.wobbly[data-variant="solid"]:not(.burger)[data-state="hover"] { color: #111; }
+.wobbly[data-variant="solid"]:not(.burger)[data-state="hover"] .wb-shape { fill: var(--accent); stroke: var(--accent); }
 
 @media (prefers-reduced-motion: reduce) {
   .wobbly .wb-spark { transition: none; }

@@ -1,5 +1,5 @@
 /* ─────────────────────────────────────────────────────────────────────────────
-   Viraa — site styles. Warm ivory page, near-black ink, beige-brown accent.
+   Viraa — site styles. Warm ivory page, near-black ink, Orchid accent.
    Type: Instrument Serif (display), Newsreader (body), JetBrains Mono (labels), Reenie Beanie (handwritten notes)
    ───────────────────────────────────────────────────────────────────────────── */
 @font-face { font-family: "Instrument Serif"; src: url("fonts/instrument-serif.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
@@ -11,7 +11,7 @@
 :root {
   --bg: #F7F3EF;
   --ink: #111;
-  --accent: #B58B66;              /* warm beige-brown */
+  --accent: #AD86CF;              /* Orchid */
   --muted: #6d6660;
   --hair: rgba(17, 17, 17, .13);
   --sand: #EBE2D8;
@@ -487,3 +487,15 @@ html:not(.js) .hero-story .lede .w { opacity: 1; transform: none; }
 .hero-story.s3 .hs-p, .hero-story.s4 .hs-p { opacity: 1; }
 .hero-story { height: 440svh; }
 @media (max-width: 900px) { .hero-story { height: 400svh; } }
+
+/* ═════════ ORCHID: purple panels (02, 04) and the contact band ═════════ */
+.panel.pn2, .panel.pn4 { --bgp: var(--accent); }
+.panel.pn2 .p-art, .panel.pn4 .p-art { --edge: rgba(17, 17, 17, .5); }
+#contact { position: relative; isolation: isolate; border-top: 0; --muted: rgba(17, 17, 17, .82); --hair: rgba(17, 17, 17, .22); padding-bottom: calc(clamp(60px, 8vw, 120px) + clamp(64px, 8vw, 118px)); }
+#contact::before { content: ""; position: absolute; z-index: -1; left: calc(50% - 50vw); right: calc(50% - 50vw); top: -34px; bottom: -4px; background: var(--accent); clip-path: url(#band-b); pointer-events: none; }
+main { overflow-x: clip; }
+.footer, .footer-dark { margin-top: 0; }
+#contact .wobbly[data-variant="solid"][data-state="hover"] .wb-shape { fill: #fff; stroke: #fff; }
+#contact .scribble-contact { color: #111; }
+.contact-art { }
+#contact .mono-lede, #contact .label { color: #111; }
