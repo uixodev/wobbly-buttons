@@ -23,7 +23,7 @@ function init() {
     title: a.querySelector('h3').textContent.trim(), kind: a.querySelector('.label').textContent.trim(),
     img: a.querySelector('img').getAttribute('src'), alt: a.querySelector('img').getAttribute('alt'), href: URLS[idx],
   }));
-  const logos = els.map((el, i) => ({ el, i, x: 0, y: 0, vx: 0, vy: 0, rot: 0, vrot: 0, sc: 1, vsc: 0, w: 0, h: 0, drag: false, gone: false, phase: i * 2.3, seed: Math.random() * 100 }));
+  const logos = els.map((el, i) => ({ el, i, x: 0, y: 0, vx: 0, vy: 0, rot: 0, vrot: 0, sc: 1, vsc: 0, w: 0, h: 0, drag: false, gone: false, phase: i * 2.3, seed: Math.random() * 100, shk: 0, shkT: 2 + Math.random() * 3, sy: 0, vsy: 0, syT: 3 + Math.random() * 3 }));
 
   function resize() {
     const b = stage.getBoundingClientRect(); W = b.width; H = b.height;
@@ -88,9 +88,39 @@ function init() {
       if (k.y < hh) { k.y = hh; k.vy = Math.abs(k.vy) * REST; }
     }
     const grounded = !k.drag && started && k.y >= H - k.h / 2 - 8 - (k.i === 3 ? 38 : 0);
-    const target = grounded ? ([2, -3, 1, -2][k.i]) : clamp(k.vx * 0.012, -18, 18);          // upright when resting, leaning into the fall
+    if (grounded && !k.drag) {
+      if (k.i === 0) { k.shkT -= dt; if (k.shkT <= 0) { k.shk = 1; k.shkT = 4 + Math.random() * 4; } }               // the geometric M gives a little shake now and then
+      if (k.i === 3) { k.syT -= dt; if (k.syT <= 0) { k.vsy += 9; k.syT = 4 + Math.random() * 4; } }                // the gradient symbol stretches up
+    }
+    k.shk = Math.max(0, k.shk - dt * 1.7); k.vsy += (-70 * k.sy - 6.5 * k.vsy) * dt; k.sy += k.vsy * dt;           // ...and springs back
+    const tilt = k.i === 1 ? Math.sin(time * 0.75 + k.phase) * 5 : 0;                                              // the handwritten O tilts gently
+    const target = grounded ? ([2, -3, 1, -2][k.i] + tilt) : clamp(k.vx * 0.012, -18, 18);          // upright when resting, leaning into the fall
     k.vrot += (46 * (target - k.rot) - 5 * k.vrot) * dt; k.rot += k.vrot * dt;
     k.vsc += (90 * ((k.drag ? 1.08 : 1) - k.sc) - 7 * k.vsc) * dt; k.sc += k.vsc * dt;
+  }
+  // ── the Vira ink character: now and then it wanders along the floor of the playground and nudges whatever is in its way ──
+  const walker = document.createElement('div'); walker.className = 'vira-walker'; walker.setAttribute('aria-hidden', 'true');
+  walker.innerHTML = '<svg viewBox="0 0 100 112"><path d="M12 100 C14 62 26 10 50 10 C74 10 86 62 88 100 C80 104 72 96 68 82 C60 76 40 76 32 82 C28 96 20 104 12 100Z"/><circle cx="86" cy="12" r="6.5"/><g class="we"><ellipse cx="41" cy="44" rx="5.5" ry="8"/><ellipse cx="59" cy="44" rx="5.5" ry="8"/></g></svg>';
+  stage.append(walker);
+  const wk = { on: false, x: 0, dir: 1, t: 8 + Math.random() * 5, ph: 0, turns: 0, bump: 0 };
+  function stepWalker(dt) {
+    if (reduced) return;
+    if (!wk.on) {
+      wk.t -= dt;
+      if (wk.t <= 0 && started && !openLogo && visible) { wk.on = true; wk.dir = Math.random() < 0.5 ? 1 : -1; wk.x = wk.dir > 0 ? -50 : W + 50; wk.turns = Math.random() < 0.4 ? 1 : 0; wk.turnAt = W * (0.3 + Math.random() * 0.4); walker.style.display = 'block'; }
+      return;
+    }
+    const sp = 80; wk.x += wk.dir * sp * dt; wk.ph += dt * 9; wk.bump = Math.max(0, wk.bump - dt * 2);
+    if (wk.turns && ((wk.dir > 0 && wk.x > wk.turnAt) || (wk.dir < 0 && wk.x < wk.turnAt))) { wk.dir *= -1; wk.turns = 0; }      // sometimes it changes its mind and heads back
+    const ww = 46, wh = 52;
+    for (const k of logos) {                                                                                                       // a nudge when it bumps into something
+      if (k.drag || k.gone) continue; const reach = k.w / 2 + ww / 2 - 6;
+      if (Math.abs(k.x - wk.x) < reach && k.y + k.h / 2 > H - wh - 30 && Math.sign(k.x - wk.x || 1) === wk.dir && wk.bump < 0.3) {
+        k.vx += wk.dir * 260; k.vy -= 330; k.vrot += wk.dir * 60; k.vsc -= 2.2; wk.bump = 1; }
+    }
+    if (wk.x < -70 || wk.x > W + 70) { wk.on = false; walker.style.display = 'none'; wk.t = 12 + Math.random() * 10; }
+    walker.style.transform = `translate3d(${(wk.x - ww / 2).toFixed(1)}px, ${(H - wh - 4 - Math.abs(Math.sin(wk.ph)) * 6).toFixed(1)}px, 0) rotate(${(Math.sin(wk.ph) * 7).toFixed(1)}deg) scaleX(${wk.dir})`;
+    walker.classList.toggle('oof', wk.bump > 0.4);
   }
   function collide() {
     for (let p = 0; p < logos.length; p++) for (let q = p + 1; q < logos.length; q++) pair(logos[p], logos[q]);
@@ -106,7 +136,7 @@ function init() {
     for (const k of logos) {
       if (PROTO.has(k.i)) { const tw = tag.offsetWidth, th = tag.offsetHeight; tag.classList.remove('flip'); tag.style.transform = `translate(${clamp(k.x - tw / 2 + 14, 4, W - tw - 4).toFixed(1)}px, ${Math.min(k.y + k.el.offsetHeight * k.sc / 2 + 12, H - th - 2).toFixed(1)}px) rotate(-3deg)`; tag.classList.toggle('on', cur.on === k.i && !openLogo); }
       const bob = 0;
-      k.el.style.transform = `translate(${(k.x - k.w / 2).toFixed(1)}px, ${(k.y - k.h / 2 + bob).toFixed(1)}px) rotate(${k.rot.toFixed(2)}deg) scale(${k.sc.toFixed(3)})`;
+      k.el.style.transform = `translate(${(k.x - k.w / 2).toFixed(1)}px, ${(k.y - k.h / 2 + bob).toFixed(1)}px) rotate(${(k.rot + Math.sin(time * 55) * 7 * k.shk * k.shk).toFixed(2)}deg) scale(${(k.sc * (1 - 0.3 * k.sy)).toFixed(3)}, ${(k.sc * (1 + k.sy)).toFixed(3)})`;
     }
   }
 
@@ -248,7 +278,7 @@ function init() {
   function frame(now) {
     const dt = Math.min((now - last) / 1000, 1 / 30); last = now; time += dt;
     if (!reduced) { for (const k of logos) step(k, dt); collide(); }
-    stepShots(dt);
+    stepWalker(dt); stepShots(dt);
     stepWindow(dt); draw();
     raf = visible && (!reduced || shotsOn) ? requestAnimationFrame(frame) : 0;
   }
