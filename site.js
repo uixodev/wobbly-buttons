@@ -31,3 +31,9 @@ if (form) {
 
 // ── the playground tiles ──
 initPlayground({ reduced });
+
+// ── touch screens: black-and-white covers / tiles turn to colour while they are in the middle band of the screen ──
+if (matchMedia('(hover: none)').matches && 'IntersectionObserver' in window) {
+  const io2 = new IntersectionObserver((entries) => entries.forEach((e) => e.target.classList.toggle('in-focus', e.isIntersecting)), { rootMargin: '-38% 0px -38% 0px' });
+  document.querySelectorAll('.project .blob, .tile-stage').forEach((el) => io2.observe(el));
+}

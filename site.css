@@ -544,3 +544,5 @@ html:not(.js) .hs-say { opacity: 1; transform: none; }
 .project-link:hover .blob, .project-link:focus-visible .blob, .project-link:active .blob,
 .tile:hover .tile-stage, .tile:focus-within .tile-stage, .tile:active .tile-stage { filter: grayscale(0) contrast(1); }
 @media (prefers-reduced-motion: reduce) { .project .blob, .tile-stage { transition: none; } }
+/* touch screens have no hover: a cover or tile gets its colour while it sits in the middle of the screen (site.js sets .in-focus) */
+.project .blob.in-focus, .tile-stage.in-focus { filter: grayscale(0) contrast(1); }
