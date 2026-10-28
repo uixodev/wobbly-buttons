@@ -629,10 +629,3 @@ html:not(.js) .ink-layer.drop, .project .blob.static .ink-layer.drop { display: 
 .proto-tag svg { display: none; width: 40px; height: 28px; fill: none; stroke: var(--ink); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; margin-bottom: 2px; }
 .proto-tag.flip { flex-direction: row-reverse; } .proto-tag.flip svg { transform: scaleX(-1); }
 .proto-tag span { text-shadow: 0 0 5px var(--bg), 0 0 5px var(--bg), 0 0 9px var(--bg); }
-
-/* the Vira ink character that wanders through the playground */
-.vira-walker { display: none; position: absolute; left: 0; top: 0; width: 46px; height: 52px; z-index: 12; pointer-events: none; will-change: transform; transform-origin: 50% 100%; }
-.vira-walker svg { display: block; width: 100%; height: 100%; overflow: visible; fill: var(--ink); }
-.vira-walker .we ellipse { fill: var(--bg); transform-box: fill-box; transform-origin: center; animation: walker-blink 4s infinite; }
-.vira-walker.oof .we ellipse { transform: scale(1.35); animation: none; }
-@keyframes walker-blink { 0%, 94%, 100% { transform: scaleY(1); } 97% { transform: scaleY(.1); } }
