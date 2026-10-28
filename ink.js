@@ -158,8 +158,13 @@ function init() {
 
   // ── hovering a logo: its screenshots pop up around the cursor ──
   const SHOTS = [['assets/shot-mariia-1.webp', 'assets/shot-mariia-2.webp', 'assets/shot-mariia-3.webp', 'assets/shot-mariia-4.webp'], ['assets/shot-oksana-1.webp', 'assets/shot-oksana-2.webp', 'assets/shot-oksana-3.webp']];
-  const OFFS = [[-285, -70, -8, 1], [270, -120, 7, 1.05], [-190, 175, 5, .95], [225, 165, -6, 1.25]];     // dx, dy, rotation, size factor (the desktop shot is wider)
-  const shotEls = SHOTS.map((list, i) => list.map((src, n) => { const a = document.createElement('a'); a.className = 'shot'; a.href = URLS[i]; a.target = '_blank'; a.rel = 'noopener'; a.tabIndex = -1; a.setAttribute('aria-label', `Visit ${projects[i].title} website`); a.style.backgroundImage = `url(${src})`; a.style.aspectRatio = n === 3 ? '560 / 368' : '320 / 600'; a.dataset.pinNopin = 'true'; const pre = new Image(); pre.src = src; (pre.decode ? pre.decode() : Promise.resolve()).catch(() => {}); stage.append(a); a.addEventListener('pointerenter', () => { holdShots(i); }); a.addEventListener('pointerleave', () => { releaseShots(i); }); return { el: a, n, x: 0, y: 0, s: 0, vs: 0, ready: false }; }));
+  // Each logo has a fixed composition: slot = [x, y, rotation, width, z] relative to the cluster centre (the cluster is centred over the logo)
+  const SLOTS = [
+    [[-300, -26, -7, 190, 6], [-176, 12, -3, 190, 8], [302, -22, 6, 190, 7], [66, 34, 2, 400, 9]],        // Mariia: three phones and the desktop, desktop in front
+    [[-215, 6, -5, 200, 6], [215, 6, 5, 200, 7], [0, -14, 0, 200, 8]],                                      // Oksana: three phones, middle one in front
+  ];
+  const ASPECT = (i, n) => (i === 0 && n === 3 ? 368 / 560 : 600 / 320);               // height / width of each screenshot
+  const shotEls = SHOTS.map((list, i) => list.map((src, n) => { const a = document.createElement('a'); a.className = 'shot'; a.href = URLS[i]; a.target = '_blank'; a.rel = 'noopener'; a.tabIndex = -1; a.setAttribute('aria-label', `Visit ${projects[i].title} website`); a.style.backgroundImage = `url(${src})`; a.dataset.pinNopin = 'true'; const pre = new Image(); pre.src = src; (pre.decode ? pre.decode() : Promise.resolve()).catch(() => {}); stage.append(a); a.addEventListener('pointerenter', () => { holdShots(i); }); a.addEventListener('pointerleave', () => { releaseShots(i); }); return { el: a, n, x: 0, y: 0, s: 0, vs: 0, ready: false }; }));
   const cur = { x: 0, y: 0, on: -1 }; let shotsOn = false, shotTimer = 0;
   const holdShots = (i) => { clearTimeout(shotTimer); if (cur.on !== i && !openLogo) { cur.on = i; wake(); } };
   const releaseShots = (i) => { clearTimeout(shotTimer); shotTimer = setTimeout(() => { if (cur.on === i) cur.on = -1; wake(); }, 380); };
@@ -170,16 +175,31 @@ function init() {
   });
   function stepShots(dt) {
     let any = false;
-    shotEls.forEach((list, i) => list.forEach((s, n) => {
-      const on = cur.on === i && !openLogo && !logos[i].drag, o = OFFS[n] || OFFS[0];
-      const w = (n === 3 ? 400 : 190) * (W < 700 ? 0.6 : 1) * (n < 3 && SHOTS[i].length === 3 ? 1 : 1);
-      const tx = clamp(cur.x + o[0] * (W < 700 ? 0.55 : 1), w / 2 + 4, W - w / 2 - 4); const hh = n === 3 ? w * 0.66 : w * 1.86; const ty = clamp(cur.y + o[1], hh / 2 + 6, Math.max(hh / 2 + 6, H - hh / 2 - 6));
-      const lag = 7 - n * 1.1;                                                         // each screenshot trails the cursor a little differently
-      s.x += (tx - s.x) * Math.min(1, dt * lag); s.y += (ty - s.y) * Math.min(1, dt * lag);
-      s.vs += (120 * ((on ? 1 : 0) - s.s) - 12 * s.vs) * dt; s.s = Math.max(0, s.s + s.vs * dt);
-      if (s.s > 0.002 || on) { any = true; s.el.style.cssText = `background-image:url(${SHOTS[i][n]});aspect-ratio:${n === 3 ? '560 / 368' : '320 / 600'};width:${w}px;transform:translate3d(${(s.x - w / 2).toFixed(1)}px,${(s.y - hh / 2).toFixed(1)}px,0) rotate(${(o[2] + Math.sin(time * 1.2 + n * 2) * 2).toFixed(1)}deg) scale(${s.s.toFixed(3)});opacity:${Math.min(1, s.s * 1.4).toFixed(2)}`; } else if (s.el.style.opacity !== '0') s.el.style.cssText = 'opacity:0';
-      s.el.style.pointerEvents = s.s > 0.7 && cur.on === i ? 'auto' : 'none';
-    }));
+    shotEls.forEach((list, i) => {
+      const k = logos[i], on = cur.on === i && !openLogo && !k.drag, slots = SLOTS[i];
+      const sc = Math.min(1, (W - 24) / 840) * (W < 700 ? 0.9 : 1);                      // one scale for the whole cluster keeps every proportion
+      let top = 1e9, bot = -1e9;
+      slots.forEach((s, n) => { const h = s[3] * ASPECT(i, n) * sc; top = Math.min(top, s[1] * sc - h / 2); bot = Math.max(bot, s[1] * sc + h / 2); });
+      const halfW = 400 * sc, tcx = clamp(k.x, halfW + 6, Math.max(halfW + 6, W - halfW - 6)), tcy = clamp(k.y - 20, 6 - top, Math.max(6 - top, H - 6 - bot));
+      if (!list.cluster) list.cluster = { x: tcx, y: tcy, px: 0, py: 0 };
+      const C = list.cluster, e = 1 - Math.exp(-dt * 10);
+      if (on || list.some((s) => s.s > 0.01)) { C.x += (tcx - C.x) * e; C.y += (tcy - C.y) * e; }
+      else { C.x = tcx; C.y = tcy; }
+      const wantPx = on ? clamp((cur.x - C.x) * 0.03, -12, 12) : 0, wantPy = on ? clamp((cur.y - C.y) * 0.03, -8, 8) : 0;        // one shared, gentle parallax for the whole group
+      C.px += (wantPx - C.px) * (1 - Math.exp(-dt * 5)); C.py += (wantPy - C.py) * (1 - Math.exp(-dt * 5));
+      list.forEach((s, n) => {
+        const sl = slots[n], w = sl[3] * sc, h = w * ASPECT(i, n);
+        s.hold = (s.hold || 0) + (on ? dt : -dt); s.hold = clamp(s.hold, 0, 1);
+        const t = clamp((s.hold - n * 0.06) / 0.45, 0, 1), p = 1 - Math.pow(1 - t, 3), sm = s.sp === undefined ? 0 : s.sp;     // eased, no overshoot
+        s.sp = p;
+        if (p > 0.001) {
+          any = true;
+          const x = k.x + (C.x + sl[0] * sc + C.px - k.x) * p, y = k.y + (C.y + sl[1] * sc + C.py - k.y) * p, scale = 0.35 + 0.65 * p;
+          s.el.style.cssText = `background-image:url(${SHOTS[i][n]});width:${w.toFixed(1)}px;height:${h.toFixed(1)}px;z-index:${sl[4]};opacity:${Math.min(1, p * 1.6).toFixed(2)};transform:translate3d(${(x - w / 2).toFixed(1)}px,${(y - h / 2).toFixed(1)}px,0) rotate(${(sl[2] * p).toFixed(2)}deg) scale(${scale.toFixed(3)});pointer-events:${p > 0.85 && on ? 'auto' : 'none'}`;
+        } else if (s.el.style.opacity !== '0') s.el.style.cssText = 'opacity:0;pointer-events:none';
+        s.s = p;
+      });
+    });
     shotsOn = any;
   }
 
