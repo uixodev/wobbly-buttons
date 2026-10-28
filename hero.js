@@ -76,3 +76,15 @@ if (story && story.classList.contains('hero-story')) {
     update();
   }
 }
+
+// Pronunciation: a small speaker button reads "Veera" aloud with the browser's own voice (hidden where speech isn't supported).
+(() => {
+  const btn = document.getElementById('say-btn');
+  if (!btn || !('speechSynthesis' in window)) return;
+  btn.hidden = false;
+  btn.addEventListener('click', () => {
+    const u = new SpeechSynthesisUtterance('Veera'); u.rate = 0.8; u.lang = 'en-GB';
+    btn.classList.add('on'); u.onend = u.onerror = () => btn.classList.remove('on');
+    speechSynthesis.cancel(); speechSynthesis.speak(u);
+  });
+})();

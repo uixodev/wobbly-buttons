@@ -499,3 +499,16 @@ main { overflow-x: clip; }
 #contact .scribble-contact { color: #111; }
 .contact-art { }
 #contact .mono-lede, #contact .label { color: #111; }
+
+/* pronunciation hint under the headline: appears with "I'm Vira." */
+.hero-story .hs-say { margin: 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 14px; font: 400 clamp(.7rem, .9vw, .8rem)/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; }
+.hero-story .hs-say .say-ipa { opacity: .6; letter-spacing: .06em; text-transform: none; }
+.hero-story .hs-say .say-hand { font: 400 clamp(1.4rem, 2vw, 1.8rem)/1 var(--hand); letter-spacing: .02em; text-transform: none; transform: rotate(-3deg); }
+.hero-story.s2 .hs-say, .hero-story.s3 .hs-say, .hero-story.s4 .hs-say { opacity: 1; transform: none; }
+.say-btn { width: 34px; height: 34px; padding: 0; display: inline-grid; place-items: center; border: 1.5px solid var(--ink); border-radius: 50% 46% 52% 48% / 48% 52% 46% 50%; background: transparent; color: var(--ink); cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background .25s ease, transform .4s cubic-bezier(.3, 1.6, .5, 1); }
+.say-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.say-btn:hover, .say-btn:focus-visible { background: var(--accent); transform: rotate(-6deg) scale(1.1); outline: none; }
+.say-btn.on { background: var(--accent); }
+.hero-story .hero-pin { gap: clamp(6px, 1.6vh, 18px); }
+.hero-story.static .hs-say { opacity: 1; transform: none; }
+html:not(.js) .hs-say { opacity: 1; transform: none; }
