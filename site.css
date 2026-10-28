@@ -676,3 +676,5 @@ html:not(.js) .ink-layer.drop, .project .blob.static .ink-layer.drop { display: 
 .logo-obj.expanded .sheet { opacity: 0; bottom: 40%; transition: opacity .3s ease, bottom .4s ease; }   /* the pages leave the folder when they expand, so nothing is shown twice */
 .ink-stage { height: clamp(640px, 92vh, 900px); }
 @media (max-width: 900px) { .ink-stage { height: clamp(620px, 90svh, 820px); } }
+.proj-cur.proj-white { background: #fff; box-shadow: 0 6px 14px -6px rgba(17, 17, 17, .35), inset 0 0 0 1.5px rgba(17, 17, 17, .12); }
+.proj-cur.proj-white svg { stroke: #111; }

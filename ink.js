@@ -248,7 +248,7 @@ function init() {
     layoutCache[i] = null; return null;
   }
   // hovering an opened screenshot: the cursor becomes the purple ink ball with the arrow pointing to the top-right corner
-  const pcur = document.createElement('span'); pcur.className = 'icon-cur proj-cur'; pcur.setAttribute('aria-hidden', 'true'); pcur.innerHTML = '<svg viewBox="0 0 24 24"><path d="M7 17 L17 7"/><path d="M8 7 H17 V16"/></svg>'; document.body.append(pcur);
+  const pcur = document.createElement('span'); pcur.className = 'icon-cur proj-cur proj-white'; pcur.setAttribute('aria-hidden', 'true'); pcur.innerHTML = '<svg viewBox="0 0 24 24"><path d="M7 17 L17 7"/><path d="M8 7 H17 V16"/></svg>'; document.body.append(pcur);
   const pc = { x: 0, y: 0, tx: 0, ty: 0, on: false, raf: 0 };
   const pcLoop = () => { pc.x += (pc.tx - pc.x) * (reduced ? 1 : 0.3); pc.y += (pc.ty - pc.y) * (reduced ? 1 : 0.3); pcur.style.transform = `translate(${pc.x.toFixed(1)}px, ${pc.y.toFixed(1)}px)`; pc.raf = pc.on || Math.abs(pc.tx - pc.x) + Math.abs(pc.ty - pc.y) > 0.5 ? requestAnimationFrame(pcLoop) : 0; };
   if (matchMedia('(hover: hover)').matches) shotEls.flat().forEach((s) => {
