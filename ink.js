@@ -39,7 +39,7 @@ function init() {
   }
 
   const PROTO = new Set([3]);
-  const tag = document.createElement('span'); tag.className = 'proto-tag hand'; tag.textContent = "it's a prototype"; tag.setAttribute('aria-hidden', 'true'); stage.append(tag);
+  const tag = document.createElement('span'); tag.className = 'proto-tag hand'; tag.textContent = 'prototype'; tag.setAttribute('aria-hidden', 'true'); stage.append(tag);
   const visit = (k) => { window.open(URLS[k.i], '_blank', 'noopener'); k.vsc -= 3; };
 
   // ── drag ──
@@ -104,7 +104,7 @@ function init() {
   }
   function draw() {
     for (const k of logos) {
-      if (PROTO.has(k.i)) { tag.style.transform = `translate(${clamp(k.x - tag.offsetWidth / 2, 4, W - tag.offsetWidth - 4).toFixed(1)}px, ${Math.min(k.y + k.h * 0.55, H - tag.offsetHeight - 4).toFixed(1)}px) rotate(-3deg)`; tag.classList.toggle('on', cur.on === k.i && !openLogo); }
+      if (PROTO.has(k.i)) { tag.style.transform = `translate(${clamp(k.x - tag.offsetWidth / 2, 4, W - tag.offsetWidth - 4).toFixed(1)}px, ${Math.min(k.y + k.h / 2 + 10, H - tag.offsetHeight - 4).toFixed(1)}px) rotate(-3deg)`; tag.classList.toggle('on', cur.on === k.i && !openLogo); }
       const bob = 0;
       k.el.style.transform = `translate(${(k.x - k.w / 2).toFixed(1)}px, ${(k.y - k.h / 2 + bob).toFixed(1)}px) rotate(${k.rot.toFixed(2)}deg) scale(${k.sc.toFixed(3)})`;
     }
