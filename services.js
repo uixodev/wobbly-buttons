@@ -25,7 +25,7 @@ if (plus) {
   const fit = () => { const r = panel.getBoundingClientRect(); dpr = Math.min(devicePixelRatio || 1, 2); w = r.width; h = r.height; plus.width = w * dpr; plus.height = h * dpr; };
   function draw() {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, h);
-    ctx.strokeStyle = '#F7F3EF'; ctx.lineCap = 'round';
+    ctx.strokeStyle = '#AD86CF'; ctx.lineCap = 'round';
     const cols = Math.ceil(w / GAP) + 1, rows = Math.ceil(h / GAP) + 1, ox = (w - (cols - 1) * GAP) / 2, oy = (h - (rows - 1) * GAP) / 2;
     for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
       let x = ox + i * GAP, y = oy + j * GAP;
