@@ -528,3 +528,10 @@ html:not(.js) .hs-say { opacity: 1; transform: none; }
 .hero-story .hs-say { position: relative; }
 .hero-story .hs-say { --aw: clamp(48px, 5.4vw, 74px); }
 .hero-story .hs-say .say-arrow { position: absolute; left: calc(100% + 10px - var(--aw) * .88); bottom: 14px; width: var(--aw); height: auto; margin: 0; pointer-events: none; }
+
+.hero-story .hs-say .say-arrow { stroke-width: 3.2; --aw: clamp(60px, 6.6vw, 92px); width: var(--aw); }
+.hero-story .hs-say .say-arrow .sk { stroke-width: 1.5; opacity: .5; transform: translate(2px, -2px); }
+.hero-story .hs-say { --aw: clamp(60px, 6.6vw, 92px); }
+.hero-story .hs-say .say-arrow { stroke-width: 4.6; bottom: 8px; left: calc(100% + 16px - var(--aw) * .88); }
+.hero-story .hs-say .say-arrow .sk { stroke-width: 2; }
+.hero-story .hs-say .say-arrow { left: calc(100% + 26px - var(--aw) * .88); }
