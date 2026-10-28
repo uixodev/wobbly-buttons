@@ -557,3 +557,12 @@ html:not(.js) .hs-say { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) { .proj-cur { animation: none; } }
 .proj-cur { background: var(--accent); }
 .proj-cur svg { stroke: #111; }
+
+/* ═════════ INK-DROP REVEAL: a black drop spreads (like thick liquid) over the dot canvas and uncovers the cover as you scroll (reveal.js) ═════════ */
+.project .blob { background: transparent !important; overflow: visible; }
+.ink-layer { position: absolute; inset: 0; transform-origin: 50% 50%; }
+.ink-layer.drop { background: #111; z-index: 4; }
+.ink-layer.cover { z-index: 5; background: #FDFDFC radial-gradient(circle, rgba(17, 17, 17, .2) 1.3px, transparent 1.7px) 0 0 / 26px 26px; }
+.ink-layer.cover > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.project .blob.revealed .ink-layer.drop { display: none; }
+html:not(.js) .ink-layer.drop, .project .blob.static .ink-layer.drop { display: none; }
