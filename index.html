@@ -124,12 +124,11 @@
         <h2 class="label" id="work-title">01 / Featured projects</h2>
         <a href="#work" class="label link-quiet">→ View all projects</a>
       </div>
-      <div class="projects">
+      <div class="projects ink-fallback">
         <article class="project" data-reveal>
           <a href="#work" class="project-link" aria-label="Mariia Sugaring Bristol — website design and development">
             <figure class="blob scene scene-tablet" style="--clip:none" data-shape="shape-a">
-              <div class="ink-layer drop" aria-hidden="true"></div>
-              <div class="ink-layer cover"><img src="assets/work-mariia.webp" alt="Mariia Sugaring Bristol website shown on three phones: the home page, the price list and the before-and-after gallery" width="1400" height="1148" loading="lazy" decoding="async" /></div>
+              <div class="ink-layer cover" style="clip-path:url(#shape-a)"><img src="assets/work-mariia.webp" alt="Mariia Sugaring Bristol website shown on three phones: the home page, the price list and the before-and-after gallery" width="1400" height="1148" loading="lazy" decoding="async" /></div>
             </figure>
             <div class="project-meta"><h3>Mariia Sugaring Bristol</h3><span class="arrow" aria-hidden="true">→</span></div>
             <p class="label muted">Website design &amp; development</p>
@@ -138,13 +137,30 @@
         <article class="project" data-reveal>
           <a href="#work" class="project-link" aria-label="Oksana Nails — website design and development">
             <figure class="blob scene scene-pink" style="--clip:none" data-shape="shape-b">
-              <div class="ink-layer drop" aria-hidden="true"></div>
-              <div class="ink-layer cover"><img src="assets/work-oksana.webp" alt="Oksana Nails website shown on three phones: the home page, the bridal gallery and the enquiries panel" width="1400" height="1148" loading="lazy" decoding="async" /></div>
+              <div class="ink-layer cover" style="clip-path:url(#shape-b)"><img src="assets/work-oksana.webp" alt="Oksana Nails website shown on three phones: the home page, the bridal gallery and the enquiries panel" width="1400" height="1148" loading="lazy" decoding="async" /></div>
             </figure>
             <div class="project-meta"><h3>Oksana Nails</h3><span class="arrow" aria-hidden="true">→</span></div>
             <p class="label muted">Website design &amp; development</p>
           </a>
         </article>
+      </div>
+    
+      <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><filter id="goo" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur in="SourceGraphic" stdDeviation="7" result="b"/><feColorMatrix in="b" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 24 -10"/></filter></defs></svg>
+      <div class="ink-stage" id="ink-stage" role="group" aria-label="Three little ink creatures. Poke them, drag them, or click one to open a project.">
+        <canvas class="ink-goo" aria-hidden="true"></canvas>
+        <canvas class="ink-eyes" aria-hidden="true"></canvas>
+        <span class="ink-tag hand" aria-hidden="true">Mariia Sugaring</span>
+        <span class="ink-tag hand" aria-hidden="true">Oksana Nails</span>
+        <span class="ink-tag hand" aria-hidden="true">your project?</span>
+        <span class="ink-zzz hand" aria-hidden="true">z z z</span>
+        <button type="button" class="ink-btn" data-i="0">Open project: Mariia Sugaring Bristol</button>
+        <button type="button" class="ink-btn" data-i="1">Open project: Oksana Nails</button>
+        <button type="button" class="ink-btn" data-i="2">Open: start your own project</button>
+        <div class="ink-window" id="ink-window" role="dialog" aria-modal="false" hidden>
+          <div class="iw-ink" aria-hidden="true"></div>
+          <div class="iw-card"><div class="iw-body"></div></div>
+        </div>
+        <p class="ink-hint hand" aria-hidden="true">poke them · drag them · click one</p>
       </div>
     </section>
 
@@ -320,7 +336,7 @@
   <script type="module" src="ink-cursor.js"></script>
   <script type="module" src="site.js"></script>
   <script type="module" src="services.js"></script>
-  <script type="module" src="reveal.js"></script>
+  <script type="module" src="ink.js"></script>
   <script type="module" src="hero.js"></script>
   <script type="module" src="footer.js"></script>
   <script type="module" src="nav.js"></script>

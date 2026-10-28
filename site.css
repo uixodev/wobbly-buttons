@@ -566,3 +566,40 @@ html:not(.js) .hs-say { opacity: 1; transform: none; }
 .ink-layer.cover > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .project .blob.revealed .ink-layer.drop { display: none; }
 html:not(.js) .ink-layer.drop, .project .blob.static .ink-layer.drop { display: none; }
+
+/* ═════════ INK CREATURES (ink.js): three little ink creatures live on a stage; click one and it opens its project ═════════ */
+.ink-stage { display: none; position: relative; height: clamp(560px, 82vh, 760px); margin-top: 8px; touch-action: pan-y; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
+.ink-ready .ink-stage { display: block; }
+.ink-ready .ink-fallback { display: none; }
+.ink-stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.ink-goo { filter: url(#goo); }
+.ink-tag { position: absolute; left: 0; top: 0; font-size: clamp(1.2rem, 1.7vw, 1.5rem); line-height: 1; white-space: nowrap; opacity: 0; transition: opacity .3s ease; pointer-events: none; z-index: 3; }
+.ink-tag.on { opacity: 1; }
+.ink-zzz { position: absolute; left: 0; top: 0; font-size: 1.4rem; opacity: .6; pointer-events: none; z-index: 3; transition: opacity .4s ease; }
+.ink-zzz.off { opacity: 0; }
+.ink-btn { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.ink-btn:focus-visible { clip: auto; width: auto; height: auto; left: 12px; bottom: 12px; padding: 8px 14px; background: var(--bg); border: 1.5px dashed var(--ink); border-radius: 999px; font: 400 .72rem var(--mono); z-index: 9; }
+.ink-hint { position: absolute; right: 2%; top: 2%; margin: 0; font-size: clamp(1.1rem, 1.5vw, 1.35rem); color: rgba(17, 17, 17, .6); transform: rotate(3deg); pointer-events: none; transition: opacity .4s ease; }
+.ink-stage.open .ink-hint { opacity: 0; }
+.ink-stage.over-ink { cursor: pointer; }
+.ink-window { position: absolute; z-index: 5; left: 0; top: 0; }
+.ink-window[hidden] { display: none; }
+.iw-ink { position: absolute; inset: 0; background: #111; }
+.iw-card { position: absolute; inset: 0; }
+.iw-body { position: absolute; inset: 24px; background: #FDFDFC; border-radius: 22px; overflow: hidden; display: flex; flex-direction: column; }
+.iw-cover { flex: 1 1 auto; min-height: 0; position: relative; background: #FDFDFC radial-gradient(circle, rgba(17, 17, 17, .2) 1.3px, transparent 1.7px) 0 0 / 26px 26px; }
+.iw-cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; filter: grayscale(1) contrast(1.06) brightness(1.03); transition: filter .6s ease; }
+.iw-body:hover .iw-cover img { filter: none; }
+.iw-meta { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 20px 16px; border-top: 1.5px solid var(--ink); background: var(--bg); }
+.iw-meta h3 { margin: 0; font: 400 clamp(1.4rem, 2.2vw, 1.9rem)/1.1 var(--serif); }
+.iw-meta p { margin: 4px 0 0; font: 400 .66rem/1.3 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.iw-link { flex: none; display: inline-flex; align-items: center; gap: .5em; padding: .8em 1.3em; border: 1.5px solid var(--ink); border-radius: 999px 940px 999px 960px / 880px 999px 940px 999px; color: var(--ink); text-decoration: none; font: 400 .72rem/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; transition: background .25s ease, transform .4s cubic-bezier(.3, 1.6, .5, 1); }
+.iw-link:hover, .iw-link:focus-visible { background: var(--accent); transform: rotate(-2deg) scale(1.04); outline: none; }
+.iw-close { position: absolute; z-index: 3; right: 36px; top: 36px; width: 42px; height: 42px; display: grid; place-items: center; padding: 0; border: 1.5px solid var(--ink); border-radius: 50% 46% 52% 48% / 48% 52% 46% 50%; background: var(--bg); color: var(--ink); cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background .25s ease, transform .4s cubic-bezier(.3, 1.6, .5, 1); }
+.iw-close svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
+.iw-close:hover, .iw-close:focus-visible { background: var(--accent); transform: rotate(8deg) scale(1.08); outline: none; }
+.iw-cta { align-items: flex-start; justify-content: center; padding: clamp(24px, 4vw, 48px); gap: 14px; background: var(--accent); }
+.iw-cta h3 { margin: 0; font: 400 clamp(2rem, 4.4vw, 3.6rem)/1 var(--serif); }
+.iw-cta p { margin: 0; max-width: 28rem; font: 400 1.05rem/1.55 var(--body); color: #111; }
+@media (max-width: 900px) { .ink-stage { height: clamp(600px, 86svh, 760px); } .iw-meta { flex-wrap: wrap; } .iw-close { right: 32px; top: 32px; } }
+@media (prefers-reduced-motion: reduce) { .ink-tag, .ink-zzz { transition: none; } }
