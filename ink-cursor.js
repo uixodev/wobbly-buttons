@@ -10,7 +10,8 @@ const R = 7;                 // resting droplet radius (px)
 const TRAIL_MS = 480;        // how long a trail point lives
 const POINTS = 16;           // outline points of the droplet
 const DARK_SURFACE = '.vira-logo, .wobbly[data-variant="solid"], .tile-jelly, .footer-dark, .menu';
-const INK = [173, 134, 207], CREAM = [173, 134, 207];   // Orchid purple everywhere (on dark surfaces too)
+const INK = [173, 134, 207], CREAM = [173, 134, 207], BLACK = [17, 17, 17];
+const PURPLE_SURFACE = '.panel, #contact, .wobbly[data-variant="solid"]:not(.burger):hover, .say-btn, .iw-close:hover';   // purple things: the cursor turns black so it stays visible   // Orchid purple everywhere (on dark surfaces too)
 const INTERACTIVE = 'a, button, [role="button"], summary, label, input, select, textarea, .wobbly, .vira-logo';
 
 export function initInkCursor() {
@@ -45,7 +46,7 @@ export function initInkCursor() {
     target.x = e.clientX; target.y = e.clientY;
     if (!visible) { head.x = target.x; head.y = target.y; head.vx = head.vy = 0; visible = true; }
     sizeT = pressed ? 0.7 : e.target.closest?.(INTERACTIVE) ? 1.6 : 1;
-    colT = e.target.closest?.(DARK_SURFACE) || document.documentElement.classList.contains('menu-open') ? CREAM : INK;
+    colT = e.target.closest?.(PURPLE_SURFACE) ? BLACK : (e.target.closest?.(DARK_SURFACE) || document.documentElement.classList.contains('menu-open') ? CREAM : INK);
     wake();
   }, { passive: true });
   addEventListener('pointerdown', () => { pressed = true; sizeT = 0.7; wake(); });
