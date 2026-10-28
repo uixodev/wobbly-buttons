@@ -45,7 +45,7 @@ function init() {
       if (openLogo || e.button > 0) return;
       const b = stage.getBoundingClientRect(); dragK = k; k.drag = true; k.el.classList.add('drag'); k.el.setPointerCapture(e.pointerId);
       down = { sx: e.clientX, sy: e.clientY, gx: e.clientX - b.left - k.x, gy: e.clientY - b.top - k.y, moved: false, lx: e.clientX, ly: e.clientY, lt: performance.now(), pvx: 0, pvy: 0 };
-      k.vx = k.vy = 0; wake();
+      k.tx = k.x; k.ty = k.y; k.vx = k.vy = 0; wake();
     });
     k.el.addEventListener('pointermove', (e) => {
       if (dragK !== k || !down) return;
@@ -170,40 +170,56 @@ function init() {
     k.el.addEventListener('pointerleave', () => releaseShots(i));
     k.el.addEventListener('pointermove', (e) => { if (cur.on !== i) return; const b = stage.getBoundingClientRect(); cur.x = e.clientX - b.left; cur.y = e.clientY - b.top; });
   });
+  // Pack the screenshots around the logo: each one goes in the free spot nearest the logo (beside it, above it, or beside another screenshot) that
+  // is inside the stage and touches neither the logo nor another screenshot. If they don't all fit, everything is scaled down until they do,
+  // so the arrangement is clean wherever the logo has been dragged.
+  const ORDER = [[3, 0, 1, 2], [0, 1, 2]];
+  function layout(i) {
+    const k = logos[i], g = 12, m = 6, baseSc = Math.min(1, (W - 24) / 1120) * (W < 700 ? 0.72 : 1);
+    const L = { l: k.x - k.w * 0.46, r: k.x + k.w * 0.46, t: k.y - k.h * 0.46, b: k.y + k.h * 0.46 };
+    const others = logos.filter((o) => o !== k && !o.gone).map((o) => ({ l: o.x - o.w * 0.5, r: o.x + o.w * 0.5, t: o.y - o.h * 0.5, b: o.y + o.h * 0.5 }));
+    const hit = (a, b) => a.l < b.r + g * 0.6 && a.r > b.l - g * 0.6 && a.t < b.b + g * 0.6 && a.b > b.t - g * 0.6;
+    for (let f = 1; f >= 0.4; f -= 0.06) {
+      const sc = baseSc * f, placed = [], out = [];
+      const size = (n) => { const w = (i === 0 && n === 3 ? 470 : 232) * sc; return [w, w * ASPECT(i, n)]; };
+      let ok = true;
+      for (const n of ORDER[i]) {
+        const [w, h] = size(n), anchors = [L, ...placed.map((p) => p.rect)], cands = [];
+        for (const A of anchors) {
+          const cx = (A.l + A.r) / 2, cy = (A.t + A.b) / 2;
+          for (const y of [cy - h / 2, A.b - h, A.t]) { cands.push([A.r + g, y]); cands.push([A.l - g - w, y]); }
+          for (const x of [cx - w / 2, A.l, A.r - w]) { cands.push([x, A.t - g - h]); cands.push([x, A.b + g]); }
+        }
+        let best = null, bs = 1e9;
+        for (const [x, y] of cands) {
+          const r = { l: x, r: x + w, t: y, b: y + h };
+          if (r.l < m || r.t < m || r.r > W - m || r.b > H - m) continue;
+          if (hit(r, L) || others.some((o) => hit(r, o)) || placed.some((p) => hit(r, p.rect))) continue;
+          const sco = Math.hypot((r.l + r.r) / 2 - k.x, (r.t + r.b) / 2 - k.y); if (sco < bs) { bs = sco; best = r; }
+        }
+        if (!best) { ok = false; break; }
+        placed.push({ n, rect: best }); out[n] = { cx: (best.l + best.r) / 2, cy: (best.t + best.b) / 2, w, h };
+      }
+      if (ok) return out;
+    }
+    return null;
+  }
   function stepShots(dt) {
     let any = false;
     shotEls.forEach((list, i) => {
       const k = logos[i], on = cur.on === i && !openLogo && !k.drag;
-      const sc = Math.min(1, (W - 24) / 1120) * (W < 700 ? 0.72 : 1), pw = 232 * sc, dw = 470 * sc, g = 18 * sc + 8;
-      const Lw = k.w * 0.92, Lh = k.h * 0.92, side = k.x < W / 2 ? 1 : -1;
-      const size = (n) => { const w = i === 0 && n === 3 ? dw : pw; return [w, w * ASPECT(i, n)]; };
-      // preferred centre for each shot, relative to the logo
-      const want = [];
-      if (i === 0) {
-        const [, dh] = size(3), [, ph] = size(0);
-        want[3] = [0, -(Lh / 2 + g + dh / 2)];                                                              // desktop above the logo
-        want[0] = [side * (Lw / 2 + g + pw / 2), Lh / 2 - ph / 2];                                          // phones stand beside it
-        want[1] = [side * (Lw / 2 + g + pw / 2 + pw * 0.72), Lh / 2 - ph / 2 - 18 * sc];
-        want[2] = [-side * (Lw / 2 + g + pw / 2), Lh / 2 - ph / 2];
-      } else {
-        const [, ph] = size(0);
-        want[0] = [-(Lw / 2 + g + pw / 2), Lh / 2 - ph / 2]; want[1] = [Lw / 2 + g + pw / 2, Lh / 2 - ph / 2];
-        want[2] = [0, -(Lh / 2 + g + ph / 2)];
-      }
+      const active = on || list.some((s) => s.s > 0.01);
+      const lay = active ? layout(i) : null;
       list.forEach((s, n) => {
-        const [w, h] = size(n); let cx = k.x + want[n][0], cy = k.y + want[n][1];
-        cx = clamp(cx, w / 2 + 6, W - w / 2 - 6); cy = clamp(cy, h / 2 + 6, Math.max(h / 2 + 6, H - h / 2 - 6));
-        // never sit on the logo: if the clamp pushed it back over the logo, slide it clear (sideways first, then up)
-        const ox = (w + Lw) / 2 + 6 - Math.abs(cx - k.x), oy = (h + Lh) / 2 + 6 - Math.abs(cy - k.y);
-        if (ox > 0 && oy > 0) { if (n === 2 && i === 1 || (i === 0 && n === 3)) cy = Math.max(h / 2 + 6, k.y - (Lh + h) / 2 - 6); else { const dir = cx >= k.x ? 1 : -1, nx = k.x + dir * ((w + Lw) / 2 + 6); if (nx > w / 2 + 6 && nx < W - w / 2 - 6) cx = nx; else cy = Math.max(h / 2 + 6, k.y - (Lh + h) / 2 - 6); } }
-        if (s.tx === undefined || (!on && s.s < 0.01)) { s.tx = cx; s.ty = cy; } else { const e = 1 - Math.exp(-dt * 10); s.tx += (cx - s.tx) * e; s.ty += (cy - s.ty) * e; }
-        s.hold = clamp((s.hold || 0) + (on ? dt : -dt * 3.2), 0, 1);
+        const T = lay && lay[n];
+        if (T) { if (s.tx === undefined || (!on && s.s < 0.01)) { s.tx = T.cx; s.ty = T.cy; s.w = T.w; s.h = T.h; } else { const e = 1 - Math.exp(-dt * 10); s.tx += (T.cx - s.tx) * e; s.ty += (T.cy - s.ty) * e; s.w += (T.w - s.w) * e; s.h += (T.h - s.h) * e; } }
+        s.hold = clamp((s.hold || 0) + (on && T ? dt : -dt * 3.2), 0, 1);
         const t = clamp((s.hold - n * 0.06) / 0.45, 0, 1), p = 1 - Math.pow(1 - t, 3);                              // eased, no overshoot
         s.s = p;
-        if (p > 0.001) {
+        if (p > 0.001 && s.w) {
           any = true;
           const x = k.x + (s.tx - k.x) * p, y = k.y + (s.ty - k.y) * p, scale = 0.35 + 0.65 * p;
-          s.el.style.cssText = `background-image:url(${SHOTS[i][n]});width:${w.toFixed(1)}px;height:${h.toFixed(1)}px;z-index:${LAYER[i][n]};opacity:${Math.min(1, p * 1.6).toFixed(2)};transform:translate3d(${(x - w / 2).toFixed(1)}px,${(y - h / 2).toFixed(1)}px,0) rotate(${(TILT[i][n] * p).toFixed(2)}deg) scale(${scale.toFixed(3)});pointer-events:none`;
+          s.el.style.cssText = `background-image:url(${SHOTS[i][n]});width:${s.w.toFixed(1)}px;height:${s.h.toFixed(1)}px;z-index:${LAYER[i][n]};opacity:${Math.min(1, p * 1.6).toFixed(2)};transform:translate3d(${(x - s.w / 2).toFixed(1)}px,${(y - s.h / 2).toFixed(1)}px,0) rotate(${(TILT[i][n] * 0.5 * p).toFixed(2)}deg) scale(${scale.toFixed(3)});pointer-events:none`;
         } else if (s.el.style.opacity !== '0') s.el.style.cssText = 'opacity:0;pointer-events:none';
       });
     });
