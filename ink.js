@@ -269,12 +269,12 @@ function init() {
         s.s = p;
         if (p > 0.001 && s.w) {
           any = true;
-          const x = k.x + (s.tx - k.x) * p, y = k.y + (s.ty - k.y) * p, scale = 0.35 + 0.65 * p;
+          const ox = k.x, oy = k.y - k.h * 0.28, x = ox + (s.tx - ox) * p, y = oy + (s.ty - oy) * p, scale = 0.35 + 0.65 * p;
           s.el.style.cssText = `background-image:url(${SHOTS[i][n]});width:${s.w.toFixed(1)}px;height:${s.h.toFixed(1)}px;z-index:${LAYER[i][n]};opacity:${Math.min(1, p * 1.6).toFixed(2)};transform:translate3d(${(x - s.w / 2).toFixed(1)}px,${(y - s.h / 2).toFixed(1)}px,0) rotate(${(TILT[i][n] * 0.5 * p).toFixed(2)}deg) scale(${scale.toFixed(3)});pointer-events:${p > 0.85 && on ? 'auto' : 'none'}`;
         } else if (s.el.style.opacity !== '0') s.el.style.cssText = 'opacity:0;pointer-events:none';
       });
     });
-    logos.forEach((k, i) => { const a = sqs[i], show = !!k.open && !openLogo && !k.drag; a.classList.toggle('on', show); if (show) a.style.transform = `translate(${(k.x + k.w * 0.5 - 20).toFixed(1)}px, ${(k.y - k.h * 0.5 - 34).toFixed(1)}px) rotate(${(-5 + i * 3).toFixed(0)}deg)`; });
+    logos.forEach((k, i) => { k.el.classList.toggle('expanded', !!k.open && !openLogo); const a = sqs[i], show = !!k.open && !openLogo && !k.drag; a.classList.toggle('on', show); if (show) a.style.transform = `translate(${(k.x + k.w * 0.5 - 20).toFixed(1)}px, ${(k.y - k.h * 0.5 - 34).toFixed(1)}px) rotate(${(-5 + i * 3).toFixed(0)}deg)`; });
     shotsOn = any;
   }
 
