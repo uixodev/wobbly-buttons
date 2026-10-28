@@ -159,8 +159,7 @@ function init() {
   // ── hovering a logo: its screenshots pop up around the cursor ──
   const SHOTS = [['assets/shot-mariia-1.webp', 'assets/shot-mariia-2.webp', 'assets/shot-mariia-3.webp', 'assets/shot-mariia-4.webp'], ['assets/shot-oksana-1.webp', 'assets/shot-oksana-2.webp', 'assets/shot-oksana-3.webp']];
   const OFFS = [[-285, -70, -8, 1], [270, -120, 7, 1.05], [-190, 175, 5, .95], [225, 165, -6, 1.25]];     // dx, dy, rotation, size factor (the desktop shot is wider)
-  const shotEls = SHOTS.map((list, i) => list.map((src, n) => { const a = document.createElement('a'); a.className = 'shot'; a.href = URLS[i]; a.target = '_blank'; a.rel = 'noopener'; a.tabIndex = -1; a.setAttribute('aria-label', `Visit ${projects[i].title} website`); const im = document.createElement('img'); im.src = src; im.alt = ''; im.decoding = 'async'; im.loading = 'eager'; im.draggable = false; a.append(im); stage.append(a); a.addEventListener('pointerenter', () => { holdShots(i); }); a.addEventListener('pointerleave', () => { releaseShots(i); }); return { el: a, n, x: 0, y: 0, s: 0, vs: 0, ready: false }; }));
-  shotEls.flat().forEach((s) => { const im = s.el.firstChild; (im.decode ? im.decode() : Promise.resolve()).catch(() => {}); });
+  const shotEls = SHOTS.map((list, i) => list.map((src, n) => { const a = document.createElement('a'); a.className = 'shot'; a.href = URLS[i]; a.target = '_blank'; a.rel = 'noopener'; a.tabIndex = -1; a.setAttribute('aria-label', `Visit ${projects[i].title} website`); a.style.backgroundImage = `url(${src})`; a.style.aspectRatio = n === 3 ? '560 / 368' : '320 / 600'; a.dataset.pinNopin = 'true'; const pre = new Image(); pre.src = src; (pre.decode ? pre.decode() : Promise.resolve()).catch(() => {}); stage.append(a); a.addEventListener('pointerenter', () => { holdShots(i); }); a.addEventListener('pointerleave', () => { releaseShots(i); }); return { el: a, n, x: 0, y: 0, s: 0, vs: 0, ready: false }; }));
   const cur = { x: 0, y: 0, on: -1 }; let shotsOn = false, shotTimer = 0;
   const holdShots = (i) => { clearTimeout(shotTimer); if (cur.on !== i && !openLogo) { cur.on = i; wake(); } };
   const releaseShots = (i) => { clearTimeout(shotTimer); shotTimer = setTimeout(() => { if (cur.on === i) cur.on = -1; wake(); }, 380); };
@@ -178,7 +177,7 @@ function init() {
       const lag = 7 - n * 1.1;                                                         // each screenshot trails the cursor a little differently
       s.x += (tx - s.x) * Math.min(1, dt * lag); s.y += (ty - s.y) * Math.min(1, dt * lag);
       s.vs += (120 * ((on ? 1 : 0) - s.s) - 12 * s.vs) * dt; s.s = Math.max(0, s.s + s.vs * dt);
-      if (s.s > 0.002 || on) { any = true; s.el.style.cssText = `width:${w}px;transform:translate3d(${(s.x - w / 2).toFixed(1)}px,${(s.y - hh / 2).toFixed(1)}px,0) rotate(${(o[2] + Math.sin(time * 1.2 + n * 2) * 2).toFixed(1)}deg) scale(${s.s.toFixed(3)});opacity:${Math.min(1, s.s * 1.4).toFixed(2)}`; } else if (s.el.style.opacity !== '0') s.el.style.cssText = 'opacity:0';
+      if (s.s > 0.002 || on) { any = true; s.el.style.cssText = `background-image:url(${SHOTS[i][n]});aspect-ratio:${n === 3 ? '560 / 368' : '320 / 600'};width:${w}px;transform:translate3d(${(s.x - w / 2).toFixed(1)}px,${(s.y - hh / 2).toFixed(1)}px,0) rotate(${(o[2] + Math.sin(time * 1.2 + n * 2) * 2).toFixed(1)}deg) scale(${s.s.toFixed(3)});opacity:${Math.min(1, s.s * 1.4).toFixed(2)}`; } else if (s.el.style.opacity !== '0') s.el.style.cssText = 'opacity:0';
       s.el.style.pointerEvents = s.s > 0.7 && cur.on === i ? 'auto' : 'none';
     }));
     shotsOn = any;
