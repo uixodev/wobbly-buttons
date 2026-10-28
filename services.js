@@ -81,7 +81,7 @@ const ICONS = {
   });
 })();
 
-// ── services on phones: the panels are a deck; swipe the top card away and it slips to the back ──
+// ── services on phones: the five panels are a deck; each swipe sends the top card away for good, and when the deck is empty "and more...." appears ──
 (() => {
   const wrap = document.getElementById('svc-wrap'); if (!wrap) return;
   const cards = [...wrap.querySelectorAll('.panel')], mq = matchMedia('(max-width: 900px)');
@@ -92,10 +92,10 @@ const ICONS = {
     busy = true; card.classList.remove('drag'); card.classList.add('fly');
     card.style.setProperty('--dx', `${dir * wrap.offsetWidth * 1.1}px`); card.style.setProperty('--dr', `${dir * 16}deg`);
     setTimeout(() => {
-      card.classList.add('drag');                                    // no transition while it teleports to the back
-      order = [...order.slice(1), order[0]]; apply();
+      card.classList.add('drag', 'gone');                            // the card has left the deck for good
+      order = order.slice(1); apply();
       card.classList.remove('fly'); card.style.removeProperty('--dx'); card.style.removeProperty('--dy'); card.style.removeProperty('--dr');
-      void card.offsetWidth; card.classList.remove('drag'); busy = false;
+      busy = false; if (!order.length) wrap.classList.add('done');
     }, 400);
   };
   wrap.addEventListener('pointerdown', (e) => {

@@ -713,3 +713,15 @@ html:not(.js) .ink-layer.drop, .project .blob.static .ink-layer.drop { display: 
 .mg-visit { flex: none; align-self: center; margin-top: 6px; display: inline-flex; gap: .6em; align-items: center; padding: 1em 1.8em; background: #111; color: var(--bg); border-radius: 999px 940px 999px 960px / 880px 999px 940px 999px; text-decoration: none; font: 400 .8rem/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; }
 html.ms-open { overflow: hidden; }
 .mf img.inv { filter: brightness(0) invert(1); }
+
+/* phones: the deck is played once; when it is empty a peeking cat and a handwritten "and more...." appear */
+.svc-end { display: none; }
+@media (max-width: 900px) {
+  .svc-wrap .panel.gone { display: none; }
+  .svc-end { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; position: absolute; inset: 0; opacity: 0; pointer-events: none; transition: opacity .5s ease .1s; }
+  .svc-wrap.done .svc-end { opacity: 1; }
+  .svc-end .svc-cat { width: min(78%, 300px); height: auto; fill: var(--ink); }
+  .svc-end .hand { margin: 0; font-size: clamp(2rem, 9vw, 2.8rem); line-height: 1; transform: rotate(-3deg); }
+  .svc-wrap.done ~ .svc-swipe { visibility: hidden; }
+  .svc-cat .tail-wave { animation: none; }
+}
