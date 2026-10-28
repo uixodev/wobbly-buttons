@@ -18,9 +18,10 @@ function init() {
   const PAD = 24, RAYS = 120;
   let W = 0, H = 0, time = 0, last = 0, raf = 0, visible = true, openLogo = null, started = false;
 
-  const projects = Array.from(fallback).map((a) => ({
+  const URLS = ['https://www.mvsugaringbristol.com/', 'https://oksana-nails.vercel.app/#book'];
+  const projects = Array.from(fallback).map((a, idx) => ({
     title: a.querySelector('h3').textContent.trim(), kind: a.querySelector('.label').textContent.trim(),
-    img: a.querySelector('img').getAttribute('src'), alt: a.querySelector('img').getAttribute('alt'), href: '#work',
+    img: a.querySelector('img').getAttribute('src'), alt: a.querySelector('img').getAttribute('alt'), href: URLS[idx],
   }));
   const logos = els.map((el, i) => ({ el, i, x: 0, y: 0, vx: 0, vy: 0, rot: 0, vrot: 0, sc: 1, vsc: 0, w: 0, h: 0, drag: false, gone: false, phase: i * 2.3, seed: Math.random() * 100 }));
 
@@ -104,7 +105,7 @@ function init() {
   const finalRadii = (w, h, Ox, Oy) => Array.from({ length: RAYS }, (_, i) => { const a = (i / RAYS) * Math.PI * 2, c = Math.cos(a), s = Math.sin(a); let lo = 0, hi = Math.hypot(w, h) * 1.2;
     for (let n = 0; n < 22; n++) { const m = (lo + hi) / 2; if (insideRR(Ox - PAD + c * m, Oy - PAD + s * m, w - 2 * PAD, h - 2 * PAD, 22)) lo = m; else hi = m; } return lo + PAD; });
   const poly = (r, O) => 'polygon(' + Array.from(r, (v, i) => { const a = (i / RAYS) * Math.PI * 2; return `${(O[0] + Math.cos(a) * v).toFixed(1)}px ${(O[1] + Math.sin(a) * v).toFixed(1)}px`; }).join(',') + ')';
-  const content = (pr) => `<div class="iw-cover"><img src="${pr.img}" alt="${pr.alt}"></div><div class="iw-meta"><div><h3>${pr.title}</h3><p>${pr.kind}</p></div><a class="iw-link" href="${pr.href}">View project →</a></div>`;
+  const content = (pr) => `<div class="iw-cover"><img src="${pr.img}" alt="${pr.alt}"></div><div class="iw-meta"><div><h3>${pr.title}</h3><p>${pr.kind}</p></div><a class="iw-link" href="${pr.href}" target="_blank" rel="noopener">Visit website ↗</a></div>`;
   const applyClip = () => { inkL.style.clipPath = poly(state.rI, state.O); cardL.style.clipPath = poly(state.rC, state.O); };
 
   function openProject(k) {
@@ -155,24 +156,27 @@ function init() {
 
   // ── hovering a logo: its screenshots pop up around the cursor ──
   const SHOTS = [['assets/shot-mariia-1.webp', 'assets/shot-mariia-2.webp', 'assets/shot-mariia-3.webp', 'assets/shot-mariia-4.webp'], ['assets/shot-oksana-1.webp', 'assets/shot-oksana-2.webp', 'assets/shot-oksana-3.webp']];
-  const OFFS = [[-190, -60, -9, 1], [185, -95, 8, 1.05], [-120, 130, 6, .95], [150, 120, -7, 1.25]];     // dx, dy, rotation, size factor (the desktop shot is wider)
-  const shotEls = SHOTS.map((list) => list.map((src, n) => { const im = document.createElement('img'); im.className = 'shot'; im.src = src; im.alt = ''; im.decoding = 'async'; im.draggable = false; stage.append(im); return { el: im, n, x: 0, y: 0, s: 0, vs: 0, ready: false }; }));
-  const cur = { x: 0, y: 0, on: -1 }; let shotsOn = false;
+  const OFFS = [[-285, -70, -8, 1], [270, -120, 7, 1.05], [-190, 175, 5, .95], [225, 165, -6, 1.25]];     // dx, dy, rotation, size factor (the desktop shot is wider)
+  const shotEls = SHOTS.map((list, i) => list.map((src, n) => { const a = document.createElement('a'); a.className = 'shot'; a.href = URLS[i]; a.target = '_blank'; a.rel = 'noopener'; a.tabIndex = -1; a.setAttribute('aria-label', `Visit ${projects[i].title} website`); const im = document.createElement('img'); im.src = src; im.alt = ''; im.decoding = 'async'; im.draggable = false; a.append(im); stage.append(a); a.addEventListener('pointerenter', () => { holdShots(i); }); a.addEventListener('pointerleave', () => { releaseShots(i); }); return { el: a, n, x: 0, y: 0, s: 0, vs: 0, ready: false }; }));
+  const cur = { x: 0, y: 0, on: -1 }; let shotsOn = false, shotTimer = 0;
+  const holdShots = (i) => { clearTimeout(shotTimer); if (cur.on !== i && !openLogo) { cur.on = i; wake(); } };
+  const releaseShots = (i) => { clearTimeout(shotTimer); shotTimer = setTimeout(() => { if (cur.on === i) cur.on = -1; wake(); }, 380); };
   logos.forEach((k, i) => {
-    k.el.addEventListener('pointerenter', (e) => { if (e.pointerType !== 'mouse' || openLogo || k.drag) return; const b = stage.getBoundingClientRect(); cur.x = e.clientX - b.left; cur.y = e.clientY - b.top; cur.on = i; shotsOn = true; shotEls[i].forEach((s) => { s.x = cur.x; s.y = cur.y; s.ready = true; }); wake(); });
-    k.el.addEventListener('pointerleave', () => { if (cur.on === i) cur.on = -1; wake(); });
+    k.el.addEventListener('pointerenter', (e) => { if (e.pointerType !== 'mouse' || openLogo || k.drag) return; clearTimeout(shotTimer); const b = stage.getBoundingClientRect(); cur.x = e.clientX - b.left; cur.y = e.clientY - b.top; cur.on = i; shotsOn = true; shotEls[i].forEach((s) => { s.x = cur.x; s.y = cur.y; s.ready = true; }); wake(); });
+    k.el.addEventListener('pointerleave', () => releaseShots(i));
     k.el.addEventListener('pointermove', (e) => { if (cur.on !== i) return; const b = stage.getBoundingClientRect(); cur.x = e.clientX - b.left; cur.y = e.clientY - b.top; });
   });
   function stepShots(dt) {
     let any = false;
     shotEls.forEach((list, i) => list.forEach((s, n) => {
       const on = cur.on === i && !openLogo && !logos[i].drag, o = OFFS[n] || OFFS[0];
-      const w = (n === 3 ? 230 : 104) * (W < 700 ? 0.8 : 1);
-      const tx = clamp(cur.x + o[0] * (W < 700 ? 0.7 : 1), w / 2 + 4, W - w / 2 - 4), ty = clamp(cur.y + o[1], 60, H - 60);
+      const w = (n === 3 ? 400 : 190) * (W < 700 ? 0.6 : 1) * (n < 3 && SHOTS[i].length === 3 ? 1 : 1);
+      const tx = clamp(cur.x + o[0] * (W < 700 ? 0.55 : 1), w / 2 + 4, W - w / 2 - 4); const hh = n === 3 ? w * 0.66 : w * 1.86; const ty = clamp(cur.y + o[1], hh / 2 + 6, Math.max(hh / 2 + 6, H - hh / 2 - 6));
       const lag = 7 - n * 1.1;                                                         // each screenshot trails the cursor a little differently
       s.x += (tx - s.x) * Math.min(1, dt * lag); s.y += (ty - s.y) * Math.min(1, dt * lag);
       s.vs += (120 * ((on ? 1 : 0) - s.s) - 12 * s.vs) * dt; s.s = Math.max(0, s.s + s.vs * dt);
-      if (s.s > 0.002 || on) { any = true; s.el.style.cssText = `width:${w}px;transform:translate(${(s.x - w / 2).toFixed(1)}px,${(s.y - 100).toFixed(1)}px) rotate(${(o[2] + Math.sin(time * 1.2 + n * 2) * 2).toFixed(1)}deg) scale(${s.s.toFixed(3)});opacity:${Math.min(1, s.s * 1.4).toFixed(2)}`; } else if (s.el.style.opacity !== '0') s.el.style.cssText = 'opacity:0';
+      if (s.s > 0.002 || on) { any = true; s.el.style.cssText = `width:${w}px;transform:translate(${(s.x - w / 2).toFixed(1)}px,${(s.y - hh / 2).toFixed(1)}px) rotate(${(o[2] + Math.sin(time * 1.2 + n * 2) * 2).toFixed(1)}deg) scale(${s.s.toFixed(3)});opacity:${Math.min(1, s.s * 1.4).toFixed(2)}`; } else if (s.el.style.opacity !== '0') s.el.style.cssText = 'opacity:0';
+      s.el.style.pointerEvents = s.s > 0.7 && cur.on === i ? 'auto' : 'none';
     }));
     shotsOn = any;
   }
