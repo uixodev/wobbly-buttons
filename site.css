@@ -535,3 +535,6 @@ html:not(.js) .hs-say { opacity: 1; transform: none; }
 .hero-story .hs-say .say-arrow { stroke-width: 4.6; bottom: 8px; left: calc(100% + 16px - var(--aw) * .88); }
 .hero-story .hs-say .say-arrow .sk { stroke-width: 2; }
 .hero-story .hs-say .say-arrow { left: calc(100% + 26px - var(--aw) * .88); }
+
+.hero-story .hs-say .say-arrow { stroke-width: 4.2; stroke-linecap: round; stroke-linejoin: round; }
+.hero-story .hs-say .say-arrow .sk { display: none; }
