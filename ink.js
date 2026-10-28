@@ -18,7 +18,7 @@ function init() {
   const PAD = 24, RAYS = 120;
   let W = 0, H = 0, time = 0, last = 0, raf = 0, visible = true, openLogo = null, started = false;
 
-  const URLS = ['https://www.mvsugaringbristol.com/', 'https://oksana-nails.vercel.app/#book'];
+  const URLS = ['https://www.mvsugaringbristol.com/', 'https://oksana-nails.vercel.app/#book', 'https://www.masterforgeneralcontracting.com/'];
   const projects = Array.from(fallback).map((a, idx) => ({
     title: a.querySelector('h3').textContent.trim(), kind: a.querySelector('.label').textContent.trim(),
     img: a.querySelector('img').getAttribute('src'), alt: a.querySelector('img').getAttribute('alt'), href: URLS[idx],
@@ -30,9 +30,10 @@ function init() {
     logos.forEach((k) => { k.w = k.el.offsetWidth; k.h = k.el.offsetHeight; k.x = clamp(k.x, k.w / 2, W - k.w / 2); k.y = clamp(k.y, k.h / 2, H - k.h / 2); });
   }
   function place() {
-    const [m, o] = logos, r = Math.random;
+    const [m, o, s] = logos, r = Math.random;
     m.x = W * (W < 700 ? 0.3 : 0.26); m.y = m.h / 2 + 10;
     o.x = W * (W < 700 ? 0.68 : 0.55 + r() * 0.2); o.y = o.h / 2 - H * 0.35;
+    s.x = W * (W < 700 ? 0.5 : 0.82); s.y = s.h / 2 - H * 0.6;
     logos.forEach((k) => { k.x = clamp(k.x, k.w / 2, W - k.w / 2); k.y = clamp(k.y, k.h / 2, H - k.h / 2); });
   }
 
@@ -84,12 +85,15 @@ function init() {
       if (k.y < hh) { k.y = hh; k.vy = Math.abs(k.vy) * REST; }
     }
     const grounded = !k.drag && started && k.y >= H - k.h / 2 - 8;
-    const target = grounded ? (k.i === 0 ? 2 : -3) : clamp(k.vx * 0.012, -18, 18);          // upright when resting, leaning into the fall
+    const target = grounded ? ([2, -3, 1][k.i]) : clamp(k.vx * 0.012, -18, 18);          // upright when resting, leaning into the fall
     k.vrot += (46 * (target - k.rot) - 5 * k.vrot) * dt; k.rot += k.vrot * dt;
     k.vsc += (90 * ((k.drag ? 1.08 : 1) - k.sc) - 7 * k.vsc) * dt; k.sc += k.vsc * dt;
   }
   function collide() {
-    const [a, b] = logos; if (a.gone || b.gone || a.drag && b.drag) return;
+    for (let p = 0; p < logos.length; p++) for (let q = p + 1; q < logos.length; q++) pair(logos[p], logos[q]);
+  }
+  function pair(a, b) {
+    if (a.gone || b.gone || a.drag && b.drag) return;
     const dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy) || 1, min = rad(a) + rad(b);
     if (d < min) { const nx = dx / d, ny = dy / d, o = min - d, wa = a.drag ? 0 : 1, wb = b.drag ? 0 : 1, wt = wa + wb || 1;
       a.x -= nx * o * wa / wt; a.y -= ny * o * wa / wt; b.x += nx * o * wb / wt; b.y += ny * o * wb / wt;
@@ -158,10 +162,11 @@ function init() {
 
 
   // ── hovering a logo: its screenshots pop up around the cursor ──
-  const SHOTS = [['assets/shot-mariia-1.webp', 'assets/shot-mariia-2.webp', 'assets/shot-mariia-3.webp', 'assets/shot-mariia-4.webp'], ['assets/shot-oksana-1.webp', 'assets/shot-oksana-2.webp', 'assets/shot-oksana-3.webp']];
+  const SHOTS = [['assets/shot-mariia-1.webp', 'assets/shot-mariia-2.webp', 'assets/shot-mariia-3.webp', 'assets/shot-mariia-4.webp'], ['assets/shot-oksana-1.webp', 'assets/shot-oksana-2.webp', 'assets/shot-oksana-3.webp'], ['assets/shot-master-3.webp', 'assets/shot-master-4.webp', 'assets/shot-master-1.webp', 'assets/shot-master-2.webp']];
   // Each screenshot has a fixed size, tilt and layer; the layout places them AROUND the logo (never on top of it), on the side with the most room.
-  const TILT = [[-6, 5, 4, 2], [-5, 5, 0]], LAYER = [[6, 7, 8, 9], [6, 7, 8]];
-  const ASPECT = (i, n) => (i === 0 && n === 3 ? 368 / 560 : 600 / 320);               // height / width of each screenshot
+  const TILT = [[-6, 5, 4, 2], [-5, 5, 0], [2, -3, -5, 5]], LAYER = [[6, 7, 8, 9], [6, 7, 8], [9, 8, 6, 7]];
+  const WIDE = (i, n) => (i === 0 && n === 3) || i === 2 && n < 2;
+  const ASPECT = (i, n) => (i === 0 && n === 3 ? 368 / 560 : i === 2 ? [342 / 560, 338 / 560, 658 / 320, 654 / 320][n] : 600 / 320);               // height / width of each screenshot
   const shotEls = SHOTS.map((list, i) => list.map((src, n) => { const a = document.createElement('a'); a.className = 'shot'; a.href = URLS[i]; a.target = '_blank'; a.rel = 'noopener'; a.tabIndex = -1; a.setAttribute('aria-label', `Visit ${projects[i].title} website`); a.style.backgroundImage = `url(${src})`; a.dataset.pinNopin = 'true'; const pre = new Image(); pre.src = src; (pre.decode ? pre.decode() : Promise.resolve()).catch(() => {}); stage.append(a); a.addEventListener('pointerenter', () => { holdShots(i); }); a.addEventListener('pointerleave', () => { releaseShots(i); }); return { el: a, n, x: 0, y: 0, s: 0, vs: 0, ready: false }; }));
   const cur = { x: 0, y: 0, on: -1 }; let shotsOn = false, shotTimer = 0;
   const holdShots = (i) => { clearTimeout(shotTimer); if (cur.on !== i && !openLogo) { cur.on = i; wake(); } };
@@ -175,7 +180,7 @@ function init() {
   // Pack the screenshots around the logo: each one goes in the free spot nearest the logo (beside it, above it, or beside another screenshot) that
   // is inside the stage and touches neither the logo nor another screenshot. If they don't all fit, everything is scaled down until they do,
   // so the arrangement is clean wherever the logo has been dragged.
-  const ORDER = [[3, 0, 1, 2], [0, 1, 2]], layoutCache = [null, null];
+  const ORDER = [[3, 0, 1, 2], [0, 1, 2], [0, 2, 3, 1]], layoutCache = [null, null, null];
   function layout(i) {
     const k = logos[i], g = 12, m = 6, baseSc = Math.min(1, (W - 24) / 1120) * (W < 700 ? 0.72 : 1);
     const L = { l: k.x - k.w * 0.46, r: k.x + k.w * 0.46, t: k.y - k.h * 0.46, b: k.y + k.h * 0.46 };
@@ -190,7 +195,7 @@ function init() {
     // pass 0: clear of both logos and of each other. pass 1: may cover the other logo. pass 2: may also overlap each other a little (never the logo itself)
     for (let pass = 0; pass < 3; pass++) for (let f = 1; f >= 0.3; f -= 0.05) {
       const sc = baseSc * f, placed = [], out = [];
-      const size = (n) => { const w = (i === 0 && n === 3 ? 470 : 232) * sc; return [w, w * ASPECT(i, n)]; };
+      const size = (n) => { const w = (WIDE(i, n) ? 470 : 232) * sc; return [w, w * ASPECT(i, n)]; };
       let ok = true;
       for (const n of ORDER[i]) {
         const [w, h] = size(n), anchors = [L, ...placed.map((p) => p.rect)], cands = [];

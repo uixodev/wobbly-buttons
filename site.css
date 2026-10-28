@@ -622,3 +622,4 @@ html:not(.js) .ink-layer.drop, .project .blob.static .ink-layer.drop { display: 
 /* logos always sit above their screenshots, so a logo is never hidden under them */
 .logo-obj { z-index: 11; }
 .logo-obj.drag { z-index: 12; }
+.logo-obj.logo-master { width: clamp(110px, 13vw, 170px); }
