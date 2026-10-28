@@ -668,10 +668,6 @@ html:not(.js) .ink-layer.drop, .project .blob.static .ink-layer.drop { display: 
 .logo-obj:hover .f-front-svg, .logo-obj:focus-visible .f-front-svg { transform: perspective(240px) rotateX(-9deg); }
 @media (hover: none) { .logo-obj .sheet { bottom: 46%; } }
 
-.open-sq { position: absolute; left: 0; top: 0; z-index: 40; width: 40px; height: 40px; display: grid; place-items: center; border: 1.6px solid #111; background: var(--bg); color: #111; opacity: 0; pointer-events: none; transition: opacity .2s ease, background .25s ease; }
-.open-sq.on { opacity: 1; pointer-events: auto; }
-.open-sq svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
-.open-sq:hover, .open-sq:focus-visible { background: var(--accent); outline: none; }
 .shot { cursor: pointer; }
 .logo-obj.expanded .sheet { opacity: 0; bottom: 40%; transition: opacity .3s ease, bottom .4s ease; }   /* the pages leave the folder when they expand, so nothing is shown twice */
 .ink-stage { height: clamp(640px, 92vh, 900px); }

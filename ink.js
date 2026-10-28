@@ -256,14 +256,8 @@ function init() {
     s.el.addEventListener('pointermove', (e) => { pc.tx = e.clientX; pc.ty = e.clientY; });
     s.el.addEventListener('pointerleave', () => { pc.on = false; pcur.classList.remove('on'); document.documentElement.classList.remove('icon-cursor'); });
   });
-  // the little imperfect square with an arrow pointing to the top-right corner: it goes to the project's website
-  const SQR = ['3px 9px 4px 8px / 8px 4px 9px 3px', '8px 3px 9px 4px / 4px 9px 3px 8px', '4px 8px 3px 9px / 9px 3px 8px 4px', '9px 4px 8px 3px / 3px 8px 4px 9px', '5px 7px 9px 3px / 7px 4px 8px 5px'];
-  const sqs = logos.map((k) => {
-    const a = document.createElement('a'); a.className = 'open-sq'; a.href = URLS[k.i]; a.target = '_blank'; a.rel = 'noopener'; a.style.borderRadius = SQR[k.i]; a.setAttribute('aria-label', `Open the ${projects[k.i] ? projects[k.i].title : 'project'} website`);
-    a.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 L17 7"/><path d="M8 7 H17 V16"/></svg>'; a.tabIndex = -1; stage.append(a); return a;
-  });
   const closeAll = () => { logos.forEach((o) => { o.open = false; }); wake(); };
-  stage.addEventListener('pointerdown', (e) => { if (!e.target.closest('.logo-obj, .shot, .open-sq')) closeAll(); });
+  stage.addEventListener('pointerdown', (e) => { if (!e.target.closest('.logo-obj, .shot')) closeAll(); });
   function stepShots(dt) {
     let any = false;
     shotEls.forEach((list, i) => {
@@ -283,7 +277,7 @@ function init() {
         } else if (s.el.style.opacity !== '0') s.el.style.cssText = 'opacity:0;pointer-events:none';
       });
     });
-    logos.forEach((k, i) => { k.el.classList.toggle('expanded', !!k.open && !openLogo); const a = sqs[i], show = !!k.open && !openLogo && !k.drag; a.classList.toggle('on', show); if (show) a.style.transform = `translate(${(k.x + k.w * 0.5 - 20).toFixed(1)}px, ${(k.y - k.h * 0.5 - 34).toFixed(1)}px) rotate(${(-5 + i * 3).toFixed(0)}deg)`; });
+    logos.forEach((k) => { k.el.classList.toggle('expanded', !!k.open && !openLogo); });
     shotsOn = any;
   }
 
