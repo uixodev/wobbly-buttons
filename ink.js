@@ -79,7 +79,7 @@ function init() {
         if (k.x > r.x - g - hw && k.x < r.x + r.w + g + hw && k.y > r.y - g - hh && k.y < r.y + r.h + g + hh) { const dl = k.x - (r.x - g - hw), dr = r.x + r.w + g + hw - k.x; k.vx += (dl < dr ? -1 : 1) * 900 * dt; } }
       k.x += k.vx * dt; k.y += k.vy * dt;
       const hw = k.w / 2, hh = k.h / 2, floor = H - hh - 6;
-      if (k.y > floor) { k.y = floor; if (k.vy > 160) { k.vrot += (Math.random() - 0.5) * k.vy * 0.04; k.vsc -= Math.min(k.vy, 1500) * 0.0035; } k.vy = k.vy > 160 ? -k.vy * REST : 0; k.vx *= Math.pow(0.05, dt); }   // bounce, scuff and slide to a stop
+      if (k.y > floor) { k.y = floor; if (k.vy > 160) { k.vrot += (Math.random() - 0.5) * k.vy * 0.04; k.vsc -= Math.min(k.vy, 1500) * 0.0035; } k.vy = k.vy > 160 ? -k.vy * REST : 0; k.vx *= Math.pow(0.05, dt); if (Math.abs(k.vx) < 6) k.vx = 0; }   // bounce, scuff and slide to a stop
       if (k.x < hw) { k.x = hw; k.vx = Math.abs(k.vx) * REST; } if (k.x > W - hw) { k.x = W - hw; k.vx = -Math.abs(k.vx) * REST; }
       if (k.y < hh) { k.y = hh; k.vy = Math.abs(k.vy) * REST; }
     }
@@ -175,12 +175,17 @@ function init() {
   // Pack the screenshots around the logo: each one goes in the free spot nearest the logo (beside it, above it, or beside another screenshot) that
   // is inside the stage and touches neither the logo nor another screenshot. If they don't all fit, everything is scaled down until they do,
   // so the arrangement is clean wherever the logo has been dragged.
-  const ORDER = [[3, 0, 1, 2], [0, 1, 2]];
+  const ORDER = [[3, 0, 1, 2], [0, 1, 2]], layoutCache = [null, null];
   function layout(i) {
     const k = logos[i], g = 12, m = 6, baseSc = Math.min(1, (W - 24) / 1120) * (W < 700 ? 0.72 : 1);
     const L = { l: k.x - k.w * 0.46, r: k.x + k.w * 0.46, t: k.y - k.h * 0.46, b: k.y + k.h * 0.46 };
     const others = logos.filter((o) => o !== k && !o.gone).map((o) => ({ l: o.x - o.w * 0.5, r: o.x + o.w * 0.5, t: o.y - o.h * 0.5, b: o.y + o.h * 0.5 }));
     const hit = (a, b) => a.l < b.r + g * 0.6 && a.r > b.l - g * 0.6 && a.t < b.b + g * 0.6 && a.b > b.t - g * 0.6;
+    const cache = layoutCache[i];                                               // keep the previous arrangement while it is still valid (no flip-flopping between equal choices)
+    if (cache) { const rs = cache.out.map((o) => ({ l: o.cx - o.w / 2, r: o.cx + o.w / 2, t: o.cy - o.h / 2, b: o.cy + o.h / 2 }));
+      const okc = rs.every((r, a) => r.l >= m - 1 && r.t >= m - 1 && r.r <= W - m + 1 && r.b <= H - m + 1 && !hit(r, L) && (cache.pass > 0 || !others.some((o) => hit(r, o))) && (cache.pass > 1 || rs.every((q, b) => b === a || !hit(r, q))));
+      const near = rs.some((r) => Math.max(0, L.l - r.r, r.l - L.r) + Math.max(0, L.t - r.b, r.t - L.b) < 90);
+      if (okc && near) return cache.out; }
     // pass 0: clear of both logos and of each other. pass 1: may cover the other logo. pass 2: may also overlap each other a little (never the logo itself)
     for (let pass = 0; pass < 3; pass++) for (let f = 1; f >= 0.4; f -= 0.06) {
       const sc = baseSc * f, placed = [], out = [];
@@ -203,9 +208,9 @@ function init() {
         if (!best) { ok = false; break; }
         placed.push({ n, rect: best }); out[n] = { cx: (best.l + best.r) / 2, cy: (best.t + best.b) / 2, w, h };
       }
-      if (ok) return out;
+      if (ok) { layoutCache[i] = { out, pass }; return out; }
     }
-    return null;
+    layoutCache[i] = null; return null;
   }
   function stepShots(dt) {
     let any = false;
