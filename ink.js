@@ -40,48 +40,7 @@ function init() {
 
   const PROTO = new Set([3]);
   const tag = document.createElement('span'); tag.className = 'proto-tag hand'; tag.innerHTML = '<svg viewBox="0 0 44 30" aria-hidden="true"><path d="M40 24 C28 26 12 22 6 8 M6 8 L5 19 M6 8 L16 11"/></svg><span>prototype</span>'; tag.setAttribute('aria-hidden', 'true'); stage.append(tag);
-  // ── the logos sit on stones (cut like diamonds). A click cracks the stone; the 4th click breaks it, shards fly, and the project opens ──
-  const HITS = 4, NS = 'http://www.w3.org/2000/svg', rnd = (a, b) => a + Math.random() * (b - a);
-  const FACET_FILL = ['#FDFDFC', '#EFEDE9', '#E4E1DC', '#F6F4F1', '#DAD6D0', '#EFEDE9', '#E4E1DC'];
-  function gemGeometry(seed) {
-    const s = (n) => ((Math.sin(seed * 12.9898 + n * 78.233) * 43758.5453) % 1 + 1) % 1 * 6 - 3;
-    const A = [24 + s(1), 6 + s(2)], B = [76 + s(3), 6 + s(4)], C = [98 + s(5) * 0.5, 32 + s(6)], D = [50 + s(7), 86 + s(8) * 0.5], E = [2 + s(9) * 0.5, 32 + s(10)], P = [30 + s(11), 32], Q = [70 + s(12), 32];
-    return [[A, B, Q, P], [E, A, P], [B, C, Q], [E, P, D], [P, Q, D], [Q, C, D], [A, B, [50 + s(13), 20 + s(14)]]];
-  }
-  logos.forEach((k) => {
-    k.hits = 0; k.geo = gemGeometry(k.i * 3.7 + 1);
-    const svg = document.createElementNS(NS, 'svg'); svg.setAttribute('viewBox', '0 0 100 90'); svg.setAttribute('class', 'gem'); svg.setAttribute('aria-hidden', 'true'); svg.setAttribute('preserveAspectRatio', 'none');
-    k.geo.forEach((f, n) => { const p = document.createElementNS(NS, 'polygon'); p.setAttribute('points', f.map((q) => q.join(',')).join(' ')); p.setAttribute('fill', FACET_FILL[n]); svg.append(p); });
-    const crack = document.createElementNS(NS, 'g'); crack.setAttribute('class', 'cracks'); svg.append(crack); k.crack = crack;
-    k.el.prepend(svg); k.gem = svg;
-  });
-  const shards = [];
-  const stageShard = (k, f, n) => {
-    const w = k.w, h = k.h, s = document.createElementNS(NS, 'svg'); s.setAttribute('viewBox', '0 0 100 90'); s.setAttribute('class', 'shard'); s.style.width = w + 'px'; s.style.height = h + 'px';
-    const p = document.createElementNS(NS, 'polygon'); p.setAttribute('points', f.map((q) => q.join(',')).join(' ')); p.setAttribute('fill', FACET_FILL[n]); s.append(p); stage.append(s);
-    const cx = f.reduce((a, q) => a + q[0], 0) / f.length / 100 - 0.5, cy = f.reduce((a, q) => a + q[1], 0) / f.length / 90 - 0.5;
-    shards.push({ el: s, x: k.x, y: k.y, vx: cx * 520 + rnd(-120, 120), vy: cy * 300 - rnd(240, 520), r: 0, vr: rnd(-420, 420), age: 0, w, h });
-  };
-  function addCrack(k, e) {
-    const b = k.el.getBoundingClientRect(), px = clamp((e.clientX - b.left) / b.width * 100, 12, 88), py = clamp((e.clientY - b.top) / b.height * 90, 10, 80);
-    const nb = 2 + k.hits;
-    for (let i = 0; i < nb; i++) {
-      let x = px, y = py, a = rnd(0, 6.28), d = `M${x.toFixed(1)} ${y.toFixed(1)}`;
-      for (let s = 0; s < 3 + (i % 2); s++) { a += rnd(-0.7, 0.7); const l = rnd(8, 15); x = clamp(x + Math.cos(a) * l, 2, 98); y = clamp(y + Math.sin(a) * l, 4, 86); d += `L${x.toFixed(1)} ${y.toFixed(1)}`; }
-      const path = document.createElementNS(NS, 'path'); path.setAttribute('d', d); path.setAttribute('pathLength', '1'); path.setAttribute('class', 'crack'); k.crack.append(path);
-    }
-  }
-  function breakStone(k) {
-    k.geo.forEach((f, n) => stageShard(k, f, n)); k.gem.classList.add('broken'); k.broken = true; k.vy -= 360; k.vsc -= 4; k.vrot += rnd(-30, 30);
-    window.open(URLS[k.i], '_blank', 'noopener');
-    setTimeout(() => { k.crack.replaceChildren(); k.hits = 0; k.broken = false; k.gem.classList.remove('broken'); k.sc = 0.3; k.vsc = 0; }, 2600);
-    wake();
-  }
-  const visit = (k, e) => {
-    if (k.broken) return;
-    k.hits++; k.vsc -= 2.2; k.vrot += rnd(-26, 26); k.vx += rnd(-70, 70);
-    if (k.hits >= HITS) breakStone(k); else { addCrack(k, e); for (let i = 0; i < 3; i++) stageShard(k, k.geo[(Math.random() * 6) | 0].map((q) => [50 + (q[0] - 50) * 0.18, 45 + (q[1] - 45) * 0.18]), 0); }
-  };
+  const visit = (k) => { window.open(URLS[k.i], '_blank', 'noopener'); k.vsc -= 3; };
 
   // ── drag ──
   let dragK = null, down = null;
@@ -104,11 +63,11 @@ function init() {
       if (dragK !== k) return; dragK = null; k.drag = false; k.el.classList.remove('drag');
       if (e && e.pointerType === 'mouse') { const b = stage.getBoundingClientRect(); cur.x = e.clientX - b.left; cur.y = e.clientY - b.top; if (!openLogo) { cur.on = k.i; } }
       if (down && down.moved) { k.vx = clamp(down.pvx * 0.7, -900, 900); k.vy = clamp(down.pvy * 0.7, -900, 900); k.vrot += clamp(down.pvx * 0.012, -14, 14); k.vsc -= 3; }   // let go: it springs and slides to rest
-      else if (down) { down = null; visit(k, e); }
+      else if (down) { down = null; visit(k); }
       down = null; wake();
     };
     k.el.addEventListener('pointerup', up); k.el.addEventListener('pointercancel', up);
-    k.el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); const r = k.el.getBoundingClientRect(); visit(k, { clientX: r.left + r.width / 2, clientY: r.top + r.height / 2 }); } });
+    k.el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); visit(k); } });
   });
   addEventListener('keydown', (e) => { if (e.key === 'Escape' && openLogo) closeProject(); });
 
@@ -286,20 +245,12 @@ function init() {
     shotsOn = any;
   }
 
-  function stepShards(dt) {
-    for (let i = shards.length - 1; i >= 0; i--) {
-      const s = shards[i]; s.age += dt; s.vy += 2100 * dt; s.x += s.vx * dt; s.y += s.vy * dt; s.r += s.vr * dt;
-      if (s.y > H - s.h * 0.25 && s.vy > 0) { s.y = H - s.h * 0.25; s.vy *= -0.35; s.vx *= 0.7; s.vr *= 0.6; }
-      s.el.style.transform = `translate3d(${(s.x - s.w / 2).toFixed(1)}px,${(s.y - s.h / 2).toFixed(1)}px,0) rotate(${s.r.toFixed(1)}deg) scale(${(s.age < 0.15 ? 1 : 1).toFixed(2)})`; s.el.style.opacity = Math.max(0, Math.min(1, (2.3 - s.age) * 1.2)).toFixed(2);
-      if (s.age > 2.4) { s.el.remove(); shards.splice(i, 1); }
-    }
-  }
   function frame(now) {
     const dt = Math.min((now - last) / 1000, 1 / 30); last = now; time += dt;
     if (!reduced) { for (const k of logos) step(k, dt); collide(); }
-    stepShots(dt); stepShards(dt);
+    stepShots(dt);
     stepWindow(dt); draw();
-    raf = visible && (!reduced || shotsOn || shards.length) ? requestAnimationFrame(frame) : 0;
+    raf = visible && (!reduced || shotsOn) ? requestAnimationFrame(frame) : 0;
   }
   const wake = () => { if (!raf && visible) { last = performance.now(); raf = requestAnimationFrame(frame); } };
   new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) wake(); }, { rootMargin: '120px' }).observe(stage);
