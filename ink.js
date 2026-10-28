@@ -55,8 +55,9 @@ function init() {
       down.pvx = (nx - k.x) / dt * 0.6 + down.pvx * 0.4; down.pvy = (ny - k.y) / dt * 0.6 + down.pvy * 0.4; down.lt = now;
       k.tx = nx; k.ty = ny;
     });
-    const up = () => {
+    const up = (e) => {
       if (dragK !== k) return; dragK = null; k.drag = false; k.el.classList.remove('drag');
+      if (e && e.pointerType === 'mouse') { const b = stage.getBoundingClientRect(); cur.x = e.clientX - b.left; cur.y = e.clientY - b.top; if (!openLogo) { cur.on = k.i; } }
       if (down && down.moved) { k.vx = clamp(down.pvx * 0.7, -900, 900); k.vy = clamp(down.pvy * 0.7, -900, 900); k.vrot += clamp(down.pvx * 0.012, -14, 14); k.vsc -= 3; }   // let go: it springs and slides to rest
       else if (down) { down = null; visit(k); }
       down = null; wake();
@@ -168,7 +169,8 @@ function init() {
   logos.forEach((k, i) => {
     k.el.addEventListener('pointerenter', (e) => { if (e.pointerType !== 'mouse' || openLogo || k.drag) return; clearTimeout(shotTimer); const b = stage.getBoundingClientRect(); cur.x = e.clientX - b.left; cur.y = e.clientY - b.top; cur.on = i; shotsOn = true; shotEls[i].forEach((s) => { s.x = cur.x; s.y = cur.y; s.ready = true; }); wake(); });
     k.el.addEventListener('pointerleave', () => releaseShots(i));
-    k.el.addEventListener('pointermove', (e) => { if (cur.on !== i) return; const b = stage.getBoundingClientRect(); cur.x = e.clientX - b.left; cur.y = e.clientY - b.top; });
+    k.el.addEventListener('pointermove', (e) => { if (e.pointerType !== 'mouse') return; const b = stage.getBoundingClientRect(); cur.x = e.clientX - b.left; cur.y = e.clientY - b.top;
+      if (cur.on !== i && !k.drag && !openLogo) { clearTimeout(shotTimer); cur.on = i; wake(); } });     // still over the logo after a drag or a fall: show the screenshots
   });
   // Pack the screenshots around the logo: each one goes in the free spot nearest the logo (beside it, above it, or beside another screenshot) that
   // is inside the stage and touches neither the logo nor another screenshot. If they don't all fit, everything is scaled down until they do,
@@ -179,7 +181,8 @@ function init() {
     const L = { l: k.x - k.w * 0.46, r: k.x + k.w * 0.46, t: k.y - k.h * 0.46, b: k.y + k.h * 0.46 };
     const others = logos.filter((o) => o !== k && !o.gone).map((o) => ({ l: o.x - o.w * 0.5, r: o.x + o.w * 0.5, t: o.y - o.h * 0.5, b: o.y + o.h * 0.5 }));
     const hit = (a, b) => a.l < b.r + g * 0.6 && a.r > b.l - g * 0.6 && a.t < b.b + g * 0.6 && a.b > b.t - g * 0.6;
-    for (let f = 1; f >= 0.4; f -= 0.06) {
+    // pass 0: clear of both logos and of each other. pass 1: may cover the other logo. pass 2: may also overlap each other a little (never the logo itself)
+    for (let pass = 0; pass < 3; pass++) for (let f = 1; f >= 0.4; f -= 0.06) {
       const sc = baseSc * f, placed = [], out = [];
       const size = (n) => { const w = (i === 0 && n === 3 ? 470 : 232) * sc; return [w, w * ASPECT(i, n)]; };
       let ok = true;
@@ -194,7 +197,7 @@ function init() {
         for (const [x, y] of cands) {
           const r = { l: x, r: x + w, t: y, b: y + h };
           if (r.l < m || r.t < m || r.r > W - m || r.b > H - m) continue;
-          if (hit(r, L) || others.some((o) => hit(r, o)) || placed.some((p) => hit(r, p.rect))) continue;
+          if (hit(r, L) || (pass === 0 && others.some((o) => hit(r, o))) || (pass < 2 && placed.some((p) => hit(r, p.rect)))) continue;
           const sco = Math.hypot((r.l + r.r) / 2 - k.x, (r.t + r.b) / 2 - k.y); if (sco < bs) { bs = sco; best = r; }
         }
         if (!best) { ok = false; break; }
