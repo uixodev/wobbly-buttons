@@ -674,6 +674,3 @@ html:not(.js) .ink-layer.drop, .project .blob.static .ink-layer.drop { display: 
 @media (max-width: 900px) { .ink-stage { height: clamp(620px, 90svh, 820px); } }
 .proj-cur.proj-white { background: #fff; box-shadow: 0 6px 14px -6px rgba(17, 17, 17, .35), inset 0 0 0 1.5px rgba(17, 17, 17, .12); }
 .proj-cur.proj-white svg { stroke: #111; }
-
-/* services: every panel is Orchid purple; ink numbers and titles, no doodles, no custom cursor */
-.panel, .panel.pn2, .panel.pn4 { --bgp: var(--accent); --fg: #111; }
