@@ -158,11 +158,8 @@ function init() {
 
   // ── hovering a logo: its screenshots pop up around the cursor ──
   const SHOTS = [['assets/shot-mariia-1.webp', 'assets/shot-mariia-2.webp', 'assets/shot-mariia-3.webp', 'assets/shot-mariia-4.webp'], ['assets/shot-oksana-1.webp', 'assets/shot-oksana-2.webp', 'assets/shot-oksana-3.webp']];
-  // Each logo has a fixed composition: slot = [x, y, rotation, width, z] relative to the cluster centre (the cluster is centred over the logo)
-  const SLOTS = [
-    [[-300, -26, -7, 190, 6], [-176, 12, -3, 190, 8], [302, -22, 6, 190, 7], [66, 34, 2, 400, 9]],        // Mariia: three phones and the desktop, desktop in front
-    [[-215, 6, -5, 200, 6], [215, 6, 5, 200, 7], [0, -14, 0, 200, 8]],                                      // Oksana: three phones, middle one in front
-  ];
+  // Each screenshot has a fixed size, tilt and layer; the layout places them AROUND the logo (never on top of it), on the side with the most room.
+  const TILT = [[-6, 5, 4, 2], [-5, 5, 0]], LAYER = [[6, 7, 8, 9], [6, 7, 8]];
   const ASPECT = (i, n) => (i === 0 && n === 3 ? 368 / 560 : 600 / 320);               // height / width of each screenshot
   const shotEls = SHOTS.map((list, i) => list.map((src, n) => { const a = document.createElement('a'); a.className = 'shot'; a.href = URLS[i]; a.target = '_blank'; a.rel = 'noopener'; a.tabIndex = -1; a.setAttribute('aria-label', `Visit ${projects[i].title} website`); a.style.backgroundImage = `url(${src})`; a.dataset.pinNopin = 'true'; const pre = new Image(); pre.src = src; (pre.decode ? pre.decode() : Promise.resolve()).catch(() => {}); stage.append(a); a.addEventListener('pointerenter', () => { holdShots(i); }); a.addEventListener('pointerleave', () => { releaseShots(i); }); return { el: a, n, x: 0, y: 0, s: 0, vs: 0, ready: false }; }));
   const cur = { x: 0, y: 0, on: -1 }; let shotsOn = false, shotTimer = 0;
@@ -176,28 +173,38 @@ function init() {
   function stepShots(dt) {
     let any = false;
     shotEls.forEach((list, i) => {
-      const k = logos[i], on = cur.on === i && !openLogo && !k.drag, slots = SLOTS[i];
-      const sc = Math.min(1, (W - 24) / 840) * (W < 700 ? 0.9 : 1);                      // one scale for the whole cluster keeps every proportion
-      let top = 1e9, bot = -1e9;
-      slots.forEach((s, n) => { const h = s[3] * ASPECT(i, n) * sc; top = Math.min(top, s[1] * sc - h / 2); bot = Math.max(bot, s[1] * sc + h / 2); });
-      const halfW = 400 * sc, tcx = clamp(k.x, halfW + 6, Math.max(halfW + 6, W - halfW - 6)), tcy = clamp(k.y - 20, 6 - top, Math.max(6 - top, H - 6 - bot));
-      if (!list.cluster) list.cluster = { x: tcx, y: tcy, px: 0, py: 0 };
-      const C = list.cluster, e = 1 - Math.exp(-dt * 10);
-      if (on || list.some((s) => s.s > 0.01)) { C.x += (tcx - C.x) * e; C.y += (tcy - C.y) * e; }
-      else { C.x = tcx; C.y = tcy; }
-      const wantPx = on ? clamp((cur.x - C.x) * 0.03, -12, 12) : 0, wantPy = on ? clamp((cur.y - C.y) * 0.03, -8, 8) : 0;        // one shared, gentle parallax for the whole group
-      C.px += (wantPx - C.px) * (1 - Math.exp(-dt * 5)); C.py += (wantPy - C.py) * (1 - Math.exp(-dt * 5));
+      const k = logos[i], on = cur.on === i && !openLogo && !k.drag;
+      const sc = Math.min(1, (W - 24) / 1120) * (W < 700 ? 0.72 : 1), pw = 232 * sc, dw = 470 * sc, g = 18 * sc + 8;
+      const Lw = k.w * 0.92, Lh = k.h * 0.92, side = k.x < W / 2 ? 1 : -1;
+      const size = (n) => { const w = i === 0 && n === 3 ? dw : pw; return [w, w * ASPECT(i, n)]; };
+      // preferred centre for each shot, relative to the logo
+      const want = [];
+      if (i === 0) {
+        const [, dh] = size(3), [, ph] = size(0);
+        want[3] = [0, -(Lh / 2 + g + dh / 2)];                                                              // desktop above the logo
+        want[0] = [side * (Lw / 2 + g + pw / 2), Lh / 2 - ph / 2];                                          // phones stand beside it
+        want[1] = [side * (Lw / 2 + g + pw / 2 + pw * 0.72), Lh / 2 - ph / 2 - 18 * sc];
+        want[2] = [-side * (Lw / 2 + g + pw / 2), Lh / 2 - ph / 2];
+      } else {
+        const [, ph] = size(0);
+        want[0] = [-(Lw / 2 + g + pw / 2), Lh / 2 - ph / 2]; want[1] = [Lw / 2 + g + pw / 2, Lh / 2 - ph / 2];
+        want[2] = [0, -(Lh / 2 + g + ph / 2)];
+      }
       list.forEach((s, n) => {
-        const sl = slots[n], w = sl[3] * sc, h = w * ASPECT(i, n);
-        s.hold = (s.hold || 0) + (on ? dt : -dt); s.hold = clamp(s.hold, 0, 1);
-        const t = clamp((s.hold - n * 0.06) / 0.45, 0, 1), p = 1 - Math.pow(1 - t, 3), sm = s.sp === undefined ? 0 : s.sp;     // eased, no overshoot
-        s.sp = p;
+        const [w, h] = size(n); let cx = k.x + want[n][0], cy = k.y + want[n][1];
+        cx = clamp(cx, w / 2 + 6, W - w / 2 - 6); cy = clamp(cy, h / 2 + 6, Math.max(h / 2 + 6, H - h / 2 - 6));
+        // never sit on the logo: if the clamp pushed it back over the logo, slide it clear (sideways first, then up)
+        const ox = (w + Lw) / 2 + 6 - Math.abs(cx - k.x), oy = (h + Lh) / 2 + 6 - Math.abs(cy - k.y);
+        if (ox > 0 && oy > 0) { if (n === 2 && i === 1 || (i === 0 && n === 3)) cy = Math.max(h / 2 + 6, k.y - (Lh + h) / 2 - 6); else { const dir = cx >= k.x ? 1 : -1, nx = k.x + dir * ((w + Lw) / 2 + 6); if (nx > w / 2 + 6 && nx < W - w / 2 - 6) cx = nx; else cy = Math.max(h / 2 + 6, k.y - (Lh + h) / 2 - 6); } }
+        if (s.tx === undefined || (!on && s.s < 0.01)) { s.tx = cx; s.ty = cy; } else { const e = 1 - Math.exp(-dt * 10); s.tx += (cx - s.tx) * e; s.ty += (cy - s.ty) * e; }
+        s.hold = clamp((s.hold || 0) + (on ? dt : -dt), 0, 1);
+        const t = clamp((s.hold - n * 0.06) / 0.45, 0, 1), p = 1 - Math.pow(1 - t, 3);                              // eased, no overshoot
+        s.s = p;
         if (p > 0.001) {
           any = true;
-          const x = k.x + (C.x + sl[0] * sc + C.px - k.x) * p, y = k.y + (C.y + sl[1] * sc + C.py - k.y) * p, scale = 0.35 + 0.65 * p;
-          s.el.style.cssText = `background-image:url(${SHOTS[i][n]});width:${w.toFixed(1)}px;height:${h.toFixed(1)}px;z-index:${sl[4]};opacity:${Math.min(1, p * 1.6).toFixed(2)};transform:translate3d(${(x - w / 2).toFixed(1)}px,${(y - h / 2).toFixed(1)}px,0) rotate(${(sl[2] * p).toFixed(2)}deg) scale(${scale.toFixed(3)});pointer-events:${p > 0.85 && on ? 'auto' : 'none'}`;
+          const x = k.x + (s.tx - k.x) * p, y = k.y + (s.ty - k.y) * p, scale = 0.35 + 0.65 * p;
+          s.el.style.cssText = `background-image:url(${SHOTS[i][n]});width:${w.toFixed(1)}px;height:${h.toFixed(1)}px;z-index:${LAYER[i][n]};opacity:${Math.min(1, p * 1.6).toFixed(2)};transform:translate3d(${(x - w / 2).toFixed(1)}px,${(y - h / 2).toFixed(1)}px,0) rotate(${(TILT[i][n] * p).toFixed(2)}deg) scale(${scale.toFixed(3)});pointer-events:${p > 0.85 && on ? 'auto' : 'none'}`;
         } else if (s.el.style.opacity !== '0') s.el.style.cssText = 'opacity:0;pointer-events:none';
-        s.s = p;
       });
     });
     shotsOn = any;
