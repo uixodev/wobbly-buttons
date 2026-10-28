@@ -611,3 +611,6 @@ html:not(.js) .ink-layer.drop, .project .blob.static .ink-layer.drop { display: 
 .logo-obj.drag { cursor: grabbing; z-index: 4; }
 .logo-obj.gone { visibility: hidden; pointer-events: none; }
 .logo-obj:focus-visible { outline: 2px dashed var(--ink); outline-offset: 10px; border-radius: 12px; }
+
+.shot { position: absolute; left: 0; top: 0; z-index: 3; height: auto; border-radius: 14px; border: 1.5px solid #111; background: #fff; box-shadow: 0 16px 30px -12px rgba(17, 17, 17, .35); pointer-events: none; opacity: 0; will-change: transform; }
+.ink-stage.open .shot { display: none; }

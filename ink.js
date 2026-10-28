@@ -16,7 +16,7 @@ function init() {
   const win = document.getElementById('ink-window'), inkL = win.querySelector('.iw-ink'), cardL = win.querySelector('.iw-card'), body = win.querySelector('.iw-body');
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
   const PAD = 24, RAYS = 120;
-  let W = 0, H = 0, time = 0, last = 0, raf = 0, visible = true, openLogo = null;
+  let W = 0, H = 0, time = 0, last = 0, raf = 0, visible = true, openLogo = null, started = false;
 
   const projects = Array.from(fallback).map((a) => ({
     title: a.querySelector('h3').textContent.trim(), kind: a.querySelector('.label').textContent.trim(),
@@ -30,8 +30,8 @@ function init() {
   }
   function place() {
     const [m, o] = logos, r = Math.random;
-    m.x = W * (W < 700 ? 0.3 : 0.26); m.y = H * 0.42;
-    o.x = W * (W < 700 ? 0.68 : 0.62 + r() * 0.12); o.y = H * (0.58 + r() * 0.16);
+    m.x = W * (W < 700 ? 0.3 : 0.26); m.y = m.h / 2 + 10;
+    o.x = W * (W < 700 ? 0.68 : 0.55 + r() * 0.2); o.y = o.h / 2 - H * 0.35;
     logos.forEach((k) => { k.x = clamp(k.x, k.w / 2, W - k.w / 2); k.y = clamp(k.y, k.h / 2, H - k.h / 2); });
   }
 
@@ -63,29 +63,37 @@ function init() {
   });
   addEventListener('keydown', (e) => { if (e.key === 'Escape' && openLogo) closeProject(); });
 
-  // ── physics ──
+  // ── physics: real gravity. They fall, bounce, tumble, collide with each other and the walls, and come to rest on the floor ──
+  const G = 2100, REST = 0.42;
+  const rad = (k) => Math.min(k.w, k.h) * 0.46;
   function step(k, dt) {
-    const t = time;
-    if (k.drag) { k.vx = (k.tx - k.x) / dt * 0.0 + k.vx; }
-    let fx = 0, fy = 0;
-    if (!k.drag) {
-      if (k.i === 1) { fx += Math.cos(t * 0.21 + k.seed) * 14 + Math.sin(t * 0.37) * 6; fy += Math.sin(t * 0.27 + k.seed) * 10; }   // Oksana drifts
-      const m = 12, lw = k.w / 2 + m, lh = k.h / 2 + m;
-      if (k.x < lw) fx += (lw - k.x) * 40; if (k.x > W - lw) fx -= (k.x - (W - lw)) * 40; if (k.y < lh) fy += (lh - k.y) * 40; if (k.y > H - lh) fy -= (k.y - (H - lh)) * 40;
-      if (openLogo && win._rect && k !== openLogo) { const r = win._rect, g = 26, hw = k.w / 2, hh = k.h / 2;
-        if (k.x > r.x - g - hw && k.x < r.x + r.w + g + hw && k.y > r.y - g - hh && k.y < r.y + r.h + g + hh) {
-          const dl = k.x - (r.x - g - hw), dr = r.x + r.w + g + hw - k.x, du = k.y - (r.y - g - hh), dd = r.y + r.h + g + hh - k.y, mn = Math.min(dl, dr, du, dd), s = 340;
-          if (mn === dl) fx -= s; else if (mn === dr) fx += s; else if (mn === du) fy -= s; else fy += s; } }
-      k.vx += (fx - 5.2 * k.vx) * dt; k.vy += (fy - 5.2 * k.vy) * dt; k.x += k.vx * dt; k.y += k.vy * dt;
-    } else { k.x += (k.tx - k.x) * Math.min(1, dt * 22); k.y += (k.ty - k.y) * Math.min(1, dt * 22); k.x = clamp(k.x, k.w / 2, W - k.w / 2); k.y = clamp(k.y, k.h / 2, H - k.h / 2); }
-    // rocking: a spring on the angle (with a slow gentle target) and a spring on the scale (squash when released / popping back)
-    const target = k.i === 0 ? Math.sin(t * 0.9 + k.phase) * 6 : Math.sin(t * 0.5 + k.seed) * 5 + clamp(k.vx * 0.01, -8, 8);
-    k.vrot += (60 * (target - k.rot) - 5.5 * k.vrot) * dt; k.rot += k.vrot * dt;
+    if (k.drag) { k.x += (k.tx - k.x) * Math.min(1, dt * 24); k.y += (k.ty - k.y) * Math.min(1, dt * 24); k.x = clamp(k.x, k.w / 2, W - k.w / 2); k.y = clamp(k.y, k.h / 2, H - k.h / 2); k.vx = k.vy = 0; k.rest = false; }
+    else if (!started) { /* waiting to fall */ }
+    else {
+      k.vy += G * dt;
+      if (openLogo && win._rect && k !== openLogo) { const r = win._rect, g = 26, hw = k.w / 2, hh = k.h / 2;   // an open window is a solid block: logos slide off it
+        if (k.x > r.x - g - hw && k.x < r.x + r.w + g + hw && k.y > r.y - g - hh && k.y < r.y + r.h + g + hh) { const dl = k.x - (r.x - g - hw), dr = r.x + r.w + g + hw - k.x; k.vx += (dl < dr ? -1 : 1) * 900 * dt; } }
+      k.x += k.vx * dt; k.y += k.vy * dt;
+      const hw = k.w / 2, hh = k.h / 2, floor = H - hh - 6;
+      if (k.y > floor) { k.y = floor; if (k.vy > 160) { k.vrot += (Math.random() - 0.5) * k.vy * 0.04; k.vsc -= Math.min(k.vy, 1500) * 0.0035; } k.vy = k.vy > 160 ? -k.vy * REST : 0; k.vx *= Math.pow(0.05, dt); }   // bounce, scuff and slide to a stop
+      if (k.x < hw) { k.x = hw; k.vx = Math.abs(k.vx) * REST; } if (k.x > W - hw) { k.x = W - hw; k.vx = -Math.abs(k.vx) * REST; }
+      if (k.y < hh) { k.y = hh; k.vy = Math.abs(k.vy) * REST; }
+    }
+    const grounded = !k.drag && started && k.y >= H - k.h / 2 - 8;
+    const target = grounded ? (k.i === 0 ? 2 : -3) : clamp(k.vx * 0.012, -18, 18);          // upright when resting, leaning into the fall
+    k.vrot += (46 * (target - k.rot) - 5 * k.vrot) * dt; k.rot += k.vrot * dt;
     k.vsc += (90 * ((k.drag ? 1.08 : 1) - k.sc) - 7 * k.vsc) * dt; k.sc += k.vsc * dt;
+  }
+  function collide() {
+    const [a, b] = logos; if (a.gone || b.gone || a.drag && b.drag) return;
+    const dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy) || 1, min = rad(a) + rad(b);
+    if (d < min) { const nx = dx / d, ny = dy / d, o = min - d, wa = a.drag ? 0 : 1, wb = b.drag ? 0 : 1, wt = wa + wb || 1;
+      a.x -= nx * o * wa / wt; a.y -= ny * o * wa / wt; b.x += nx * o * wb / wt; b.y += ny * o * wb / wt;
+      const rv = (b.vx - a.vx) * nx + (b.vy - a.vy) * ny; if (rv < 0) { const j = -(1 + REST) * rv / 2; a.vx -= j * nx; a.vy -= j * ny; b.vx += j * nx; b.vy += j * ny; a.vrot += 8; b.vrot -= 8; } }
   }
   function draw() {
     for (const k of logos) {
-      const bob = k.i === 0 ? Math.sin(time * 0.7 + k.phase) * 9 : 0;
+      const bob = 0;
       k.el.style.transform = `translate(${(k.x - k.w / 2).toFixed(1)}px, ${(k.y - k.h / 2 + bob).toFixed(1)}px) rotate(${k.rot.toFixed(2)}deg) scale(${k.sc.toFixed(3)})`;
     }
   }
@@ -144,17 +152,45 @@ function init() {
     if (state.phase === 'closing') { let m = 0; for (let i = 0; i < RAYS; i++) m = Math.max(m, state.rC[i]); if (m < 14 || state.t > 1.4) finishClose(); }
   }
 
+
+  // ── hovering a logo: its screenshots pop up around the cursor ──
+  const SHOTS = [['assets/shot-mariia-1.webp', 'assets/shot-mariia-2.webp', 'assets/shot-mariia-3.webp', 'assets/shot-mariia-4.webp'], ['assets/shot-oksana-1.webp', 'assets/shot-oksana-2.webp', 'assets/shot-oksana-3.webp']];
+  const OFFS = [[-190, -60, -9, 1], [185, -95, 8, 1.05], [-120, 130, 6, .95], [150, 120, -7, 1.25]];     // dx, dy, rotation, size factor (the desktop shot is wider)
+  const shotEls = SHOTS.map((list) => list.map((src, n) => { const im = document.createElement('img'); im.className = 'shot'; im.src = src; im.alt = ''; im.decoding = 'async'; im.draggable = false; stage.append(im); return { el: im, n, x: 0, y: 0, s: 0, vs: 0, ready: false }; }));
+  const cur = { x: 0, y: 0, on: -1 }; let shotsOn = false;
+  logos.forEach((k, i) => {
+    k.el.addEventListener('pointerenter', (e) => { if (e.pointerType !== 'mouse' || openLogo || k.drag) return; const b = stage.getBoundingClientRect(); cur.x = e.clientX - b.left; cur.y = e.clientY - b.top; cur.on = i; shotsOn = true; shotEls[i].forEach((s) => { s.x = cur.x; s.y = cur.y; s.ready = true; }); wake(); });
+    k.el.addEventListener('pointerleave', () => { if (cur.on === i) cur.on = -1; wake(); });
+    k.el.addEventListener('pointermove', (e) => { if (cur.on !== i) return; const b = stage.getBoundingClientRect(); cur.x = e.clientX - b.left; cur.y = e.clientY - b.top; });
+  });
+  function stepShots(dt) {
+    let any = false;
+    shotEls.forEach((list, i) => list.forEach((s, n) => {
+      const on = cur.on === i && !openLogo && !logos[i].drag, o = OFFS[n] || OFFS[0];
+      const w = (n === 3 ? 230 : 104) * (W < 700 ? 0.8 : 1);
+      const tx = clamp(cur.x + o[0] * (W < 700 ? 0.7 : 1), w / 2 + 4, W - w / 2 - 4), ty = clamp(cur.y + o[1], 60, H - 60);
+      const lag = 7 - n * 1.1;                                                         // each screenshot trails the cursor a little differently
+      s.x += (tx - s.x) * Math.min(1, dt * lag); s.y += (ty - s.y) * Math.min(1, dt * lag);
+      s.vs += (120 * ((on ? 1 : 0) - s.s) - 12 * s.vs) * dt; s.s = Math.max(0, s.s + s.vs * dt);
+      if (s.s > 0.002 || on) { any = true; s.el.style.cssText = `width:${w}px;transform:translate(${(s.x - w / 2).toFixed(1)}px,${(s.y - 100).toFixed(1)}px) rotate(${(o[2] + Math.sin(time * 1.2 + n * 2) * 2).toFixed(1)}deg) scale(${s.s.toFixed(3)});opacity:${Math.min(1, s.s * 1.4).toFixed(2)}`; } else if (s.el.style.opacity !== '0') s.el.style.cssText = 'opacity:0';
+    }));
+    shotsOn = any;
+  }
+
   function frame(now) {
     const dt = Math.min((now - last) / 1000, 1 / 30); last = now; time += dt;
-    if (!reduced) for (const k of logos) step(k, dt);
+    if (!reduced) { for (const k of logos) step(k, dt); collide(); }
+    stepShots(dt);
     stepWindow(dt); draw();
-    raf = visible && !reduced ? requestAnimationFrame(frame) : 0;
+    raf = visible && (!reduced || shotsOn) ? requestAnimationFrame(frame) : 0;
   }
   const wake = () => { if (!raf && visible) { last = performance.now(); raf = requestAnimationFrame(frame); } };
   new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) wake(); }, { rootMargin: '120px' }).observe(stage);
+  new IntersectionObserver(([e]) => { if (e.isIntersecting && !started) { started = true; wake(); } }, { threshold: 0.45 }).observe(stage);
   addEventListener('resize', () => { resize(); draw(); });
 
   document.documentElement.classList.add('ink-ready');
   resize(); place(); resize(); draw();
-  if (!reduced) wake();
+  if (reduced) { started = true; logos.forEach((k) => { k.y = H - k.h / 2 - 8; }); draw(); }
+  else wake();
 }
