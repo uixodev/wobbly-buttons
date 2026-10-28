@@ -195,6 +195,19 @@ function init() {
   // Pack the screenshots around the logo: each one goes in the free spot nearest the logo (beside it, above it, or beside another screenshot) that
   // is inside the stage and touches neither the logo nor another screenshot. If they don't all fit, everything is scaled down until they do,
   // so the arrangement is clean wherever the logo has been dragged.
+
+  // ── the screenshots live inside each folder: they peek out behind the front flap and rise when you hover ──
+  els.forEach((el, i) => {
+    const front = el.querySelector('.f-front-svg'), wrap = document.createElement('div'); wrap.className = 'sheets';
+    const picks = i === 0 ? [0, 1, 3] : i === 2 ? [0, 2, 3] : i === 4 ? [0, 1, 3] : [0, 1, 2];
+    picks.forEach((n, idx) => {
+      const sh = document.createElement('div'), asp = ASPECT(i, n), wide = asp < 1; sh.className = 'sheet' + (wide ? ' wide' : '');
+      sh.style.backgroundImage = `url(${SHOTS[i][n]})`; sh.style.setProperty('--w', wide ? '52%' : `${(54 / asp * 0.8).toFixed(1)}%`); sh.style.aspectRatio = `${1 / asp}`;
+      sh.style.setProperty('--l', `${[6, 27, 48][idx]}%`); sh.style.setProperty('--r', `${[-7, 2, 8][idx]}deg`); sh.style.setProperty('--d', `${idx * 50}ms`);
+      wrap.append(sh);
+    });
+    el.insertBefore(wrap, front);
+  });
   const ORDER = [[3, 0, 1, 2], [0, 1, 2], [0, 2, 3, 1], [0, 1, 2, 3], [0, 1, 2, 3]], layoutCache = [null, null, null, null, null];
   function layout(i) {
     const k = logos[i], g = 12, m = 6, baseSc = Math.min(1, (W - 24) / 1120) * (W < 700 ? 0.72 : 1);
@@ -239,7 +252,8 @@ function init() {
     shotEls.forEach((list, i) => {
       const k = logos[i], on = cur.on === i && !openLogo && !k.drag;
       const active = on || list.some((s) => s.s > 0.01);
-      const lay = active ? layout(i) : null;
+      const lay = null;                                                                  // screenshots now live inside the folders instead of floating around the cursor
+      void active;
       list.forEach((s, n) => {
         const T = lay && lay[n];
         if (T) { if (s.tx === undefined || (!on && s.s < 0.01)) { s.tx = T.cx; s.ty = T.cy; s.w = T.w; s.h = T.h; } else { const e = 1 - Math.exp(-dt * 10); s.tx += (T.cx - s.tx) * e; s.ty += (T.cy - s.ty) * e; s.w += (T.w - s.w) * e; s.h += (T.h - s.h) * e; } }
