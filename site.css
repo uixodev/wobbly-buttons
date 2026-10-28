@@ -678,3 +678,4 @@ html:not(.js) .ink-layer.drop, .project .blob.static .ink-layer.drop { display: 
 /* services: no doodles; a card turns Orchid purple when you hover it */
 .panel { transition: opacity .9s ease, transform .9s cubic-bezier(.2, .7, .2, 1), translate .5s cubic-bezier(.3, 1.5, .5, 1), rotate .5s cubic-bezier(.3, 1.5, .5, 1), background-color .35s ease, color .35s ease; }
 .panel:hover, .panel:focus-within { --bgp: var(--accent); --fg: #111; }
+.logo-obj.logo-spark img { filter: none; }
