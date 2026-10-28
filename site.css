@@ -4,7 +4,7 @@
    ───────────────────────────────────────────────────────────────────────────── */
 @font-face { font-family: "Instrument Serif"; src: url("fonts/instrument-serif.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
 @font-face { font-family: "Instrument Serif"; src: url("fonts/instrument-serif-italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
-@font-face { font-family: "Newsreader"; src: url("fonts/newsreader.woff2") format("woff2"); font-weight: 300 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Newsreader"; src: url("fonts/newsreader.woff2") format("woff2"); font-weight: 300 800; font-style: normal; font-display: swap; }
 @font-face { font-family: "JetBrains Mono"; src: url("fonts/jetbrains-mono.woff2") format("woff2"); font-weight: 400 500; font-style: normal; font-display: swap; }
 @font-face { font-family: "Reenie Beanie"; src: url("fonts/reenie-beanie.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
 
@@ -408,7 +408,7 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .hero-story .hero-cat { width: 100%; margin: 0; }
 .hero-story .hero-cat svg { max-height: 42svh; }
 .hero-story .hero-copy { padding: 0; }
-.hero-story .hero-copy .lede { margin: 0 auto; max-width: 38rem; text-align: center; color: #4f4944; font-size: clamp(1.1rem, 1.4vw, 1.3rem); }
+.hero-story .hero-copy .lede { margin: 0 auto; max-width: 38rem; text-align: center; color: #111; font-weight: 600; font-size: clamp(1.15rem, 1.5vw, 1.4rem); line-height: 1.5; }
 .hero-story .actions { justify-content: center; }
 .hero-story .scroll-hint { position: absolute; left: 50%; bottom: 14px; right: auto; transform: translateX(-50%); align-items: center; margin: 0; opacity: 1; transition: opacity .4s ease; }
 .hero-story:not(.s0) .scroll-hint { opacity: 0; }
@@ -478,3 +478,12 @@ html:not(.js) .hero-story { height: auto; } html:not(.js) .hero-story .hero-pin 
 @media (prefers-reduced-motion: reduce) { .hero-story .scroll-down svg, .hero-story .scroll-down svg path { animation: none; stroke-dashoffset: 0; } }
 .hero-story { margin-top: -64px; }   /* the pinned stage starts at the very top of the screen (the nav bar is 64px tall in the flow) */
 .hero-pin { padding-top: 76px; }
+
+/* intro paragraph: words appear one by one as you scroll (hero.js sets .on on each word) */
+.hero-story .lede .w { opacity: .0; transform: translateY(.35em); display: inline-block; transition: opacity .25s ease, transform .35s ease; }
+.hero-story .lede .w.on { opacity: 1; transform: none; }
+.hero-story.static .lede .w { opacity: 1; transform: none; }
+html:not(.js) .hero-story .lede .w { opacity: 1; transform: none; }
+.hero-story.s3 .hs-p, .hero-story.s4 .hs-p { opacity: 1; }
+.hero-story { height: 440svh; }
+@media (max-width: 900px) { .hero-story { height: 400svh; } }
