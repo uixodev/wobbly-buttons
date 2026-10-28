@@ -164,7 +164,7 @@ function init() {
   const shotEls = SHOTS.map((list, i) => list.map((src, n) => { const a = document.createElement('a'); a.className = 'shot'; a.href = URLS[i]; a.target = '_blank'; a.rel = 'noopener'; a.tabIndex = -1; a.setAttribute('aria-label', `Visit ${projects[i].title} website`); a.style.backgroundImage = `url(${src})`; a.dataset.pinNopin = 'true'; const pre = new Image(); pre.src = src; (pre.decode ? pre.decode() : Promise.resolve()).catch(() => {}); stage.append(a); a.addEventListener('pointerenter', () => { holdShots(i); }); a.addEventListener('pointerleave', () => { releaseShots(i); }); return { el: a, n, x: 0, y: 0, s: 0, vs: 0, ready: false }; }));
   const cur = { x: 0, y: 0, on: -1 }; let shotsOn = false, shotTimer = 0;
   const holdShots = (i) => { clearTimeout(shotTimer); if (cur.on !== i && !openLogo) { cur.on = i; wake(); } };
-  const releaseShots = (i) => { clearTimeout(shotTimer); shotTimer = setTimeout(() => { if (cur.on === i) cur.on = -1; wake(); }, 380); };
+  const releaseShots = (i) => { clearTimeout(shotTimer); shotTimer = setTimeout(() => { if (cur.on === i) cur.on = -1; wake(); }, 130); };
   logos.forEach((k, i) => {
     k.el.addEventListener('pointerenter', (e) => { if (e.pointerType !== 'mouse' || openLogo || k.drag) return; clearTimeout(shotTimer); const b = stage.getBoundingClientRect(); cur.x = e.clientX - b.left; cur.y = e.clientY - b.top; cur.on = i; shotsOn = true; shotEls[i].forEach((s) => { s.x = cur.x; s.y = cur.y; s.ready = true; }); wake(); });
     k.el.addEventListener('pointerleave', () => releaseShots(i));
@@ -197,7 +197,7 @@ function init() {
         const ox = (w + Lw) / 2 + 6 - Math.abs(cx - k.x), oy = (h + Lh) / 2 + 6 - Math.abs(cy - k.y);
         if (ox > 0 && oy > 0) { if (n === 2 && i === 1 || (i === 0 && n === 3)) cy = Math.max(h / 2 + 6, k.y - (Lh + h) / 2 - 6); else { const dir = cx >= k.x ? 1 : -1, nx = k.x + dir * ((w + Lw) / 2 + 6); if (nx > w / 2 + 6 && nx < W - w / 2 - 6) cx = nx; else cy = Math.max(h / 2 + 6, k.y - (Lh + h) / 2 - 6); } }
         if (s.tx === undefined || (!on && s.s < 0.01)) { s.tx = cx; s.ty = cy; } else { const e = 1 - Math.exp(-dt * 10); s.tx += (cx - s.tx) * e; s.ty += (cy - s.ty) * e; }
-        s.hold = clamp((s.hold || 0) + (on ? dt : -dt), 0, 1);
+        s.hold = clamp((s.hold || 0) + (on ? dt : -dt * 3.2), 0, 1);
         const t = clamp((s.hold - n * 0.06) / 0.45, 0, 1), p = 1 - Math.pow(1 - t, 3);                              // eased, no overshoot
         s.s = p;
         if (p > 0.001) {
