@@ -42,28 +42,23 @@ function init() {
   const tag = document.createElement('span'); tag.className = 'proto-tag hand'; tag.innerHTML = '<svg viewBox="0 0 44 30" aria-hidden="true"><path d="M40 24 C28 26 12 22 6 8 M6 8 L5 19 M6 8 L16 11"/></svg><span>prototype</span>'; tag.setAttribute('aria-hidden', 'true'); stage.append(tag);
   // ── the logos sit on stones (cut like diamonds). A click cracks the stone; the 4th click breaks it, shards fly, and the project opens ──
   const HITS = 4, NS = 'http://www.w3.org/2000/svg', rnd = (a, b) => a + Math.random() * (b - a);
-  // each stone takes the colour of its logo; the facets are lighter / darker versions of it, so it reads as a lit, cut gem
-  const STONE = ['#D8B565', '#2C3224', '#222222', ['#22E0E6', '#2A9BFF', '#8A3DFF', '#E52DD6', '#FF3FA4', '#4C7BFF', '#16F0C9']];
-  const SHADE = [0.2, -0.04, -0.28, 0.1, -0.4, -0.16, 0.36];
-  const mixc = (hex, t) => { const n = parseInt(hex.slice(1), 16), c = [n >> 16, (n >> 8) & 255, n & 255], to = t > 0 ? 255 : 0, a = Math.abs(t); return '#' + c.map((v) => Math.round(v + (to - v) * a).toString(16).padStart(2, '0')).join(''); };
-  const fillsFor = (i) => SHADE.map((t, n) => (Array.isArray(STONE[i]) ? mixc(STONE[i][n], t * 0.35) : mixc(STONE[i], t)));
+  const FACET_FILL = ['#FDFDFC', '#EFEDE9', '#E4E1DC', '#F6F4F1', '#DAD6D0', '#EFEDE9', '#E4E1DC'];
   function gemGeometry(seed) {
     const s = (n) => ((Math.sin(seed * 12.9898 + n * 78.233) * 43758.5453) % 1 + 1) % 1 * 6 - 3;
     const A = [24 + s(1), 6 + s(2)], B = [76 + s(3), 6 + s(4)], C = [98 + s(5) * 0.5, 32 + s(6)], D = [50 + s(7), 86 + s(8) * 0.5], E = [2 + s(9) * 0.5, 32 + s(10)], P = [30 + s(11), 32], Q = [70 + s(12), 32];
     return [[A, B, Q, P], [E, A, P], [B, C, Q], [E, P, D], [P, Q, D], [Q, C, D], [A, B, [50 + s(13), 20 + s(14)]]];
   }
   logos.forEach((k) => {
-    k.hits = 0; k.geo = gemGeometry(k.i * 3.7 + 1); k.fills = fillsFor(k.i);
+    k.hits = 0; k.geo = gemGeometry(k.i * 3.7 + 1);
     const svg = document.createElementNS(NS, 'svg'); svg.setAttribute('viewBox', '0 0 100 90'); svg.setAttribute('class', 'gem'); svg.setAttribute('aria-hidden', 'true'); svg.setAttribute('preserveAspectRatio', 'none');
-    k.geo.forEach((f, n) => { const p = document.createElementNS(NS, 'polygon'); p.setAttribute('points', f.map((q) => q.join(',')).join(' ')); p.setAttribute('fill', k.fills[n]); svg.append(p); });
-    const sheen = document.createElementNS(NS, 'polygon'); sheen.setAttribute('class', 'sheen'); sheen.setAttribute('points', k.geo[0].map((q) => q.join(',')).join(' ')); svg.append(sheen);
+    k.geo.forEach((f, n) => { const p = document.createElementNS(NS, 'polygon'); p.setAttribute('points', f.map((q) => q.join(',')).join(' ')); p.setAttribute('fill', FACET_FILL[n]); svg.append(p); });
     const crack = document.createElementNS(NS, 'g'); crack.setAttribute('class', 'cracks'); svg.append(crack); k.crack = crack;
     k.el.prepend(svg); k.gem = svg;
   });
   const shards = [];
   const stageShard = (k, f, n) => {
     const w = k.w, h = k.h, s = document.createElementNS(NS, 'svg'); s.setAttribute('viewBox', '0 0 100 90'); s.setAttribute('class', 'shard'); s.style.width = w + 'px'; s.style.height = h + 'px';
-    const p = document.createElementNS(NS, 'polygon'); p.setAttribute('points', f.map((q) => q.join(',')).join(' ')); p.setAttribute('fill', k.fills[n]); s.append(p); stage.append(s);
+    const p = document.createElementNS(NS, 'polygon'); p.setAttribute('points', f.map((q) => q.join(',')).join(' ')); p.setAttribute('fill', FACET_FILL[n]); s.append(p); stage.append(s);
     const cx = f.reduce((a, q) => a + q[0], 0) / f.length / 100 - 0.5, cy = f.reduce((a, q) => a + q[1], 0) / f.length / 90 - 0.5;
     shards.push({ el: s, x: k.x, y: k.y, vx: cx * 520 + rnd(-120, 120), vy: cy * 300 - rnd(240, 520), r: 0, vr: rnd(-420, 420), age: 0, w, h });
   };
@@ -77,14 +72,14 @@ function init() {
     }
   }
   function breakStone(k) {
-    k.geo.forEach((f, n) => stageShard(k, f, n)); k.gem.classList.add('broken'); k.el.classList.add('open'); k.broken = true; k.vy -= 360; k.vsc -= 4; k.vrot += rnd(-30, 30);
+    k.geo.forEach((f, n) => stageShard(k, f, n)); k.gem.classList.add('broken'); k.broken = true; k.vy -= 360; k.vsc -= 4; k.vrot += rnd(-30, 30);
     window.open(URLS[k.i], '_blank', 'noopener');
-    setTimeout(() => { k.el.style.setProperty('--reveal', 0); k.crack.replaceChildren(); k.hits = 0; k.broken = false; k.gem.classList.remove('broken'); k.el.classList.remove('open'); k.sc = 0.3; k.vsc = 0; }, 2600);
+    setTimeout(() => { k.crack.replaceChildren(); k.hits = 0; k.broken = false; k.gem.classList.remove('broken'); k.sc = 0.3; k.vsc = 0; }, 2600);
     wake();
   }
   const visit = (k, e) => {
     if (k.broken) return;
-    k.hits++; k.el.style.setProperty('--reveal', Math.max(0, (k.hits - 1) / (HITS - 1)).toFixed(2)); k.vsc -= 2.2; k.vrot += rnd(-26, 26); k.vx += rnd(-70, 70);
+    k.hits++; k.vsc -= 2.2; k.vrot += rnd(-26, 26); k.vx += rnd(-70, 70);
     if (k.hits >= HITS) breakStone(k); else { addCrack(k, e); for (let i = 0; i < 3; i++) stageShard(k, k.geo[(Math.random() * 6) | 0].map((q) => [50 + (q[0] - 50) * 0.18, 45 + (q[1] - 45) * 0.18]), 0); }
   };
 
@@ -152,7 +147,7 @@ function init() {
     for (const k of logos) {
       if (PROTO.has(k.i)) { const tw = tag.offsetWidth, th = tag.offsetHeight; tag.classList.remove('flip'); tag.style.transform = `translate(${clamp(k.x - tw / 2 + 14, 4, W - tw - 4).toFixed(1)}px, ${Math.min(k.y + k.el.offsetHeight * k.sc / 2 + 12, H - th - 2).toFixed(1)}px) rotate(-3deg)`; tag.classList.toggle('on', cur.on === k.i && !openLogo); }
       const bob = 0;
-      k.el.style.transform = `translate(${(k.x - k.w / 2).toFixed(1)}px, ${(k.y - k.h / 2 + bob).toFixed(1)}px) perspective(600px) rotateY(${clamp(k.vx * 0.045 + Math.sin(time * 0.9 + k.phase) * 7, -35, 35).toFixed(1)}deg) rotateX(${(8 + clamp(k.vy * 0.01, -10, 10)).toFixed(1)}deg) rotate(${k.rot.toFixed(2)}deg) scale(${k.sc.toFixed(3)})`;
+      k.el.style.transform = `translate(${(k.x - k.w / 2).toFixed(1)}px, ${(k.y - k.h / 2 + bob).toFixed(1)}px) rotate(${k.rot.toFixed(2)}deg) scale(${k.sc.toFixed(3)})`;
     }
   }
 
