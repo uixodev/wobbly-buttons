@@ -18,7 +18,7 @@ function init() {
   const PAD = 24, RAYS = 120;
   let W = 0, H = 0, time = 0, last = 0, raf = 0, visible = true, openLogo = null, started = false;
 
-  const URLS = ['https://www.mvsugaringbristol.com/', 'https://oksana-nails.vercel.app/#book', 'https://www.masterforgeneralcontracting.com/', 'https://my-bristol-college-app-publish.vercel.app/', 'https://sweet-orchard.github.io/Jakub-portfolio/', 'https://randomspark.app'];
+  const URLS = ['https://www.mvsugaringbristol.com/', 'https://oksana-nails.vercel.app/#book', 'https://www.masterforgeneralcontracting.com/', 'https://my-bristol-college-app-publish.vercel.app/', 'https://sweet-orchard.github.io/Jakub-portfolio/', 'https://randomspark.app', 'https://sweet-orchard.github.io/unit10-cribbs-causeway-project/'];
   const projects = Array.from(fallback).map((a, idx) => ({
     title: a.querySelector('h3').textContent.trim(), kind: a.querySelector('.label').textContent.trim(),
     img: a.querySelector('img').getAttribute('src'), alt: a.querySelector('img').getAttribute('alt'), href: URLS[idx],
@@ -40,13 +40,14 @@ function init() {
     logos.forEach((k) => { k.w = k.el.offsetWidth; k.h = k.el.offsetHeight; k.x = clamp(k.x, k.w / 2, W - k.w / 2); k.y = clamp(k.y, k.h / 2, H - k.h / 2); });
   }
   function place() {
-    const [m, o, s, t, u, v] = logos, r = Math.random;
+    const [m, o, s, t, u, v, y] = logos, r = Math.random;
     m.x = W * (W < 700 ? 0.3 : 0.26); m.y = m.h / 2 + 10;
     o.x = W * (W < 700 ? 0.68 : 0.55 + r() * 0.2); o.y = o.h / 2 - H * 0.35;
     s.x = W * (W < 700 ? 0.5 : 0.82); s.y = s.h / 2 - H * 0.6;
     t.x = W * (W < 700 ? 0.18 : 0.4); t.y = t.h / 2 - H * 0.9;
     u.x = W * (W < 700 ? 0.8 : 0.68); u.y = u.h / 2 - H * 1.2;
     v.x = W * (W < 700 ? 0.4 : 0.9); v.y = v.h / 2 - H * 1.5;
+    y.x = W * (W < 700 ? 0.6 : 0.12); y.y = y.h / 2 - H * 1.8;
     logos.forEach((k) => { k.x = clamp(k.x, k.w / 2, W - k.w / 2); k.y = clamp(k.y, k.h / 2, H - k.h / 2); });
   }
 
@@ -100,7 +101,7 @@ function init() {
       if (k.y < hh) { k.y = hh; k.vy = Math.abs(k.vy) * REST; }
     }
     const grounded = !k.drag && started && k.y >= H - k.h / 2 - 8 - (k.i === 3 ? 38 : 0);
-    const target = grounded ? ([2, -3, 1, -2, 2, -2][k.i]) : clamp(k.vx * 0.012, -18, 18);          // upright when resting, leaning into the fall
+    const target = grounded ? ([2, -3, 1, -2, 2, -2, 1][k.i]) : clamp(k.vx * 0.012, -18, 18);          // upright when resting, leaning into the fall
     k.vrot += (46 * (target - k.rot) - 5 * k.vrot) * dt; k.rot += k.vrot * dt;
     k.vsc += (90 * ((k.drag ? 1.08 : 1) - k.sc) - 7 * k.vsc) * dt; k.sc += k.vsc * dt;
   }
@@ -178,11 +179,11 @@ function init() {
 
 
   // ── hovering a logo: its screenshots pop up around the cursor ──
-  const SHOTS = [['assets/shot-mariia-1.webp', 'assets/shot-mariia-2.webp', 'assets/shot-mariia-3.webp', 'assets/shot-mariia-4.webp'], ['assets/shot-oksana-1.webp', 'assets/shot-oksana-2.webp', 'assets/shot-oksana-3.webp'], ['assets/shot-master-3.webp', 'assets/shot-master-4.webp', 'assets/shot-master-1.webp', 'assets/shot-master-2.webp'], ['assets/shot-bristol-1.webp', 'assets/shot-bristol-2.webp', 'assets/shot-bristol-3.webp', 'assets/shot-bristol-4.webp'], ['assets/shot-jakub-1.webp', 'assets/shot-jakub-2.webp', 'assets/shot-jakub-3.webp', 'assets/shot-jakub-4.webp'], ['assets/shot-spark-1.webp', 'assets/shot-spark-2.webp', 'assets/shot-spark-3.webp']];
+  const SHOTS = [['assets/shot-mariia-1.webp', 'assets/shot-mariia-2.webp', 'assets/shot-mariia-3.webp', 'assets/shot-mariia-4.webp'], ['assets/shot-oksana-1.webp', 'assets/shot-oksana-2.webp', 'assets/shot-oksana-3.webp'], ['assets/shot-master-3.webp', 'assets/shot-master-4.webp', 'assets/shot-master-1.webp', 'assets/shot-master-2.webp'], ['assets/shot-bristol-1.webp', 'assets/shot-bristol-2.webp', 'assets/shot-bristol-3.webp', 'assets/shot-bristol-4.webp'], ['assets/shot-jakub-1.webp', 'assets/shot-jakub-2.webp', 'assets/shot-jakub-3.webp', 'assets/shot-jakub-4.webp'], ['assets/shot-spark-1.webp', 'assets/shot-spark-2.webp', 'assets/shot-spark-3.webp'], ['assets/shot-cribbs-1.webp', 'assets/shot-cribbs-2.webp', 'assets/shot-cribbs-3.webp']];
   // Each screenshot has a fixed size, tilt and layer; the layout places them AROUND the logo (never on top of it), on the side with the most room.
-  const TILT = [[-6, 5, 4, 2], [-5, 5, 0], [2, -3, -5, 5], [-4, 3, 5, -3], [3, -4, 4, -5], [-4, 4, -2]], LAYER = [[6, 7, 8, 9], [6, 7, 8], [9, 8, 6, 7], [6, 7, 8, 9], [6, 7, 8, 9], [6, 7, 8]];
-  const WIDE = (i, n) => (i === 0 && n === 3) || (i === 2 && n < 2) || (i === 4 && n < 3) || (i === 5 && n < 2);
-  const ASPECT = (i, n) => (i === 0 && n === 3 ? 368 / 560 : i === 2 ? [342 / 560, 338 / 560, 658 / 320, 654 / 320][n] : i === 3 ? [1608 / 782, 1586 / 776, 1594 / 718, 1602 / 718][n] : i === 4 ? [351 / 560, 376 / 560, 395 / 560, 658 / 320][n] : i === 5 ? [427 / 560, 429 / 560, 560 / 507][n] : 600 / 320);               // height / width of each screenshot
+  const TILT = [[-6, 5, 4, 2], [-5, 5, 0], [2, -3, -5, 5], [-4, 3, 5, -3], [3, -4, 4, -5], [-4, 4, -2], [3, -3, 4]], LAYER = [[6, 7, 8, 9], [6, 7, 8], [9, 8, 6, 7], [6, 7, 8, 9], [6, 7, 8, 9], [6, 7, 8], [8, 6, 7]];
+  const WIDE = (i, n) => (i === 0 && n === 3) || (i === 2 && n < 2) || (i === 4 && n < 3) || (i === 5 && n < 2) || (i === 6 && n !== 1);
+  const ASPECT = (i, n) => (i === 0 && n === 3 ? 368 / 560 : i === 2 ? [342 / 560, 338 / 560, 658 / 320, 654 / 320][n] : i === 3 ? [1608 / 782, 1586 / 776, 1594 / 718, 1602 / 718][n] : i === 4 ? [351 / 560, 376 / 560, 395 / 560, 658 / 320][n] : i === 5 ? [427 / 560, 429 / 560, 560 / 507][n] : i === 6 ? [366 / 560, 700 / 272, 397 / 560][n] : 600 / 320);               // height / width of each screenshot
   const shotEls = SHOTS.map((list, i) => list.map((src, n) => { const a = document.createElement('a'); a.className = 'shot'; a.href = URLS[i]; a.target = '_blank'; a.rel = 'noopener'; a.tabIndex = -1; a.setAttribute('aria-label', `Visit ${projects[i].title} website`); a.style.backgroundImage = `url(${src})`; a.dataset.pinNopin = 'true'; const pre = new Image(); pre.src = src; (pre.decode ? pre.decode() : Promise.resolve()).catch(() => {}); stage.append(a); a.addEventListener('pointerenter', () => { holdShots(i); }); a.addEventListener('pointerleave', () => { releaseShots(i); }); return { el: a, n, x: 0, y: 0, s: 0, vs: 0, ready: false }; }));
   const cur = { x: 0, y: 0, on: -1 }; let shotsOn = false, shotTimer = 0;
   const holdShots = (i) => { clearTimeout(shotTimer); if (cur.on !== i && !openLogo) { cur.on = i; wake(); } };
@@ -209,7 +210,7 @@ function init() {
     });
     el.insertBefore(wrap, front);
   });
-  const ORDER = [[3, 0, 1, 2], [0, 1, 2], [0, 2, 3, 1], [0, 1, 2, 3], [0, 1, 2, 3], [0, 1, 2]], layoutCache = [null, null, null, null, null, null];
+  const ORDER = [[3, 0, 1, 2], [0, 1, 2], [0, 2, 3, 1], [0, 1, 2, 3], [0, 1, 2, 3], [0, 1, 2], [0, 1, 2]], layoutCache = [null, null, null, null, null, null, null];
   function layout(i) {
     const k = logos[i], g = 12, m = 6, baseSc = Math.min(1, (W - 24) / 1120) * (W < 700 ? 0.72 : 1);
     const L = { l: k.x - k.w * 0.46, r: k.x + k.w * 0.46, t: k.y - k.h * 0.46, b: k.y + k.h * 0.46 };
