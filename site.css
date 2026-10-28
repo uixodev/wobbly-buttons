@@ -603,3 +603,11 @@ html:not(.js) .ink-layer.drop, .project .blob.static .ink-layer.drop { display: 
 .iw-cta p { margin: 0; max-width: 28rem; font: 400 1.05rem/1.55 var(--body); color: #111; }
 @media (max-width: 900px) { .ink-stage { height: clamp(600px, 86svh, 760px); } .iw-meta { flex-wrap: wrap; } .iw-close { right: 32px; top: 32px; } }
 @media (prefers-reduced-motion: reduce) { .ink-tag, .ink-zzz { transition: none; } }
+
+/* logo objects (ink.js): each project is its logo, floating on the stage */
+.logo-obj { position: absolute; left: 0; top: 0; z-index: 2; padding: 0; border: 0; background: none; cursor: grab; touch-action: pan-y; -webkit-tap-highlight-color: transparent; will-change: transform; width: clamp(96px, 12vw, 150px); }
+.logo-obj img { display: block; width: 100%; height: auto; pointer-events: none; filter: drop-shadow(0 10px 14px rgba(17, 17, 17, .12)); }
+.logo-obj.logo-oksana { width: clamp(130px, 17vw, 230px); }
+.logo-obj.drag { cursor: grabbing; z-index: 4; }
+.logo-obj.gone { visibility: hidden; pointer-events: none; }
+.logo-obj:focus-visible { outline: 2px dashed var(--ink); outline-offset: 10px; border-radius: 12px; }
