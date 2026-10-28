@@ -1,4 +1,4 @@
-// Viraa — page behaviour: scroll reveals, self-drawing hand-drawn lines, the newsletter form, and the playground experiments.
+// Vira — page behaviour: scroll reveals, self-drawing hand-drawn lines, the newsletter form, and the playground experiments.
 import { initPlayground } from './playground.js';
 
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
