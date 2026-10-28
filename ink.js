@@ -51,7 +51,7 @@ function init() {
 
   const PROTO = new Set([3]);
   const tag = document.createElement('span'); tag.className = 'proto-tag hand'; tag.innerHTML = '<svg viewBox="0 0 44 30" aria-hidden="true"><path d="M40 24 C28 26 12 22 6 8 M6 8 L5 19 M6 8 L16 11"/></svg><span>prototype</span>'; tag.setAttribute('aria-hidden', 'true'); stage.append(tag);
-  const visit = (k) => { window.open(URLS[k.i], '_blank', 'noopener'); k.vsc -= 3; };
+  const visit = (k) => { logos.forEach((o) => { if (o !== k) o.open = false; }); k.open = !k.open; k.vsc -= 2; wake(); };   // a click expands (or folds away) the screenshots around the folder
 
   // ── drag ──
   let dragK = null, down = null;
@@ -80,7 +80,7 @@ function init() {
     k.el.addEventListener('pointerup', up); k.el.addEventListener('pointercancel', up);
     k.el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); visit(k); } });
   });
-  addEventListener('keydown', (e) => { if (e.key === 'Escape' && openLogo) closeProject(); });
+  addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (openLogo) closeProject(); closeAll(); } });
 
   // ── physics: real gravity. They fall, bounce, tumble, collide with each other and the walls, and come to rest on the floor ──
   const G = 2100, REST = 0.42;
@@ -247,13 +247,20 @@ function init() {
     }
     layoutCache[i] = null; return null;
   }
+  // the little imperfect square with an arrow pointing to the top-right corner: it goes to the project's website
+  const SQR = ['3px 9px 4px 8px / 8px 4px 9px 3px', '8px 3px 9px 4px / 4px 9px 3px 8px', '4px 8px 3px 9px / 9px 3px 8px 4px', '9px 4px 8px 3px / 3px 8px 4px 9px', '5px 7px 9px 3px / 7px 4px 8px 5px'];
+  const sqs = logos.map((k) => {
+    const a = document.createElement('a'); a.className = 'open-sq'; a.href = URLS[k.i]; a.target = '_blank'; a.rel = 'noopener'; a.style.borderRadius = SQR[k.i]; a.setAttribute('aria-label', `Open the ${projects[k.i] ? projects[k.i].title : 'project'} website`);
+    a.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 L17 7"/><path d="M8 7 H17 V16"/></svg>'; a.tabIndex = -1; stage.append(a); return a;
+  });
+  const closeAll = () => { logos.forEach((o) => { o.open = false; }); wake(); };
+  stage.addEventListener('pointerdown', (e) => { if (!e.target.closest('.logo-obj, .shot, .open-sq')) closeAll(); });
   function stepShots(dt) {
     let any = false;
     shotEls.forEach((list, i) => {
-      const k = logos[i], on = cur.on === i && !openLogo && !k.drag;
+      const k = logos[i], on = !!k.open && !openLogo && !k.drag;
       const active = on || list.some((s) => s.s > 0.01);
-      const lay = null;                                                                  // screenshots now live inside the folders instead of floating around the cursor
-      void active;
+      const lay = active ? layout(i) : null;
       list.forEach((s, n) => {
         const T = lay && lay[n];
         if (T) { if (s.tx === undefined || (!on && s.s < 0.01)) { s.tx = T.cx; s.ty = T.cy; s.w = T.w; s.h = T.h; } else { const e = 1 - Math.exp(-dt * 10); s.tx += (T.cx - s.tx) * e; s.ty += (T.cy - s.ty) * e; s.w += (T.w - s.w) * e; s.h += (T.h - s.h) * e; } }
@@ -263,10 +270,11 @@ function init() {
         if (p > 0.001 && s.w) {
           any = true;
           const x = k.x + (s.tx - k.x) * p, y = k.y + (s.ty - k.y) * p, scale = 0.35 + 0.65 * p;
-          s.el.style.cssText = `background-image:url(${SHOTS[i][n]});width:${s.w.toFixed(1)}px;height:${s.h.toFixed(1)}px;z-index:${LAYER[i][n]};opacity:${Math.min(1, p * 1.6).toFixed(2)};transform:translate3d(${(x - s.w / 2).toFixed(1)}px,${(y - s.h / 2).toFixed(1)}px,0) rotate(${(TILT[i][n] * 0.5 * p).toFixed(2)}deg) scale(${scale.toFixed(3)});pointer-events:none`;
+          s.el.style.cssText = `background-image:url(${SHOTS[i][n]});width:${s.w.toFixed(1)}px;height:${s.h.toFixed(1)}px;z-index:${LAYER[i][n]};opacity:${Math.min(1, p * 1.6).toFixed(2)};transform:translate3d(${(x - s.w / 2).toFixed(1)}px,${(y - s.h / 2).toFixed(1)}px,0) rotate(${(TILT[i][n] * 0.5 * p).toFixed(2)}deg) scale(${scale.toFixed(3)});pointer-events:${p > 0.85 && on ? 'auto' : 'none'}`;
         } else if (s.el.style.opacity !== '0') s.el.style.cssText = 'opacity:0;pointer-events:none';
       });
     });
+    logos.forEach((k, i) => { const a = sqs[i], show = !!k.open && !openLogo && !k.drag; a.classList.toggle('on', show); if (show) a.style.transform = `translate(${(k.x + k.w * 0.5 - 20).toFixed(1)}px, ${(k.y - k.h * 0.5 - 34).toFixed(1)}px) rotate(${(-5 + i * 3).toFixed(0)}deg)`; });
     shotsOn = any;
   }
 
