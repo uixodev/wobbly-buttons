@@ -8,7 +8,7 @@
 
 const stage = document.getElementById('ink-stage');
 const fallback = document.querySelectorAll('.ink-fallback .project');
-if (stage && fallback.length) init();
+if (stage && fallback.length && !matchMedia('(max-width: 900px)').matches) init();     // phones get the calmer folder grid in mobile.js
 
 function init() {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
