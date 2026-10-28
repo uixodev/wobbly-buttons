@@ -540,7 +540,7 @@ html:not(.js) .hs-say { opacity: 1; transform: none; }
 .hero-story .hs-say .say-arrow .sk { display: none; }
 
 /* ═════════ BLACK & WHITE until you hover: project covers and playground tiles ═════════ */
-.project .blob, .tile-stage { filter: grayscale(1) contrast(1.04); transition: filter .6s ease; }
+.project .blob, .tile-stage { filter: grayscale(1) contrast(1.06) brightness(1.03); transition: filter .6s ease; }
 .project-link:hover .blob, .project-link:focus-visible .blob, .project-link:active .blob,
 .tile:hover .tile-stage, .tile:focus-within .tile-stage, .tile:active .tile-stage { filter: grayscale(0) contrast(1); }
 @media (prefers-reduced-motion: reduce) { .project .blob, .tile-stage { transition: none; } }
@@ -548,5 +548,5 @@ html:not(.js) .hs-say { opacity: 1; transform: none; }
 .project .blob.in-focus, .tile-stage.in-focus { filter: grayscale(0) contrast(1); }
 
 /* project covers sit on a Figma-style dot grid instead of a coloured backdrop */
-.project .blob { background: #ECEAE7 radial-gradient(circle, rgba(17, 17, 17, .28) 1.3px, transparent 1.7px) 0 0 / 26px 26px; }
-.scene-tablet, .scene-pink { background: #ECEAE7 radial-gradient(circle, rgba(17, 17, 17, .28) 1.3px, transparent 1.7px) 0 0 / 26px 26px; }
+.project .blob { background: #FDFDFC radial-gradient(circle, rgba(17, 17, 17, .2) 1.3px, transparent 1.7px) 0 0 / 26px 26px; }
+.scene-tablet, .scene-pink { background: #FDFDFC radial-gradient(circle, rgba(17, 17, 17, .2) 1.3px, transparent 1.7px) 0 0 / 26px 26px; }
