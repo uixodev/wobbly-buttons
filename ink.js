@@ -28,12 +28,12 @@ function init() {
   // each project is a folder: a black back panel with a tab, a paper peeking out, and a front flap the logo sits on (every outline a little off)
   els.forEach((el, i) => {
     const s = (n) => (Math.sin((i + 1) * 12.9898 + n * 78.233) * 43758.5453 % 1 + 1) % 1 * 3 - 1.5, NS = 'http://www.w3.org/2000/svg';
-    const svg = document.createElementNS(NS, 'svg'); svg.setAttribute('viewBox', '0 0 100 80'); svg.setAttribute('class', 'folder'); svg.setAttribute('aria-hidden', 'true'); svg.setAttribute('preserveAspectRatio', 'none');
-    const P = (d, cls) => { const p = document.createElementNS(NS, 'path'); p.setAttribute('d', d); p.setAttribute('class', cls); svg.append(p); };
-    P(`M${3 + s(1)} ${15 + s(2)} Q${3 + s(3)} ${6 + s(4)} ${12 + s(5)} ${6 + s(6)} H${35 + s(7)} Q${41 + s(8)} ${6 + s(9)} ${44 + s(10)} ${11 + s(11)} L${48 + s(12)} ${15 + s(13)} H${89 + s(14)} Q${97 + s(15)} ${15 + s(16)} ${97 + s(17)} ${23 + s(18)} V${70 + s(19)} Q${97 + s(20)} ${76 + s(21)} ${89 + s(22)} ${76 + s(23)} H${11 + s(24)} Q${3 + s(25)} ${76 + s(26)} ${3 + s(27)} ${69 + s(28)} Z`, 'f-back');
-    P(`M${14 + s(30)} ${22 + s(31)} L${20 + s(32)} ${10 + s(33)} L${74 + s(34)} ${11 + s(35)} L${80 + s(36)} ${24 + s(37)} Z`, 'f-paper');
-    P(`M${3 + s(40)} ${30 + s(41)} Q${3 + s(42)} ${23 + s(43)} ${10 + s(44)} ${23 + s(45)} L${90 + s(46)} ${22 + s(47)} Q${97 + s(48)} ${23 + s(49)} ${97 + s(50)} ${30 + s(51)} V${69 + s(52)} Q${97 + s(53)} ${76 + s(54)} ${90 + s(55)} ${76 + s(56)} H${10 + s(57)} Q${3 + s(58)} ${76 + s(59)} ${3 + s(60)} ${69 + s(61)} Z`, 'f-front');
-    el.prepend(svg);
+    const mk = (cls) => { const v = document.createElementNS(NS, 'svg'); v.setAttribute('viewBox', '0 0 100 80'); v.setAttribute('class', 'folder ' + cls); v.setAttribute('aria-hidden', 'true'); v.setAttribute('preserveAspectRatio', 'none'); return v; };
+    const P = (v, d, cls) => { const p = document.createElementNS(NS, 'path'); p.setAttribute('d', d); p.setAttribute('class', cls); v.append(p); };
+    const back = mk('f-back-svg'), front = mk('f-front-svg');
+    P(back, `M${3 + s(1)} ${15 + s(2)} Q${3 + s(3)} ${6 + s(4)} ${12 + s(5)} ${6 + s(6)} H${35 + s(7)} Q${41 + s(8)} ${6 + s(9)} ${44 + s(10)} ${11 + s(11)} L${48 + s(12)} ${15 + s(13)} H${89 + s(14)} Q${97 + s(15)} ${15 + s(16)} ${97 + s(17)} ${23 + s(18)} V${70 + s(19)} Q${97 + s(20)} ${76 + s(21)} ${89 + s(22)} ${76 + s(23)} H${11 + s(24)} Q${3 + s(25)} ${76 + s(26)} ${3 + s(27)} ${69 + s(28)} Z`, 'f-back');
+    P(front, `M${3 + s(40)} ${33 + s(41)} Q${3 + s(42)} ${26 + s(43)} ${10 + s(44)} ${26 + s(45)} L${90 + s(46)} ${25 + s(47)} Q${97 + s(48)} ${26 + s(49)} ${97 + s(50)} ${33 + s(51)} V${69 + s(52)} Q${97 + s(53)} ${76 + s(54)} ${90 + s(55)} ${76 + s(56)} H${10 + s(57)} Q${3 + s(58)} ${76 + s(59)} ${3 + s(60)} ${69 + s(61)} Z`, 'f-front');
+    el.prepend(back); el.append(front);
   });
   function resize() {
     const b = stage.getBoundingClientRect(); W = b.width; H = b.height;
