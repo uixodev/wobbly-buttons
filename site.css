@@ -555,3 +555,5 @@ html:not(.js) .hs-say { opacity: 1; transform: none; }
 .proj-cur svg { width: 40px; height: 40px; fill: none; stroke: #F7F3EF; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 @keyframes ink-wobble { to { border-radius: 46% 54% 48% 52% / 54% 46% 56% 44%; } }
 @media (prefers-reduced-motion: reduce) { .proj-cur { animation: none; } }
+.proj-cur { background: var(--accent); }
+.proj-cur svg { stroke: #111; }
