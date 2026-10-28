@@ -466,3 +466,4 @@ html:not(.js) .hero-story { height: auto; } html:not(.js) .hero-story .hero-pin 
 @media (prefers-reduced-motion: reduce) { .dd * { stroke-dashoffset: 0; transition: none; } }
 .panel.pn2 .dd *, .panel.pn4 .dd * { stroke: #111; }
 .panel .p-art > .dd { transition: opacity .5s ease; }
+.dd g > :nth-child(1) { --i: 1; } .dd g > :nth-child(2) { --i: 2; } .dd g > :nth-child(3) { --i: 3; } .dd g > :nth-child(4) { --i: 4; } .dd g > :nth-child(5) { --i: 5; } .dd g > :nth-child(6) { --i: 6; } .dd g > :nth-child(7) { --i: 7; } .dd g > :nth-child(8) { --i: 8; } .dd g > :nth-child(9) { --i: 9; } .dd g > :nth-child(10) { --i: 10; } .dd g > :nth-child(11) { --i: 11; } .dd g > :nth-child(12) { --i: 12; } 
