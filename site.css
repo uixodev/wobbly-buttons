@@ -607,7 +607,6 @@ html:not(.js) .ink-layer.drop, .project .blob.static .ink-layer.drop { display: 
 /* logo objects (ink.js): each project is its logo, floating on the stage */
 .logo-obj { position: absolute; left: 0; top: 0; z-index: 2; padding: 0; border: 0; background: none; cursor: grab; touch-action: pan-y; -webkit-tap-highlight-color: transparent; will-change: transform; width: clamp(96px, 12vw, 150px); }
 .logo-obj img { display: block; width: 100%; height: auto; pointer-events: none; }
-.logo-obj.logo-oksana { width: clamp(130px, 17vw, 230px); }
 .logo-obj.drag { cursor: grabbing; z-index: 4; }
 .logo-obj.gone { visibility: hidden; pointer-events: none; }
 .logo-obj:focus-visible { outline: 2px dashed var(--ink); outline-offset: 10px; border-radius: 12px; }
@@ -622,10 +621,19 @@ html:not(.js) .ink-layer.drop, .project .blob.static .ink-layer.drop { display: 
 /* logos always sit above their screenshots, so a logo is never hidden under them */
 .logo-obj { z-index: 11; }
 .logo-obj.drag { z-index: 12; }
-.logo-obj.logo-master { width: clamp(110px, 13vw, 170px); }
-.logo-obj.logo-bristol { width: clamp(80px, 9vw, 120px); }
 .proto-tag { position: absolute; left: 0; top: 0; z-index: 13; display: flex; align-items: flex-end; gap: 4px; font-size: clamp(1.5rem, 2vw, 1.9rem); line-height: 1; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity .2s ease; }
 .proto-tag.on { opacity: 1; }
 .proto-tag svg { display: none; width: 40px; height: 28px; fill: none; stroke: var(--ink); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; margin-bottom: 2px; }
 .proto-tag.flip { flex-direction: row-reverse; } .proto-tag.flip svg { transform: scaleX(-1); }
 .proto-tag span { text-shadow: 0 0 5px var(--bg), 0 0 5px var(--bg), 0 0 9px var(--bg); }
+
+/* the logos sit on stones cut like diamonds: click to crack, click again to break */
+.logo-obj { width: clamp(140px, 16vw, 200px); aspect-ratio: 100 / 90; }
+.logo-obj .gem { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 8px 8px rgba(17, 17, 17, .16)); transition: opacity .15s ease; }
+.logo-obj .gem polygon { stroke: #111; stroke-width: 1.5; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.logo-obj .gem.broken { opacity: 0; }
+.logo-obj .crack { fill: none; stroke: #111; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; stroke-dasharray: 1; stroke-dashoffset: 1; animation: crack-in .28s ease-out forwards; }
+@keyframes crack-in { to { stroke-dashoffset: 0; } }
+.logo-obj img { position: absolute; left: 50%; top: 48%; width: auto; height: auto; max-width: 62%; max-height: 58%; transform: translate(-50%, -50%); }
+.shard { position: absolute; left: 0; top: 0; z-index: 12; overflow: visible; pointer-events: none; will-change: transform; filter: drop-shadow(0 4px 4px rgba(17, 17, 17, .18)); }
+.shard polygon { stroke: #111; stroke-width: 1.4; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
