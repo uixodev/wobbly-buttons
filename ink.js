@@ -25,6 +25,16 @@ function init() {
   }));
   const logos = els.map((el, i) => ({ el, i, x: 0, y: 0, vx: 0, vy: 0, rot: 0, vrot: 0, sc: 1, vsc: 0, w: 0, h: 0, drag: false, gone: false, phase: i * 2.3, seed: Math.random() * 100 }));
 
+  // each project is a folder: a black back panel with a tab, a paper peeking out, and a front flap the logo sits on (every outline a little off)
+  els.forEach((el, i) => {
+    const s = (n) => (Math.sin((i + 1) * 12.9898 + n * 78.233) * 43758.5453 % 1 + 1) % 1 * 3 - 1.5, NS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(NS, 'svg'); svg.setAttribute('viewBox', '0 0 100 80'); svg.setAttribute('class', 'folder'); svg.setAttribute('aria-hidden', 'true'); svg.setAttribute('preserveAspectRatio', 'none');
+    const P = (d, cls) => { const p = document.createElementNS(NS, 'path'); p.setAttribute('d', d); p.setAttribute('class', cls); svg.append(p); };
+    P(`M${3 + s(1)} ${15 + s(2)} Q${3 + s(3)} ${6 + s(4)} ${12 + s(5)} ${6 + s(6)} H${35 + s(7)} Q${41 + s(8)} ${6 + s(9)} ${44 + s(10)} ${11 + s(11)} L${48 + s(12)} ${15 + s(13)} H${89 + s(14)} Q${97 + s(15)} ${15 + s(16)} ${97 + s(17)} ${23 + s(18)} V${70 + s(19)} Q${97 + s(20)} ${76 + s(21)} ${89 + s(22)} ${76 + s(23)} H${11 + s(24)} Q${3 + s(25)} ${76 + s(26)} ${3 + s(27)} ${69 + s(28)} Z`, 'f-back');
+    P(`M${14 + s(30)} ${22 + s(31)} L${20 + s(32)} ${10 + s(33)} L${74 + s(34)} ${11 + s(35)} L${80 + s(36)} ${24 + s(37)} Z`, 'f-paper');
+    P(`M${3 + s(40)} ${30 + s(41)} Q${3 + s(42)} ${23 + s(43)} ${10 + s(44)} ${23 + s(45)} L${90 + s(46)} ${22 + s(47)} Q${97 + s(48)} ${23 + s(49)} ${97 + s(50)} ${30 + s(51)} V${69 + s(52)} Q${97 + s(53)} ${76 + s(54)} ${90 + s(55)} ${76 + s(56)} H${10 + s(57)} Q${3 + s(58)} ${76 + s(59)} ${3 + s(60)} ${69 + s(61)} Z`, 'f-front');
+    el.prepend(svg);
+  });
   function resize() {
     const b = stage.getBoundingClientRect(); W = b.width; H = b.height;
     logos.forEach((k) => { k.w = k.el.offsetWidth; k.h = k.el.offsetHeight; k.x = clamp(k.x, k.w / 2, W - k.w / 2); k.y = clamp(k.y, k.h / 2, H - k.h / 2); });
@@ -74,7 +84,7 @@ function init() {
 
   // ── physics: real gravity. They fall, bounce, tumble, collide with each other and the walls, and come to rest on the floor ──
   const G = 2100, REST = 0.42;
-  const rad = (k) => Math.min(k.w, k.h) * 0.46;
+  const rad = (k) => (k.w + k.h) * 0.27;
   function step(k, dt) {
     if (k.drag) { k.x += (k.tx - k.x) * Math.min(1, dt * 24); k.y += (k.ty - k.y) * Math.min(1, dt * 24); k.x = clamp(k.x, k.w / 2, W - k.w / 2); k.y = clamp(k.y, k.h / 2, H - k.h / 2 - (k.i === 3 ? 38 : 0)); k.vx = k.vy = 0; k.rest = false; }
     else if (!started) { /* waiting to fall */ }
