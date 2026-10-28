@@ -40,15 +40,17 @@ function init() {
     logos.forEach((k) => { k.w = k.el.offsetWidth; k.h = k.el.offsetHeight; k.x = clamp(k.x, k.w / 2, W - k.w / 2); k.y = clamp(k.y, k.h / 2, H - k.h / 2); });
   }
   function place() {
-    const [m, o, s, t, u, v, y] = logos, r = Math.random;
-    m.x = W * (W < 700 ? 0.3 : 0.26); m.y = m.h / 2 + 10;
-    o.x = W * (W < 700 ? 0.68 : 0.55 + r() * 0.2); o.y = o.h / 2 - H * 0.35;
-    s.x = W * (W < 700 ? 0.5 : 0.82); s.y = s.h / 2 - H * 0.6;
-    t.x = W * (W < 700 ? 0.18 : 0.4); t.y = t.h / 2 - H * 0.9;
-    u.x = W * (W < 700 ? 0.8 : 0.68); u.y = u.h / 2 - H * 1.2;
-    v.x = W * (W < 700 ? 0.4 : 0.9); v.y = v.h / 2 - H * 1.5;
-    y.x = W * (W < 700 ? 0.6 : 0.12); y.y = y.h / 2 - H * 1.8;
-    logos.forEach((k) => { k.x = clamp(k.x, k.w / 2, W - k.w / 2); k.y = clamp(k.y, k.h / 2, H - k.h / 2); });
+    // random scatter: every folder gets its own random spot, kept clear of the others and of the hint text (best of many tries)
+    const placed = [], gap = 18, top = 70, bw = (k) => k.w * 1.0, bh = (k) => k.h * 1.0 + (k.i === 3 ? 40 : 14);
+    for (const k of logos) {
+      let best = null, bs = -1;
+      for (let n = 0; n < 160; n++) {
+        const x = k.w / 2 + 8 + Math.random() * (W - k.w - 16), y = Math.max(k.h / 2 + top, k.h / 2 + 8) + Math.random() * Math.max(1, H - k.h - top - 24);
+        const d = placed.length ? Math.min(...placed.map((p) => Math.max(Math.abs(p.x - x) - (bw(p.k) + bw(k)) / 2, Math.abs(p.y - y) - (bh(p.k) + bh(k)) / 2))) : 999;
+        if (d > bs) { bs = d; best = [x, y]; if (d > gap) break; }
+      }
+      k.x = best[0]; k.y = best[1]; k.sc = 0.3; k.vsc = 0; placed.push({ x: k.x, y: k.y, k });
+    }
   }
 
   const PROTO = new Set([3]);
@@ -85,13 +87,13 @@ function init() {
   addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (openLogo) closeProject(); closeAll(); } });
 
   // ── physics: real gravity. They fall, bounce, tumble, collide with each other and the walls, and come to rest on the floor ──
-  const G = 2100, REST = 0.42;
+  const G = 0, REST = 0.42;       // no gravity: folders stay wherever they are placed (or dropped)
   const rad = (k) => (k.w + k.h) * 0.27;
   function step(k, dt) {
     if (k.drag) { k.x += (k.tx - k.x) * Math.min(1, dt * 24); k.y += (k.ty - k.y) * Math.min(1, dt * 24); k.x = clamp(k.x, k.w / 2, W - k.w / 2); k.y = clamp(k.y, k.h / 2, H - k.h / 2 - (k.i === 3 ? 38 : 0)); k.vx = k.vy = 0; k.rest = false; }
     else if (!started) { /* waiting to fall */ }
     else {
-      k.vy += G * dt;
+      k.vy += G * dt; const damp = Math.pow(0.04, dt); k.vx *= damp; k.vy *= damp; if (Math.abs(k.vx) + Math.abs(k.vy) < 4) k.vx = k.vy = 0;      // a thrown folder slides and stops
       if (openLogo && win._rect && k !== openLogo) { const r = win._rect, g = 26, hw = k.w / 2, hh = k.h / 2;   // an open window is a solid block: logos slide off it
         if (k.x > r.x - g - hw && k.x < r.x + r.w + g + hw && k.y > r.y - g - hh && k.y < r.y + r.h + g + hh) { const dl = k.x - (r.x - g - hw), dr = r.x + r.w + g + hw - k.x; k.vx += (dl < dr ? -1 : 1) * 900 * dt; } }
       k.x += k.vx * dt; k.y += k.vy * dt;
@@ -100,7 +102,7 @@ function init() {
       if (k.x < hw) { k.x = hw; k.vx = Math.abs(k.vx) * REST; } if (k.x > W - hw) { k.x = W - hw; k.vx = -Math.abs(k.vx) * REST; }
       if (k.y < hh) { k.y = hh; k.vy = Math.abs(k.vy) * REST; }
     }
-    const grounded = !k.drag && started && k.y >= H - k.h / 2 - 8 - (k.i === 3 ? 38 : 0);
+    const grounded = !k.drag && started && Math.hypot(k.vx, k.vy) < 60;
     const target = grounded ? ([2, -3, 1, -2, 2, -2, 1][k.i]) : clamp(k.vx * 0.012, -18, 18);          // upright when resting, leaning into the fall
     k.vrot += (46 * (target - k.rot) - 5 * k.vrot) * dt; k.rot += k.vrot * dt;
     k.vsc += (90 * ((k.drag ? 1.08 : 1) - k.sc) - 7 * k.vsc) * dt; k.sc += k.vsc * dt;

@@ -711,3 +711,4 @@ html:not(.js) .ink-layer.drop, .project .blob.static .ink-layer.drop { display: 
 .ms-visit { align-self: center; display: inline-flex; gap: .6em; align-items: center; padding: 1em 1.8em; background: #111; color: var(--bg); border-radius: 999px 940px 999px 960px / 880px 999px 940px 999px; text-decoration: none; font: 400 .8rem/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; }
 html.ms-open { overflow: hidden; }
 .mgrid .mf:last-child:nth-child(odd) { grid-column: 1 / -1; width: calc(50% - 8px); justify-self: center; }
+.logo-obj { transition: opacity .4s ease; }
