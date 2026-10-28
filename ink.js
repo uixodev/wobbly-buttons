@@ -18,7 +18,7 @@ function init() {
   const PAD = 24, RAYS = 120;
   let W = 0, H = 0, time = 0, last = 0, raf = 0, visible = true, openLogo = null, started = false;
 
-  const URLS = ['https://www.mvsugaringbristol.com/', 'https://oksana-nails.vercel.app/#book', 'https://www.masterforgeneralcontracting.com/'];
+  const URLS = ['https://www.mvsugaringbristol.com/', 'https://oksana-nails.vercel.app/#book', 'https://www.masterforgeneralcontracting.com/', 'https://my-bristol-college-app-publish.vercel.app/'];
   const projects = Array.from(fallback).map((a, idx) => ({
     title: a.querySelector('h3').textContent.trim(), kind: a.querySelector('.label').textContent.trim(),
     img: a.querySelector('img').getAttribute('src'), alt: a.querySelector('img').getAttribute('alt'), href: URLS[idx],
@@ -30,13 +30,16 @@ function init() {
     logos.forEach((k) => { k.w = k.el.offsetWidth; k.h = k.el.offsetHeight; k.x = clamp(k.x, k.w / 2, W - k.w / 2); k.y = clamp(k.y, k.h / 2, H - k.h / 2); });
   }
   function place() {
-    const [m, o, s] = logos, r = Math.random;
+    const [m, o, s, t] = logos, r = Math.random;
     m.x = W * (W < 700 ? 0.3 : 0.26); m.y = m.h / 2 + 10;
     o.x = W * (W < 700 ? 0.68 : 0.55 + r() * 0.2); o.y = o.h / 2 - H * 0.35;
     s.x = W * (W < 700 ? 0.5 : 0.82); s.y = s.h / 2 - H * 0.6;
+    t.x = W * (W < 700 ? 0.18 : 0.4); t.y = t.h / 2 - H * 0.9;
     logos.forEach((k) => { k.x = clamp(k.x, k.w / 2, W - k.w / 2); k.y = clamp(k.y, k.h / 2, H - k.h / 2); });
   }
 
+  const PROTO = new Set([3]);
+  const tag = document.createElement('span'); tag.className = 'proto-tag hand'; tag.textContent = 'prototype ✎'; tag.setAttribute('aria-hidden', 'true'); stage.append(tag);
   const visit = (k) => { window.open(URLS[k.i], '_blank', 'noopener'); k.vsc -= 3; };
 
   // ── drag ──
@@ -85,7 +88,7 @@ function init() {
       if (k.y < hh) { k.y = hh; k.vy = Math.abs(k.vy) * REST; }
     }
     const grounded = !k.drag && started && k.y >= H - k.h / 2 - 8;
-    const target = grounded ? ([2, -3, 1][k.i]) : clamp(k.vx * 0.012, -18, 18);          // upright when resting, leaning into the fall
+    const target = grounded ? ([2, -3, 1, -2][k.i]) : clamp(k.vx * 0.012, -18, 18);          // upright when resting, leaning into the fall
     k.vrot += (46 * (target - k.rot) - 5 * k.vrot) * dt; k.rot += k.vrot * dt;
     k.vsc += (90 * ((k.drag ? 1.08 : 1) - k.sc) - 7 * k.vsc) * dt; k.sc += k.vsc * dt;
   }
@@ -101,6 +104,7 @@ function init() {
   }
   function draw() {
     for (const k of logos) {
+      if (PROTO.has(k.i)) tag.style.transform = `translate(${(k.x - k.w * 0.5).toFixed(1)}px, ${(k.y + k.h * 0.52).toFixed(1)}px) rotate(-4deg)`;
       const bob = 0;
       k.el.style.transform = `translate(${(k.x - k.w / 2).toFixed(1)}px, ${(k.y - k.h / 2 + bob).toFixed(1)}px) rotate(${k.rot.toFixed(2)}deg) scale(${k.sc.toFixed(3)})`;
     }
@@ -162,11 +166,11 @@ function init() {
 
 
   // ── hovering a logo: its screenshots pop up around the cursor ──
-  const SHOTS = [['assets/shot-mariia-1.webp', 'assets/shot-mariia-2.webp', 'assets/shot-mariia-3.webp', 'assets/shot-mariia-4.webp'], ['assets/shot-oksana-1.webp', 'assets/shot-oksana-2.webp', 'assets/shot-oksana-3.webp'], ['assets/shot-master-3.webp', 'assets/shot-master-4.webp', 'assets/shot-master-1.webp', 'assets/shot-master-2.webp']];
+  const SHOTS = [['assets/shot-mariia-1.webp', 'assets/shot-mariia-2.webp', 'assets/shot-mariia-3.webp', 'assets/shot-mariia-4.webp'], ['assets/shot-oksana-1.webp', 'assets/shot-oksana-2.webp', 'assets/shot-oksana-3.webp'], ['assets/shot-master-3.webp', 'assets/shot-master-4.webp', 'assets/shot-master-1.webp', 'assets/shot-master-2.webp'], ['assets/shot-bristol-1.webp', 'assets/shot-bristol-2.webp', 'assets/shot-bristol-3.webp', 'assets/shot-bristol-4.webp']];
   // Each screenshot has a fixed size, tilt and layer; the layout places them AROUND the logo (never on top of it), on the side with the most room.
-  const TILT = [[-6, 5, 4, 2], [-5, 5, 0], [2, -3, -5, 5]], LAYER = [[6, 7, 8, 9], [6, 7, 8], [9, 8, 6, 7]];
+  const TILT = [[-6, 5, 4, 2], [-5, 5, 0], [2, -3, -5, 5], [-4, 3, 5, -3]], LAYER = [[6, 7, 8, 9], [6, 7, 8], [9, 8, 6, 7], [6, 7, 8, 9]];
   const WIDE = (i, n) => (i === 0 && n === 3) || i === 2 && n < 2;
-  const ASPECT = (i, n) => (i === 0 && n === 3 ? 368 / 560 : i === 2 ? [342 / 560, 338 / 560, 658 / 320, 654 / 320][n] : 600 / 320);               // height / width of each screenshot
+  const ASPECT = (i, n) => (i === 0 && n === 3 ? 368 / 560 : i === 2 ? [342 / 560, 338 / 560, 658 / 320, 654 / 320][n] : i === 3 ? [1608 / 782, 1586 / 776, 1594 / 718, 1602 / 718][n] : 600 / 320);               // height / width of each screenshot
   const shotEls = SHOTS.map((list, i) => list.map((src, n) => { const a = document.createElement('a'); a.className = 'shot'; a.href = URLS[i]; a.target = '_blank'; a.rel = 'noopener'; a.tabIndex = -1; a.setAttribute('aria-label', `Visit ${projects[i].title} website`); a.style.backgroundImage = `url(${src})`; a.dataset.pinNopin = 'true'; const pre = new Image(); pre.src = src; (pre.decode ? pre.decode() : Promise.resolve()).catch(() => {}); stage.append(a); a.addEventListener('pointerenter', () => { holdShots(i); }); a.addEventListener('pointerleave', () => { releaseShots(i); }); return { el: a, n, x: 0, y: 0, s: 0, vs: 0, ready: false }; }));
   const cur = { x: 0, y: 0, on: -1 }; let shotsOn = false, shotTimer = 0;
   const holdShots = (i) => { clearTimeout(shotTimer); if (cur.on !== i && !openLogo) { cur.on = i; wake(); } };
@@ -180,7 +184,7 @@ function init() {
   // Pack the screenshots around the logo: each one goes in the free spot nearest the logo (beside it, above it, or beside another screenshot) that
   // is inside the stage and touches neither the logo nor another screenshot. If they don't all fit, everything is scaled down until they do,
   // so the arrangement is clean wherever the logo has been dragged.
-  const ORDER = [[3, 0, 1, 2], [0, 1, 2], [0, 2, 3, 1]], layoutCache = [null, null, null];
+  const ORDER = [[3, 0, 1, 2], [0, 1, 2], [0, 2, 3, 1], [0, 1, 2, 3]], layoutCache = [null, null, null, null];
   function layout(i) {
     const k = logos[i], g = 12, m = 6, baseSc = Math.min(1, (W - 24) / 1120) * (W < 700 ? 0.72 : 1);
     const L = { l: k.x - k.w * 0.46, r: k.x + k.w * 0.46, t: k.y - k.h * 0.46, b: k.y + k.h * 0.46 };
