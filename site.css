@@ -432,7 +432,7 @@ html:not(.js) .hero-story { height: auto; } html:not(.js) .hero-story .hero-pin 
 /* the "Scroll down" cue at the bottom of the first frame (desktop and phone) */
 .hero-story .scroll-down { bottom: clamp(14px, 3.5vh, 34px); gap: 10px; z-index: 4; display: flex !important; }
 .hero-story .scroll-down span { font: 400 clamp(.78rem, 1vw, .9rem)/1 var(--mono); letter-spacing: .2em; text-transform: uppercase; color: var(--ink); background: color-mix(in srgb, var(--bg) 88%, transparent); padding: 8px 14px; border-radius: 999px; border: 1.5px solid var(--ink); }
-.hero-story .scroll-down i { height: 34px; }
+
 @media (max-width: 900px) { .hero-story .scroll-down { bottom: 22px; } }
 
 /* ═════════ SERVICES on phones: the same five panels become a deck. Swipe the top card away and it slips back under the pile ═════════ */
@@ -467,3 +467,14 @@ html:not(.js) .hero-story { height: auto; } html:not(.js) .hero-story .hero-pin 
 .panel.pn2 .dd *, .panel.pn4 .dd * { stroke: #111; }
 .panel .p-art > .dd { transition: opacity .5s ease; }
 .dd g > :nth-child(1) { --i: 1; } .dd g > :nth-child(2) { --i: 2; } .dd g > :nth-child(3) { --i: 3; } .dd g > :nth-child(4) { --i: 4; } .dd g > :nth-child(5) { --i: 5; } .dd g > :nth-child(6) { --i: 6; } .dd g > :nth-child(7) { --i: 7; } .dd g > :nth-child(8) { --i: 8; } .dd g > :nth-child(9) { --i: 9; } .dd g > :nth-child(10) { --i: 10; } .dd g > :nth-child(11) { --i: 11; } .dd g > :nth-child(12) { --i: 12; } 
+
+/* handwritten "scroll down" with a doodle arrow */
+.hero-story .scroll-down { flex-direction: column; gap: 2px; }
+.hero-story .scroll-down span.hand { font: 400 clamp(1.5rem, 2.2vw, 2rem)/1 var(--hand); letter-spacing: .02em; text-transform: none; border: 0; border-radius: 0; padding: 2px 8px; background: color-mix(in srgb, var(--bg) 80%, transparent); transform: rotate(-3deg); }
+.hero-story .scroll-down svg { width: 30px; height: 44px; fill: none; stroke: var(--ink); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; overflow: visible; animation: sd-bob 1.6s ease-in-out infinite; }
+.hero-story .scroll-down svg path { stroke-dasharray: 1; stroke-dashoffset: 1; animation: sd-draw 1.2s ease .6s forwards; }
+@keyframes sd-draw { to { stroke-dashoffset: 0; } }
+@keyframes sd-bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 6px; } }
+@media (prefers-reduced-motion: reduce) { .hero-story .scroll-down svg, .hero-story .scroll-down svg path { animation: none; stroke-dashoffset: 0; } }
+.hero-story { margin-top: -64px; }   /* the pinned stage starts at the very top of the screen (the nav bar is 64px tall in the flow) */
+.hero-pin { padding-top: 76px; }
