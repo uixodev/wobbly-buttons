@@ -18,69 +18,52 @@ if (mq.matches && stage && cards.length) {
   // folders: scattered at random (clear of each other) in a tall field
   const field = document.createElement('div'); field.className = 'mfield'; field.setAttribute('role', 'list');
   titles.forEach((t, i) => {
-    const b = document.createElement('button'); b.type = 'button'; b.className = 'mf'; b.setAttribute('role', 'listitem'); b.dataset.i = i; b.style.setProperty('--r', `${(Math.random() * 10 - 5).toFixed(1)}deg`);
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'mf'; b.setAttribute('role', 'listitem'); b.dataset.i = i; b.style.setProperty('--r', `${(Math.random() * 10 - 5).toFixed(1)}deg`);   // (set once)
     b.setAttribute('aria-label', `Open ${t}${PROTO.has(i) ? ' (prototype)' : ''}`);
-    b.innerHTML = `<span class="mf-back"></span><span class="mf-sheets">${SHOTS[i].slice(0, 3).map((s, n) => `<i style="background-image:url(${s});--l:${[8, 31, 54][n]}%;--rot:${[-7, 1, 7][n]}deg"></i>`).join('')}</span><span class="mf-front"></span><img src="${logos[i]}" alt="" draggable="false">`;
+    b.innerHTML = `<span class="mf-back"></span><span class="mf-sheets">${SHOTS[i].slice(0, 3).map((s, n) => `<i style="background-image:url(${s});--l:${[8, 31, 54][n]}%;--rot:${[-7, 1, 7][n]}deg"></i>`).join('')}</span><span class="mf-front"></span><img ${i === 1 || i === 2 ? 'class="inv" ' : ''}src="${logos[i]}" alt="" draggable="false">`;
     field.append(b);
   });
   stage.after(field);
-  function scatter() {                                  // random slots on a loose 2-column grid, each jittered, so they never overlap but never look lined up
-    const W = field.clientWidth, fw = Math.min(150, W * 0.4), fh = fw * 0.92, rows = Math.ceil(titles.length / 2), rowH = fh * 1.3, H = Math.round(rowH * rows + 20);
+  let seed = null, lastW = 0;
+  function scatter() {                                  // random slots on a loose 2-column grid, each jittered, so they never overlap but never look lined up (the random numbers are drawn once, so closing a gallery never shuffles them)
+    const W = field.clientWidth; lastW = W;
+    const  fw = Math.min(150, W * 0.4), fh = fw * 0.92, rows = Math.ceil(titles.length / 2), rowH = fh * 1.3, H = Math.round(rowH * rows + 20);
     field.style.height = H + 'px';
-    const slots = []; for (let r = 0; r < rows; r++) for (let c = 0; c < 2; c++) slots.push([r, c]);
-    slots.sort(() => Math.random() - 0.5);
+    if (!seed) { const slots = []; for (let r = 0; r < rows; r++) for (let c = 0; c < 2; c++) slots.push([r, c]); slots.sort(() => Math.random() - 0.5); seed = titles.map((_, i) => ({ s: slots[i], jx: Math.random(), jy: Math.random(), rot: Math.random() * 10 - 5 })); }
     [...field.children].forEach((b, i) => {
-      const [r, c] = slots[i], colW = (W - fw) / 1, x = c === 0 ? Math.random() * (W - 2 * fw) * 0.5 : W - fw - Math.random() * (W - 2 * fw) * 0.5, y = 10 + r * rowH + Math.random() * (rowH - fh * 1.05);
+      const [r, c] = seed[i].s, colW = (W - fw) / 1, x = c === 0 ? seed[i].jx * (W - 2 * fw) * 0.5 : W - fw - seed[i].jx * (W - 2 * fw) * 0.5, y = 10 + r * rowH + seed[i].jy * (rowH - fh * 1.05);
       void colW; b.style.width = fw + 'px'; b.style.left = clamp(x, 0, W - fw).toFixed(1) + 'px'; b.style.top = y.toFixed(1) + 'px';
     });
   }
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
   scatter();
 
-  // tapping a folder: its screenshots fly out of it and settle into a collage that fills the screen (every screenshot as large as it can be)
-  const layer = document.createElement('div'); layer.className = 'mcollage'; layer.hidden = true; layer.setAttribute('role', 'dialog'); layer.setAttribute('aria-modal', 'true');
-  layer.innerHTML = '<div class="mc-back"></div><p class="mc-title"></p><button type="button" class="mc-close" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5 L19 19 M19 5 L5 19"/></svg></button><p class="mc-hint">tap a screenshot to visit the site</p>';
+  // tapping a folder opens a gallery (like Quick Look on a Mac): one big screenshot with a strip of thumbnails under it. Swipe or tap a thumbnail to change,
+  // tap the big one to expand it to full width (scroll to see all of it), and a button visits the live website.
+  const layer = document.createElement('div'); layer.className = 'mgal'; layer.hidden = true; layer.setAttribute('role', 'dialog'); layer.setAttribute('aria-modal', 'true');
+  layer.innerHTML = '<div class="mg-head"><p class="mg-title"></p><button type="button" class="mg-close" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5 L19 19 M19 5 L5 19"/></svg></button></div><div class="mg-main"><img alt="" draggable="false"></div><p class="mg-count"></p><div class="mg-thumbs"></div><a class="mg-visit" target="_blank" rel="noopener">Visit website <span aria-hidden="true">↗</span></a>';
   document.body.append(layer);
-  const titleEl = layer.querySelector('.mc-title'); let lastBtn = null, items = [];
-  const ratio = (img) => (img.naturalHeight || 1) / (img.naturalWidth || 1);
-  function pack(rs, W, H, g) {                       // best way to split the screenshots into rows so they fill W x H at the largest size
-    const n = rs.length; let best = null;
-    for (let mask = 0; mask < 1 << (n - 1); mask++) {
-      const rows = [[0]]; for (let i = 1; i < n; i++) { if (mask & (1 << (i - 1))) rows.push([i]); else rows[rows.length - 1].push(i); }
-      const hs = rows.map((r) => (W - g * (r.length - 1)) / r.reduce((s, i) => s + 1 / rs[i], 0));
-      let tot = hs.reduce((s, h) => s + h, 0) + g * (rows.length - 1), k = Math.min(1, H / tot);
-      const score = tot * k;
-      if (!best || score > best.score) best = { rows, hs, k, score };
-    }
-    return best;
+  const titleEl = layer.querySelector('.mg-title'), main = layer.querySelector('.mg-main'), big = main.querySelector('img'), count = layer.querySelector('.mg-count'), thumbs = layer.querySelector('.mg-thumbs'), visit = layer.querySelector('.mg-visit');
+  let cur = 0, idx = 0, lastBtn = null;
+  function show(n, dir = 0) {
+    idx = (n + SHOTS[cur].length) % SHOTS[cur].length; layer.classList.remove('zoom'); main.scrollTop = 0;
+    big.style.transition = 'none'; big.style.opacity = '0'; big.style.transform = `translateX(${dir * 40}px)`; big.src = SHOTS[cur][idx]; void big.offsetWidth; big.style.transition = ''; big.style.opacity = '1'; big.style.transform = '';
+    count.textContent = `${idx + 1} / ${SHOTS[cur].length}`; [...thumbs.children].forEach((t, k) => t.classList.toggle('on', k === idx));
+    const t = thumbs.children[idx]; if (t) t.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
   }
   function open(i, btn) {
-    lastBtn = btn; layer.hidden = false; titleEl.textContent = titles[i] + (PROTO.has(i) ? ' · prototype' : '');
-    layer.querySelectorAll('.mc-shot').forEach((e) => e.remove());
-    const from = btn.getBoundingClientRect(), fx = from.left + from.width / 2, fy = from.top + from.height * 0.35;
-    const imgs = SHOTS[i].map((s) => { const a = document.createElement('a'); a.className = 'mc-shot'; a.href = URLS[i]; a.target = '_blank'; a.rel = 'noopener'; const im = new Image(); im.src = s; im.alt = ''; im.draggable = false; a.append(im); layer.append(a); return { a, im }; });
-    root.classList.add('ms-open');
-    Promise.all(imgs.map(({ im }) => (im.decode ? im.decode().catch(() => {}) : Promise.resolve()))).then(() => {
-      const W0 = innerWidth - 28, H0 = innerHeight - 150, rs = imgs.map(({ im }) => ratio(im)), g = 10, p = pack(rs, W0, H0, g);
-      const rowsH = p.hs.map((h) => h * p.k), tot = rowsH.reduce((s, h) => s + h, 0) + g * (p.rows.length - 1);
-      let y = 74 + Math.max(0, (H0 - tot) / 2);
-      p.rows.forEach((row, ri) => {
-        const hh = rowsH[ri], widths = row.map((k) => hh / rs[k]), rw = widths.reduce((s, w) => s + w, 0) + g * (row.length - 1); let x = (innerWidth - rw) / 2;
-        row.forEach((k, ci) => {
-          const { a } = imgs[k], w = widths[ci], cx = x + w / 2, cy = y + hh / 2;
-          a.style.cssText = `left:${x.toFixed(1)}px;top:${y.toFixed(1)}px;width:${w.toFixed(1)}px;height:${hh.toFixed(1)}px;transform:translate(${(fx - cx).toFixed(1)}px,${(fy - cy).toFixed(1)}px) scale(.18) rotate(${(k % 2 ? 8 : -8)}deg);opacity:0`;
-          void a.offsetWidth; a.style.transitionDelay = `${(k * 55)}ms`; a.style.transform = `rotate(${[-1.2, 1, -.6, .8][k % 4]}deg)`; a.style.opacity = '1';
-          x += w + g;
-        });
-        y += hh + g;
-      });
-      layer.classList.add('on');
-    });
-    layer.querySelector('.mc-close').focus({ preventScroll: true });
+    cur = i; lastBtn = btn; titleEl.textContent = titles[i] + (PROTO.has(i) ? ' · prototype' : ''); visit.href = URLS[i];
+    thumbs.innerHTML = SHOTS[i].map((s, k) => `<button type="button" class="mg-t" aria-label="Screenshot ${k + 1}"><img src="${s}" alt="" draggable="false"></button>`).join('');
+    layer.hidden = false; void layer.offsetWidth; layer.classList.add('on'); root.classList.add('ms-open'); show(0); layer.querySelector('.mg-close').focus({ preventScroll: true });
   }
-  function close() { if (layer.hidden) return; layer.classList.remove('on'); layer.querySelectorAll('.mc-shot').forEach((a) => { a.style.transitionDelay = '0ms'; a.style.opacity = '0'; a.style.transform = 'scale(.6)'; }); root.classList.remove('ms-open'); setTimeout(() => { layer.hidden = true; layer.querySelectorAll('.mc-shot').forEach((e) => e.remove()); }, 300); if (lastBtn) lastBtn.focus({ preventScroll: true }); }
+  function close() { if (layer.hidden) return; layer.classList.remove('on'); root.classList.remove('ms-open'); setTimeout(() => { layer.hidden = true; }, 260); if (lastBtn) lastBtn.focus({ preventScroll: true }); }
+  thumbs.addEventListener('click', (e) => { const t = e.target.closest('.mg-t'); if (t) show([...thumbs.children].indexOf(t), [...thumbs.children].indexOf(t) > idx ? 1 : -1); });
+  main.addEventListener('click', () => layer.classList.toggle('zoom'));                 // expand / shrink the screenshot (it is not a link)
+  let sx = 0, sy = 0;                                                                     // swipe left / right to change screenshot
+  main.addEventListener('touchstart', (e) => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+  main.addEventListener('touchend', (e) => { const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy; if (!layer.classList.contains('zoom') && Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) show(idx + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1); }, { passive: true });
   field.addEventListener('click', (e) => { const b = e.target.closest('.mf'); if (b) open(+b.dataset.i, b); });
-  layer.querySelector('.mc-close').addEventListener('click', close); layer.querySelector('.mc-back').addEventListener('click', close); layer.querySelector('.mc-hint').addEventListener('click', close);
-  addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
-  addEventListener('resize', () => { if (layer.hidden) scatter(); });
+  layer.querySelector('.mg-close').addEventListener('click', close);
+  addEventListener('keydown', (e) => { if (layer.hidden) return; if (e.key === 'Escape') close(); else if (e.key === 'ArrowRight') show(idx + 1, 1); else if (e.key === 'ArrowLeft') show(idx - 1, -1); });
+  addEventListener('resize', () => { if (layer.hidden && field.clientWidth !== lastW) scatter(); });
 }
