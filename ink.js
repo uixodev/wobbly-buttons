@@ -224,7 +224,7 @@ function init() {
     // pass 0: clear of both logos and of each other. pass 1: may cover the other logo. pass 2: may also overlap each other a little (never the logo itself)
     for (let pass = 0; pass < 3; pass++) for (let f = 1; f >= 0.3; f -= 0.05) {
       const sc = baseSc * f, placed = [], out = [];
-      const size = (n) => { const w = (WIDE(i, n) ? 470 : 232) * sc; return [w, w * ASPECT(i, n)]; };
+      const size = (n) => { const w = (WIDE(i, n) ? 520 : 260) * sc; return [w, w * ASPECT(i, n)]; };
       let ok = true;
       for (const n of ORDER[i]) {
         const [w, h] = size(n), anchors = [L, ...placed.map((p) => p.rect)], cands = [];
@@ -237,7 +237,7 @@ function init() {
         for (const [x, y] of cands) {
           const r = { l: x, r: x + w, t: y, b: y + h };
           if (r.l < m || r.t < m || r.r > W - m || r.b > H - m) continue;
-          if (hit(r, L) || (pass < 3 && TAGR && hit(r, TAGR)) || (pass < 2 && HINT && hit(r, HINT)) || (pass === 0 && others.some((o) => hit(r, o))) || (pass < 2 && placed.some((p) => hit(r, p.rect)))) continue;
+          if (hit(r, L) || (pass < 3 && TAGR && hit(r, TAGR)) || (pass < 2 && HINT && hit(r, HINT)) || (pass < 2 && placed.some((p) => hit(r, p.rect)))) continue;
           const sco = Math.hypot((r.l + r.r) / 2 - k.x, (r.t + r.b) / 2 - k.y); if (sco < bs) { bs = sco; best = r; }
         }
         if (!best) { ok = false; break; }
