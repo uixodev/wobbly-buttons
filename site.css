@@ -739,3 +739,9 @@ html.ms-open { overflow: hidden; }
 .hero-story .h-under path { stroke: var(--accent); }
 .lede .amz { padding-right: .95em; }
 .lede .amz-star { right: 0; top: -.55em; width: .85em; height: .85em; }
+
+.lede strong { font-weight: 750; }
+.lede .amz { padding-right: .78em; }
+.lede .amz-star { right: 0; top: -.38em; width: .8em; height: .8em; stroke-width: 2.8; transform: rotate(8deg); }
+.lede .amz { padding-right: .9em; }
+.lede .amz-star { width: 1.05em; height: 1.05em; top: -.5em; stroke-width: 1.9; }
