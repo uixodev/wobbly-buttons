@@ -969,3 +969,13 @@ html.ms-open { overflow: hidden; }
 .chat-ask svg { transform: translateY(-2px); }
 .chat-dock { margin-bottom: -64px; }
 @media (max-width: 900px) { .chat-dock { margin-bottom: -8px; } }
+
+/* the chat window is a hand-cut shape (not a perfect rounded rectangle) and taller */
+.chat { clip-path: url(#chat-shape); border-radius: 0; box-shadow: none; padding: 6px 4px; }
+.chat-dock.open { filter: drop-shadow(0 22px 22px rgba(17, 17, 17, .22)) drop-shadow(0 3px 4px rgba(17, 17, 17, .08)); }
+.chat-log { height: 22rem; }
+.chat-head { padding-top: 16px; padding-left: 20px; }
+.chat-form { padding-bottom: 16px; }
+.chat-quick { padding-left: 18px; }
+.chat-log { padding-left: 18px; padding-right: 18px; }
+@media (max-width: 900px) { .chat-log { height: min(24rem, 56svh); } }
