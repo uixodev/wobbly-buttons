@@ -13,6 +13,7 @@ const ANSWERS = {
 };
 const START = ['do', 'process', 'price', 'avail'];
 
+const dock = document.getElementById('chat-dock'), fab = document.getElementById('chat-fab'), sugg = document.getElementById('chat-sugg'), closeBtn = document.getElementById('chat-x');
 const log = document.getElementById('chat-log'), quick = document.getElementById('chat-quick'), form = document.getElementById('chat-form'), input = document.getElementById('chat-input'), root = document.getElementById('chat');
 if (log && quick && form) {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -43,6 +44,16 @@ if (log && quick && form) {
   }
   form.addEventListener('submit', (e) => { e.preventDefault(); const v = input.value.trim(); if (!v) return; input.value = ''; free(v); });
 
-  async function start() { if (started) return; started = true; busy = true; await say('Hi! I’m Vira — well, her little chat helper. What would you like to know?'); chips(START); busy = false; }
-  new IntersectionObserver(([e]) => { if (e.isIntersecting) start(); }, { threshold: 0.3 }).observe(root);
+  async function start() { if (started) return Promise.resolve(); started = true; busy = true; await say('Hi! I’m Vira — well, her little chat helper. What would you like to know?'); chips(START); busy = false; }
+  // closed by default: a white button and a few suggestions; opening shows the chat (a suggestion also asks that question)
+  const openChat = (key) => {
+    root.hidden = false; void root.offsetWidth; dock.classList.add('open'); fab.setAttribute('aria-expanded', 'true');
+    if (!started) { start().then(() => { if (key) choose(key); }); } else if (key) choose(key);
+    setTimeout(() => input.focus({ preventScroll: true }), 50);
+  };
+  const closeChat = () => { dock.classList.remove('open'); fab.setAttribute('aria-expanded', 'false'); setTimeout(() => { if (!dock.classList.contains('open')) root.hidden = true; }, 300); fab.focus({ preventScroll: true }); };
+  fab.addEventListener('click', () => openChat());
+  closeBtn?.addEventListener('click', closeChat);
+  addEventListener('keydown', (e) => { if (e.key === 'Escape' && dock.classList.contains('open')) closeChat(); });
+  sugg.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => openChat(b.dataset.k)));
 }
