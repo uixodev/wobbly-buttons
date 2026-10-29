@@ -59,6 +59,7 @@ if (mq.matches && stage && cards.length) {
     layer.querySelector('.mg-close').focus({ preventScroll: true });
   }
   function close() { if (layer.hidden) return; field.querySelectorAll('.mf.opening').forEach((b) => b.classList.remove('opening')); layer.classList.remove('on'); root.classList.remove('ms-open'); setTimeout(() => { layer.hidden = true; feed.innerHTML = ''; }, 260); if (lastBtn) lastBtn.focus({ preventScroll: true }); }
+  layer.querySelectorAll('.mg-btn').forEach((b) => b.addEventListener('pointerdown', () => { b.classList.add('tapped'); setTimeout(() => b.classList.remove('tapped'), 450); }));     // white until tapped, then it flashes its colour
   field.addEventListener('click', (e) => { const b = e.target.closest('.mf'); if (b) open(+b.dataset.i, b); });
   layer.querySelector('.mg-close').addEventListener('click', close);
   addEventListener('keydown', (e) => { if (!layer.hidden && e.key === 'Escape') close(); });
