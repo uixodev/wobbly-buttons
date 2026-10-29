@@ -1,5 +1,4 @@
-// Vira — page behaviour: scroll reveals, self-drawing hand-drawn lines, the newsletter form, and the playground experiments.
-import { initPlayground } from './playground.js';
+// Vira — page behaviour: scroll reveals, self-drawing hand-drawn lines, and the newsletter form.
 
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -29,8 +28,7 @@ if (form) {
   });
 }
 
-// ── the playground tiles ──
-initPlayground({ reduced });
+
 
 // ── touch screens: black-and-white covers / tiles turn to colour while they are in the middle band of the screen ──
 if (matchMedia('(hover: none)').matches && 'IntersectionObserver' in window) {

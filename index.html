@@ -50,7 +50,7 @@
         <a href="#work" style="--i:0"><i>01</i><span>Work</span></a>
         <a href="#services" style="--i:1"><i>02</i><span>Services</span></a>
         <a href="#about" style="--i:2"><i>03</i><span>About</span></a>
-        <a href="#playground" style="--i:3"><i>04</i><span>Playground</span></a>
+        <a href="#blog" style="--i:3"><i>04</i><span>Blog</span></a>
         <a href="#contact" style="--i:4"><i>05</i><span>Contact</span></a>
       </nav>
       <aside class="menu-side">
@@ -242,52 +242,74 @@
       <p class="svc-cap" data-reveal>A miniature gallery where each panel comes alive on hover.</p>
     </section>
 
-    <!-- ───────────── 03 PLAYGROUND ───────────── -->
-    <section class="wrap section playground" id="playground" aria-labelledby="play-title">
-      <div class="play-copy">
-        <h2 class="label" id="play-title" data-reveal>03 / Playground</h2>
-        <p class="display" data-reveal>A more <em>playful</em> side.</p>
-        <p class="lede" data-reveal>Creative coding experiments, interactive visuals and ideas in progress.</p>
-        <div data-reveal><a href="#playground" class="wobbly" data-variant="solid">Explore the playground <span aria-hidden="true">→</span></a></div>
-        <div class="note note-play">
-          <p class="hand">same tools,<br />more possibilities</p>
-          <svg class="scribble draw" viewBox="0 0 90 60" aria-hidden="true"><path pathLength="1" d="M6 50 C30 54 62 48 78 14 M78 14 L68 20 M78 14 L82 26"/></svg>
-        </div>
+    <!-- ───────────── 03 BLOG ───────────── -->
+    <section class="wrap section blog" id="blog" aria-labelledby="blog-title">
+      <div class="section-head" data-reveal>
+        <h2 class="label" id="blog-title">03 / Notes &amp; ideas</h2>
+        <span class="label">The blog</span>
       </div>
-
-      <div class="bento">
-        <div class="col">
-        <figure class="tile tile-jelly" style="--clip:url(#shape-wave1)" data-reveal>
-          <div class="tile-stage">
-            <span class="vira-logo jelly-logo" data-text="vira"></span>
-          </div>
-          <figcaption class="label"><span>Jelly text experiment</span></figcaption>
-        </figure>
-        <figure class="tile tile-physics" style="--clip:url(#shape-wave2)" data-reveal>
-          <div class="tile-stage"><canvas class="physics-canvas" aria-label="Physics playground: spheres you can push with the cursor" role="img"></canvas></div>
-          <figcaption class="label"><span>Physics playground</span><span aria-hidden="true">→</span></figcaption>
-        </figure>
-        </div>
-        <div class="col">
-        <figure class="tile tile-flower" style="--clip:url(#shape-wave2)" data-reveal>
-          <div class="tile-stage"><canvas class="flower-canvas" aria-label="Interactive canvas: a pink flower that follows your cursor" role="img"></canvas></div>
-          <figcaption class="label"><span>Interactive canvas</span><span aria-hidden="true">→</span></figcaption>
-        </figure>
-        <figure class="tile tile-liquid" style="--clip:url(#shape-wave1)" data-reveal>
-          <div class="tile-stage">
-            <svg class="liquid-svg" viewBox="0 0 400 260" role="img" aria-label="Liquid type experiment">
-              <defs>
-                <filter id="liquid" x="-10%" y="-10%" width="120%" height="120%">
-                  <feTurbulence id="liquid-noise" type="fractalNoise" baseFrequency="0.008 0.02" numOctaves="2" seed="3" result="n"/>
-                  <feDisplacementMap id="liquid-map" in="SourceGraphic" in2="n" scale="26" xChannelSelector="R" yChannelSelector="G"/>
-                </filter>
-              </defs>
-              <g filter="url(#liquid)" class="liquid-text"><text x="200" y="118" text-anchor="middle">LIQUID TYPE</text><text x="200" y="228" text-anchor="middle">LIQUID TYPE</text></g>
-            </svg>
-          </div>
-          <figcaption class="label"><span>Liquid type experiment</span><span aria-hidden="true">→</span></figcaption>
-        </figure>
-        </div>
+      <p class="display blog-lede" data-reveal>Notes on design, code and <em>working with AI</em>.</p>
+      <div class="posts">
+        <article class="post" data-reveal>
+          <a href="#contact" class="post-link" aria-label="How I use AI tools to build websites — and still keep my own style (draft)">
+            <span class="post-no">01</span>
+            <span class="post-tag">AI</span>
+            <h3>How I use AI tools to build websites — and still keep my own style</h3>
+            <p>Where AI speeds me up, where I switch it off, and the tools I actually open every day.</p>
+            <span class="post-meta"><i>6 min read</i><i class="soon">Draft · coming soon</i></span>
+            <span class="post-arrow" aria-hidden="true">→</span>
+          </a>
+        </article>
+        <article class="post" data-reveal>
+          <a href="#contact" class="post-link" aria-label="What a website project with me looks like, step by step (draft)">
+            <span class="post-no">02</span>
+            <span class="post-tag">Process</span>
+            <h3>What a website project with me looks like, step by step</h3>
+            <p>From the first message to launch day: what happens, what I need from you and how long it takes.</p>
+            <span class="post-meta"><i>5 min read</i><i class="soon">Draft · coming soon</i></span>
+            <span class="post-arrow" aria-hidden="true">→</span>
+          </a>
+        </article>
+        <article class="post" data-reveal>
+          <a href="#contact" class="post-link" aria-label="How much does a small-business website really cost? (draft)">
+            <span class="post-no">03</span>
+            <span class="post-tag">Pricing</span>
+            <h3>How much does a small-business website really cost?</h3>
+            <p>What drives the price up or down, with honest ranges and what you get at each level.</p>
+            <span class="post-meta"><i>4 min read</i><i class="soon">Draft · coming soon</i></span>
+            <span class="post-arrow" aria-hidden="true">→</span>
+          </a>
+        </article>
+        <article class="post" data-reveal>
+          <a href="#contact" class="post-link" aria-label="Five things your homepage must say in the first five seconds (draft)">
+            <span class="post-no">04</span>
+            <span class="post-tag">Tips</span>
+            <h3>Five things your homepage must say in the first five seconds</h3>
+            <p>A quick checklist for beauty studios and small businesses, before anyone scrolls.</p>
+            <span class="post-meta"><i>3 min read</i><i class="soon">Draft · coming soon</i></span>
+            <span class="post-arrow" aria-hidden="true">→</span>
+          </a>
+        </article>
+        <article class="post" data-reveal>
+          <a href="#contact" class="post-link" aria-label="Behind the scenes: Mariia Sugaring Bristol (draft)">
+            <span class="post-no">05</span>
+            <span class="post-tag">Case study</span>
+            <h3>Behind the scenes: Mariia Sugaring Bristol</h3>
+            <p>How a gentle, women-only studio became a calm, warm website — decisions, sketches and mistakes.</p>
+            <span class="post-meta"><i>7 min read</i><i class="soon">Draft · coming soon</i></span>
+            <span class="post-arrow" aria-hidden="true">→</span>
+          </a>
+        </article>
+        <article class="post" data-reveal>
+          <a href="#contact" class="post-link" aria-label="Before you hire a web designer: what to prepare (draft)">
+            <span class="post-no">06</span>
+            <span class="post-tag">Guide</span>
+            <h3>Before you hire a web designer: what to prepare</h3>
+            <p>Photos, words, examples you like — a short list that makes any project smoother and cheaper.</p>
+            <span class="post-meta"><i>4 min read</i><i class="soon">Draft · coming soon</i></span>
+            <span class="post-arrow" aria-hidden="true">→</span>
+          </a>
+        </article>
       </div>
     </section>
 
@@ -339,7 +361,7 @@
         <p class="mono">Web design, creative coding<br />and digital experiences for<br />small businesses and creative people.</p>
         <p class="mono loc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22 C7 16 5 13 5 9.5 A7 7 0 0 1 19 9.5 C19 13 17 16 12 22Z"/><circle cx="12" cy="9.5" r="2.4"/></svg>Bristol, UK</p>
       </div>
-      <nav class="f-col" aria-label="Footer navigation"><h4 class="label">Navigation</h4><ul><li><a href="#work">Work</a></li><li><a href="#services">Services</a></li><li><a href="#about">About</a></li><li><a href="#playground">Playground</a></li><li><a href="#contact">Contact</a></li></ul></nav>
+      <nav class="f-col" aria-label="Footer navigation"><h4 class="label">Navigation</h4><ul><li><a href="#work">Work</a></li><li><a href="#services">Services</a></li><li><a href="#about">About</a></li><li><a href="#blog">Blog</a></li><li><a href="#contact">Contact</a></li></ul></nav>
       <div class="f-col"><h4 class="label">Services</h4><ul><li>Web Design</li><li>Development</li><li>Creative Extras</li><li>Website Refresh</li><li>Ongoing Support</li></ul></div>
       <div class="f-col"><h4 class="label">Let’s connect</h4>
         <ul class="social">

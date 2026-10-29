@@ -785,3 +785,21 @@ html.ms-open { overflow: hidden; }
   .svc-half.right { transform-origin: 100% 50%; right: calc(50% - 50vw - 2px); }
   @keyframes half-pop { 0% { filter: brightness(1); } 35% { filter: brightness(1.15); transform: translateX(0) scaleX(1.35); } 100% { filter: brightness(1); } }
 }
+
+/* ═════════ BLOG ═════════ */
+.blog-lede { margin: 0 0 clamp(26px, 4vw, 52px); max-width: 16ch; }
+.posts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(14px, 2vw, 26px); }
+.post-link { position: relative; display: grid; grid-template-columns: 2.6rem 1fr auto; grid-template-areas: "no tag arrow" "t t t" "p p p" "m m m"; gap: 8px 12px; align-items: baseline; height: 100%; box-sizing: border-box; padding: clamp(20px, 2.2vw, 30px); color: var(--ink); text-decoration: none; border: 1.5px solid var(--ink); border-radius: 18px 14px 19px 13px / 14px 19px 13px 17px; background: transparent; transition: background-color .3s ease, transform .5s cubic-bezier(.3, 1.5, .5, 1), rotate .5s cubic-bezier(.3, 1.5, .5, 1); }
+.post:nth-child(odd) .post-link { rotate: -.35deg; } .post:nth-child(even) .post-link { rotate: .3deg; }
+.post-link:hover, .post-link:focus-visible { background: var(--accent); transform: translateY(-4px); rotate: 0deg; outline: none; }
+.post-no { grid-area: no; font: 400 .72rem/1 var(--mono); letter-spacing: .12em; opacity: .55; }
+.post-tag { grid-area: tag; justify-self: start; padding: 4px 10px 5px; border: 1px solid currentColor; border-radius: 999px 940px 999px 960px / 880px 999px 940px 999px; font: 400 .64rem/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; }
+.post-arrow { grid-area: arrow; font: 400 1.2rem/1 var(--mono); transition: transform .4s cubic-bezier(.3, 1.6, .5, 1); }
+.post-link:hover .post-arrow { transform: translate(4px, -4px); }
+.post h3 { grid-area: t; margin: 14px 0 0; font: 400 clamp(1.55rem, 2.3vw, 2.15rem)/1.12 var(--serif); letter-spacing: -.01em; }
+.post p { grid-area: p; margin: 0; max-width: 34rem; color: #4f4944; font-size: 1.02rem; line-height: 1.55; }
+.post-link:hover p { color: #111; }
+.post-meta { grid-area: m; display: flex; gap: 14px; margin-top: 8px; font: 400 .66rem/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; opacity: .65; }
+.post-meta i { font-style: normal; }
+@media (max-width: 900px) { .posts { grid-template-columns: 1fr; } .blog-lede { max-width: none; } }
+@media (prefers-reduced-motion: reduce) { .post-link { transition: none; } }
