@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Privacy — Vira</title>
+  <meta name="description" content="How the website and its chat handle your information: what is collected, where it goes, how long it is kept, and how to ask for it to be seen or deleted." />
+  <link rel="preload" href="fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="wobbly-buttons.css" />
+  <link rel="stylesheet" href="vira-logo.css" />
+  <link rel="stylesheet" href="ink-cursor.css" />
+  <link rel="stylesheet" href="site.css" />
+  <style>
+    .priv-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-block: 18px; }
+    .priv-top .vira-logo { font-size: 1.35rem; }
+    .priv-back { font: 400 .72rem/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink); text-decoration: none; padding: 10px 16px; background: #fff; border-radius: 999px 940px 999px 960px / 880px 999px 940px 999px; box-shadow: 0 8px 14px -8px rgba(17, 17, 17, .3); transition: background .25s ease, transform .3s cubic-bezier(.3, 1.6, .5, 1); }
+    .priv-back:hover { background: var(--accent); transform: rotate(-2deg); }
+    .priv { max-width: 46rem; margin: 0 auto; padding: clamp(28px, 6vw, 70px) 0 clamp(60px, 9vw, 120px); }
+    .priv h1 { margin: 10px 0 14px; font: 400 clamp(2.8rem, 8vw, 5.4rem)/.98 var(--serif); letter-spacing: -.02em; }
+    .priv h1 em { font-style: italic; }
+    .priv .updated { font: 400 .7rem/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; opacity: .6; margin: 0 0 clamp(26px, 4vw, 44px); }
+    .priv h2 { margin: clamp(34px, 5vw, 56px) 0 12px; font: 400 clamp(1.7rem, 3.4vw, 2.3rem)/1.1 var(--serif); }
+    .priv p, .priv li { font: 400 1.1rem/1.65 var(--body); color: #2b2724; }
+    .priv p { margin: 0 0 14px; }
+    .priv ul, .priv ol { margin: 0 0 14px; padding-left: 1.3em; }
+    .priv li { margin-bottom: 8px; }
+    .priv a { color: var(--ink); text-underline-offset: 4px; }
+    .priv .short { padding: clamp(20px, 3vw, 30px); background: #fff; border-radius: 22px 18px 24px 17px / 18px 24px 17px 22px; box-shadow: 0 14px 22px -16px rgba(17, 17, 17, .35); }
+    .priv .short ul { margin: 0; }
+    .priv .keep { display: grid; gap: 12px; margin: 6px 0 14px; }
+    .priv .keep > div { padding: 16px 18px; background: #F1ECE6; border-radius: 16px 20px 15px 21px / 20px 15px 21px 16px; }
+    .priv .keep b { display: block; font: 400 .72rem/1.2 var(--mono); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 6px; }
+    .priv .keep span { font: 400 1.02rem/1.55 var(--body); }
+    .priv .tool { margin: 12px 0 0; padding: 18px 20px; background: #fff; border-radius: 20px 16px 22px 15px / 16px 22px 15px 20px; box-shadow: 0 12px 20px -16px rgba(17, 17, 17, .35); }
+    .priv .tool code { display: block; margin: 8px 0 12px; padding: 10px 12px; background: #F1ECE6; border-radius: 10px; font: 400 .85rem/1.3 var(--mono); word-break: break-all; }
+    .priv .tool button { padding: 10px 18px; border: 0; background: #111; color: #fff; border-radius: 999px 940px 999px 960px / 880px 999px 940px 999px; font: 400 .72rem/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; cursor: pointer; transition: background .2s ease, color .2s ease; }
+    .priv .tool button:hover { background: var(--accent); color: #111; }
+    .priv .tool .done { margin: 10px 0 0; font: 400 1.4rem/1 var(--hand); }
+  </style>
+  <script>document.documentElement.classList.add("js")</script>
+</head>
+<body>
+  <header class="wrap priv-top">
+    <a class="vira-logo" href="./" data-text="vira" aria-label="Vira — back to the home page"></a>
+    <a class="priv-back" href="./">← Back to the site</a>
+  </header>
+
+  <main class="wrap">
+    <article class="priv">
+      <p class="label">Privacy</p>
+      <h1>How your <em>messages</em> are handled.</h1>
+      <p class="updated">Last updated 29 October 2026</p>
+
+      <div class="short">
+        <p class="label" style="margin-bottom:10px">The short version</p>
+        <ul>
+          <li>This is my personal website. I’m Vira, a web designer in Bristol, UK.</li>
+          <li>The only thing the site collects is what you choose to type into the chat: a message, a first name and a way to reply.</li>
+          <li>There are no cookies, no advertising, and no analytics on this site.</li>
+          <li>Your message is sent to me on WhatsApp. My number is never shown to you.</li>
+          <li>The copy on the website’s database is kept for 30 days after the last message in a conversation. Copies in WhatsApp are not deleted automatically — see below.</li>
+          <li>You can ask to see or delete your messages any time at <a href="mailto:dearviraa@gmail.com">dearviraa@gmail.com</a>.</li>
+        </ul>
+      </div>
+
+      <h2>Who I am</h2>
+      <p>I’m Vira, the owner of this website and the person who decides what happens to the information described here. For anything about privacy, email me at <a href="mailto:dearviraa@gmail.com">dearviraa@gmail.com</a>. I’m an individual based in Bristol, UK, so I follow the UK’s data protection rules.</p>
+
+      <h2>What the chat collects</h2>
+      <p>The little chat in the blog section answers common questions with ready-made replies. Tapping those suggestion buttons doesn’t send anything to me and doesn’t store anything.</p>
+      <p>If you choose to leave me a message, the chat collects:</p>
+      <ul>
+        <li><b>Your message</b>, and any later messages you type in the same chat.</li>
+        <li><b>Your name</b> (a first name is fine), exactly as you type it.</li>
+        <li><b>How I can reply</b> — the email address or WhatsApp number you type in.</li>
+        <li><b>A random chat code</b> your browser creates the first time you open the chat. It has no connection to who you are. It only lets the chat find your conversation again, and lets my replies reach you.</li>
+        <li><b>My replies</b> to you, which are part of the same conversation.</li>
+      </ul>
+      <p>Please don’t put anything sensitive in the chat, such as health details, bank details or passwords.</p>
+
+      <h2>What it does not collect</h2>
+      <ul>
+        <li>No cookies, and no tracking or analytics tools.</li>
+        <li>No ads, and nothing is sold or shared for marketing.</li>
+        <li>The fonts are served from this site, not from Google or anyone else.</li>
+        <li>The “updates” sign-up form in the footer isn’t connected to anything yet. If you type an email there, it isn’t sent or saved anywhere.</li>
+        <li>The chat never keeps a record of your IP address in its database. The server uses it only briefly, in memory, to stop one person sending dozens of messages in an hour.</li>
+      </ul>
+
+      <h2>How a message travels</h2>
+      <ol>
+        <li>You send your message from the chat on this page.</li>
+        <li>It goes to a small function on this site’s hosting (Vercel), which passes it on to <b>WhatsApp</b> using Meta’s official WhatsApp Business Cloud API. It arrives on my personal WhatsApp, labelled with your name, how to reply, and a short code from your chat code.</li>
+        <li>The function also saves a copy of the conversation in a small database (Upstash Redis) so that my reply can find its way back to you in the chat.</li>
+        <li>When I reply on WhatsApp, Meta tells the site, the reply is saved in the same database, and the chat shows it to you within a few seconds.</li>
+      </ol>
+      <p>Only messages from my own number are passed back to the chat. If the database isn’t working, your message is still forwarded to me, but it won’t be saved on the website.</p>
+
+      <h2>Where it is kept, and for how long</h2>
+      <div class="keep">
+        <div><b>On the website’s database (Upstash Redis, via Vercel)</b><span>Each conversation is kept for <b style="display:inline;font:inherit;letter-spacing:0;text-transform:none">30 days after its latest message</b>, then the database removes it automatically. Every new message, from you or from me, restarts the 30 days for that conversation. A couple of small lookup entries that connect my WhatsApp replies to your chat expire after 30 days too.</span></div>
+        <div><b>In your browser</b><span>Your chat code, and the name and way-to-reply you gave, are stored on your device so the chat can remember you. This has no expiry date and stays until you clear it. You can do that below, or by clearing this site’s data in your browser settings.</span></div>
+        <div><b>On WhatsApp (my phone and Meta)</b><span>The message that reaches me is a normal WhatsApp message. It stays on my phone until I delete it, and Meta, which runs WhatsApp, keeps its own records under its own rules. <b style="display:inline;font:inherit;letter-spacing:0;text-transform:none">Deleting your conversation from the website’s database does not delete these copies, and nothing deletes them automatically.</b> I can delete the messages on my phone if you ask, but I can’t control what Meta keeps.</span></div>
+        <div><b>Hosting logs and backups</b><span>The site is hosted on Vercel, which keeps its own technical logs (such as when a request was made and its result, which can include an IP address) under its own rules and retention. My functions also write short log lines, for example the last four digits of a phone number or the first four characters of a chat code, and my code doesn’t write the text of your message to them. I don’t make my own backups of the chat database, but my providers may keep theirs.</span></div>
+      </div>
+
+      <h2>Who else handles it</h2>
+      <ul>
+        <li><b>Meta (WhatsApp Business Cloud API)</b> carries your message to my WhatsApp and carries my replies back to the website.</li>
+        <li><b>Vercel</b> hosts the website and runs the function that passes messages along.</li>
+        <li><b>Upstash</b> provides the small database that stores conversations for 30 days.</li>
+      </ul>
+      <p>These companies process information on my behalf or as service providers, and may do so in countries outside the UK. I don’t send your details to anyone else. I read your message and use your name and contact details only to answer you.</p>
+
+      <h2>Your choices: see it, change it, delete it</h2>
+      <p>You can ask me to show you what I hold about you, correct it, or delete it. Email <a href="mailto:dearviraa@gmail.com">dearviraa@gmail.com</a> from the address you gave in the chat, and tell me:</p>
+      <ul>
+        <li>what you’d like (a copy, a correction, or deletion), and</li>
+        <li>your <b>chat code</b> if you can (you can find it below), or otherwise the name, the contact details and roughly when you wrote.</li>
+      </ul>
+      <p>I’ll do this by hand. I’ll reply within one month, and I may ask you to confirm it’s really you before I share or remove anything.</p>
+      <p>For deletion I will remove your conversation from the website’s database, delete the messages from my WhatsApp, and tell you when it’s done. I can’t promise to remove copies held by Meta, or in Vercel or Upstash’s own logs and backups, which follow their own retention periods. If you want to know more about those, their privacy policies explain how they work.</p>
+
+      <div class="tool" id="mine">
+        <p class="label" style="margin-bottom:8px">Your chat on this device</p>
+        <p id="mine-text" style="margin:0">Checking…</p>
+        <code id="mine-code" hidden></code>
+        <button type="button" id="mine-clear" hidden>Clear it from this browser</button>
+        <p class="done" id="mine-done" hidden>Cleared. ✓</p>
+      </div>
+      <p style="margin-top:12px">Clearing your browser only forgets the chat on this device. It doesn’t delete the conversation from the website’s database or from WhatsApp.</p>
+
+      <h2>Children</h2>
+      <p>The chat is for adults and isn’t aimed at children. If a child has written to me, a parent or carer can ask for the messages to be deleted using the email above.</p>
+
+      <h2>Changes, and complaints</h2>
+      <p>If I change how the chat works, I’ll update this page and the date at the top. If you’re unhappy with how I’ve handled your information, please tell me first so I can put it right. You also have the right to complain to the Information Commissioner’s Office (ICO) at <a href="https://ico.org.uk" rel="noopener">ico.org.uk</a>.</p>
+
+      <p style="margin-top:34px"><a class="wobbly" data-variant="solid" href="mailto:dearviraa@gmail.com">Email me about privacy <span aria-hidden="true">→</span></a></p>
+    </article>
+  </main>
+
+  <script type="module" src="wobbly-buttons.js"></script>
+  <script type="module" src="vira-logo.js"></script>
+  <script type="module" src="ink-cursor.js"></script>
+  <script>
+    (function () {
+      var K = ['vira-chat-sid', 'vira-chat-who'], text = document.getElementById('mine-text'), code = document.getElementById('mine-code'), clear = document.getElementById('mine-clear'), done = document.getElementById('mine-done');
+      var get = function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } };
+      function show() {
+        var sid = get(K[0]);
+        if (sid) { text.textContent = 'This browser has a chat code. You can include it in an email if you want me to find your conversation:'; code.textContent = sid; code.hidden = false; clear.hidden = false; }
+        else { text.textContent = 'This browser doesn’t have a chat code, so you haven’t used the chat here.'; code.hidden = true; clear.hidden = true; }
+      }
+      clear.addEventListener('click', function () { try { K.forEach(function (k) { localStorage.removeItem(k); }); } catch (e) {} show(); done.hidden = false; });
+      show();
+    })();
+  </script>
+</body>
+</html>

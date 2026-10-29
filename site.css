@@ -996,3 +996,7 @@ html.ms-open { overflow: hidden; }
 
 .chat-fab.ping::after { content: ""; position: absolute; right: 4px; top: 4px; width: 16px; height: 16px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px #fff; }
 .chat-fab { position: relative; }
+
+.chat-note { margin: 0; padding: 4px 20px 8px; font: 400 .62rem/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; opacity: .6; }
+.chat-note a, .priv-link { color: inherit; text-underline-offset: 4px; }
+.footer-dark .priv-link { color: inherit; }
