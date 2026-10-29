@@ -10,7 +10,7 @@ const svgEl = (n, a = {}) => { const e = document.createElementNS(NS, n); for (c
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const onScreen = (el, cb) => new IntersectionObserver(([e]) => cb(e.isIntersecting), { threshold: 0.2 }).observe(el);
 
-document.querySelectorAll('[data-cover]').forEach((el) => ({ 'cv-ai': ai, 'cv-price': price, 'cv-process': process, 'cv-tips': tips })[el.dataset.cover]?.(el));
+document.querySelectorAll('[data-cover]').forEach((el) => ({ 'cv-ai': ai, 'cv-price': price, 'cv-process': process, 'cv-domain': domain })[el.dataset.cover]?.(el));
 
 // ───────────────────────── AI ─────────────────────────
 function ai(root) {
@@ -113,16 +113,20 @@ function process(root) {
   if (reduced) { pos = 1; place(); } else { pos = 0; place(); }
 }
 
-// ───────────────────────── TIPS ─────────────────────────
-function tips(root) {
-  const LIST = ['Who it is for', 'What you do', 'Where you are', 'Proof it works', 'The next step'];
-  root.innerHTML = `<div class="tp-ring"><svg viewBox="0 0 100 100"><circle class="bg" cx="50" cy="50" r="44"/><circle class="fg" cx="50" cy="50" r="44" stroke-dasharray="276.5" stroke-dashoffset="0"/></svg><b>5</b></div><ul class="tp-list">${LIST.map((t) => `<li><i><svg viewBox="0 0 12 12"><path pathLength="1" d="M2 6.5 L5 9.5 L10.5 2.5"/></svg></i>${t}</li>`).join('')}</ul><span class="tp-done">in 5 seconds ✓</span>`;
-  const fg = root.querySelector('.fg'), num = root.querySelector('b'), lis = [...root.querySelectorAll('li')];
-  let sec = 0, timer = 0, running = false, vis = false, wait = 0;
-  const show = (n) => { lis.forEach((l, i) => l.classList.toggle('on', i < n)); num.textContent = String(Math.max(0, 5 - n)); fg.style.strokeDashoffset = String(276.5 * (n / 5)); root.classList.toggle('fin', n >= 5); };
-  const run = () => { clearInterval(timer); clearTimeout(wait); sec = 0; show(0); running = true; timer = setInterval(() => { if (!vis || document.hidden) return; sec++; show(sec); if (sec >= 5) { clearInterval(timer); wait = setTimeout(run, 3200); } }, 1000); };
-  root.addEventListener('click', run);
-  onScreen(root, (v) => { vis = v; if (v && !running) run(); });
-  if (reduced) { clearInterval(timer); show(5); }
-  if (reduced) root.removeEventListener('click', run);
+// ───────────────────────── DOMAIN ─────────────────────────
+function domain(root) {
+  const PAIRS = [{ bad: 'www.mariias-best-sugaring-studio-bristol2024.net', good: 'mariia.studio' }, { bad: 'oksana_nails-and-beauty-123.biz', good: 'oksananails.co.uk' }];
+  root.innerHTML = '<div class="dm-bar"><i class="dm-lock"></i><span class="dm-url"></span><i class="dm-caret"></i></div><ul class="dm-rules"><li>short</li><li>easy to say</li><li>no hyphens or numbers</li></ul><span class="dm-hint">click to try another</span><i class="dm-mark"></i>';
+  const url = root.querySelector('.dm-url'), rules = [...root.querySelectorAll('.dm-rules li')], mark = root.querySelector('.dm-mark');
+  let k = 0, timers = [], vis = false, step = 0;
+  const clear = () => { timers.forEach(clearTimeout); timers = []; };
+  const type = (txt, cb) => { let i = 0; const t = () => { url.textContent = txt.slice(0, ++i); if (i < txt.length) timers.push(setTimeout(t, 38)); else cb && timers.push(setTimeout(cb, 600)); }; t(); };
+  const show = (good) => { root.classList.toggle('good', good); root.classList.toggle('bad', !good); mark.textContent = good ? '✓' : '✕'; rules.forEach((r, i) => timers.push(setTimeout(() => r.classList.toggle('on', good), good ? 250 + i * 220 : 0))); };
+  const run = () => {
+    clear(); rules.forEach((r) => r.classList.remove('on')); root.classList.remove('good', 'bad'); mark.textContent = ''; const p = PAIRS[k % PAIRS.length];
+    type(p.bad, () => { show(false); timers.push(setTimeout(() => { url.textContent = ''; root.classList.remove('bad'); mark.textContent = ''; type(p.good, () => { show(true); timers.push(setTimeout(() => { k++; if (vis && !reduced) run(); }, 3200)); }); }, 1500)); });
+  };
+  root.addEventListener('click', () => { k++; run(); });
+  onScreen(root, (v) => { vis = v; if (v && !timers.length) run(); if (!v) clear(); });
+  if (reduced) { clear(); url.textContent = PAIRS[0].good; show(true); rules.forEach((r) => r.classList.add('on')); }
 }
