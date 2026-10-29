@@ -692,25 +692,20 @@ html:not(.js) .ink-layer.drop, .project .blob.static .ink-layer.drop { display: 
 .mf-sheets i { position: absolute; left: var(--l); bottom: 52%; width: 36%; aspect-ratio: 320 / 600; max-height: 52%; background-size: cover; background-position: top; border: 1px solid #111; border-radius: 4px 4px 0 0; transform: rotate(var(--rot)); transform-origin: 50% 100%; }
 .mf img { position: absolute; z-index: 3; left: 50%; top: 56%; transform: translate(-50%, -50%); width: auto; height: auto; max-width: 46%; max-height: 32%; pointer-events: none; }
 .mf:active { transform: rotate(var(--r)) scale(.97); }
-.mgal { position: fixed; inset: 0; z-index: 90; display: flex; flex-direction: column; background: var(--bg); padding: max(12px, env(safe-area-inset-top)) 0 max(14px, env(safe-area-inset-bottom)); opacity: 0; transition: opacity .25s ease; }
+.mgal { position: fixed; inset: 0; z-index: 90; display: flex; flex-direction: column; background: var(--bg); opacity: 0; transition: opacity .3s ease; }
 .mgal[hidden] { display: none; } .mgal.on { opacity: 1; }
-.mg-head { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 16px 10px; }
-.mg-title { margin: 0; font: 400 1.5rem/1.1 var(--serif); }
-.mg-close { flex: none; width: 44px; height: 44px; display: grid; place-items: center; padding: 0; border: 1.5px solid var(--ink); border-radius: 50% 46% 52% 48% / 48% 52% 46% 50%; background: transparent; color: var(--ink); -webkit-tap-highlight-color: transparent; }
-.mg-close svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
-.mg-main { flex: 1 1 auto; min-height: 0; margin: 0 14px; display: grid; place-items: center; overflow: hidden; border: 1.5px solid #111; border-radius: 16px; background: #fff; box-shadow: 0 14px 22px -14px rgba(17, 17, 17, .4); -webkit-tap-highlight-color: transparent; position: relative; }
-.mg-main img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; transition: opacity .25s ease, transform .3s ease; }
-.mg-main::after { content: "tap to expand"; position: absolute; right: 10px; bottom: 8px; padding: 3px 9px; border-radius: 999px; background: rgba(17, 17, 17, .75); color: #fff; font: 400 .6rem/1.4 var(--mono); letter-spacing: .1em; text-transform: uppercase; pointer-events: none; }
-.mgal.zoom .mg-main { display: block; overflow: auto; -webkit-overflow-scrolling: touch; }
-.mgal.zoom .mg-main img { width: 100%; height: auto; max-height: none; }
-.mgal.zoom .mg-main::after { content: "tap to shrink"; position: fixed; right: 24px; bottom: auto; top: auto; }
-.mg-count { flex: none; margin: 8px 0 4px; text-align: center; font: 400 .66rem/1 var(--mono); letter-spacing: .14em; color: rgba(17, 17, 17, .55); }
-.mg-thumbs { flex: none; display: flex; gap: 10px; overflow-x: auto; padding: 4px 14px 8px; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
-.mg-thumbs::-webkit-scrollbar { display: none; }
-.mg-t { flex: none; width: 64px; height: 64px; padding: 0; border: 1.5px solid rgba(17, 17, 17, .35); border-radius: 12px; overflow: hidden; background: #fff; opacity: .6; -webkit-tap-highlight-color: transparent; transition: opacity .2s ease, border-color .2s ease, transform .3s cubic-bezier(.3, 1.5, .5, 1); }
-.mg-t img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; pointer-events: none; }
-.mg-t.on { opacity: 1; border-color: #111; transform: translateY(-3px); }
-.mg-visit { flex: none; align-self: center; margin-top: 6px; display: inline-flex; gap: .6em; align-items: center; padding: 1em 1.8em; background: #111; color: var(--bg); border-radius: 999px 940px 999px 960px / 880px 999px 940px 999px; text-decoration: none; font: 400 .8rem/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+.mg-bar { flex: none; display: flex; align-items: center; gap: 10px; padding: max(12px, env(safe-area-inset-top)) 14px 10px 16px; }
+.mg-title { flex: 1; min-width: 0; margin: 0; font: 400 1.4rem/1.1 var(--serif); }
+.mg-btn { flex: none; width: 46px; height: 46px; display: grid; place-items: center; padding: 0; border: 1.6px solid var(--ink); background: var(--bg); color: var(--ink); text-decoration: none; -webkit-tap-highlight-color: transparent; transition: background .2s ease, transform .3s cubic-bezier(.3, 1.6, .5, 1); }
+.mg-link { border-radius: 52% 48% 55% 45% / 47% 56% 44% 53%; }
+.mg-close { border-radius: 46% 54% 48% 52% / 55% 45% 56% 44%; }
+.mg-btn:active { transform: scale(.92) rotate(-4deg); background: var(--accent); }
+.mg-btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.mg-feed { flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; padding: 6px 14px max(28px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 18px; overscroll-behavior: contain; }
+.mg-shot { margin: 0; flex: none; border: 1.5px solid #111; border-radius: 16px; overflow: hidden; background: #fff; box-shadow: 0 14px 22px -14px rgba(17, 17, 17, .4); opacity: 0; transform: translateX(calc(var(--dir) * 42px)) scale(.97); transition: opacity .7s ease, transform .85s cubic-bezier(.2, .8, .2, 1); will-change: transform, opacity; }
+.mg-shot.in { opacity: 1; transform: none; }
+.mg-shot img { display: block; width: 100%; height: auto; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .mg-shot { transition: none; opacity: 1; transform: none; } }
 html.ms-open { overflow: hidden; }
 .mf img.inv { filter: brightness(0) invert(1); }
 

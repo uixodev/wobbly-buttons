@@ -38,32 +38,25 @@ if (mq.matches && stage && cards.length) {
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
   scatter();
 
-  // tapping a folder opens a gallery (like Quick Look on a Mac): one big screenshot with a strip of thumbnails under it. Swipe or tap a thumbnail to change,
-  // tap the big one to expand it to full width (scroll to see all of it), and a button visits the live website.
+  // tapping a folder opens a scrolling feed: the screenshots glide in one after another (sliding in sideways), full width, and you scroll down through them.
+  // Two hand-drawn imperfect circles sit in the top-right corner: a cross to close and an arrow that opens the live website.
   const layer = document.createElement('div'); layer.className = 'mgal'; layer.hidden = true; layer.setAttribute('role', 'dialog'); layer.setAttribute('aria-modal', 'true');
-  layer.innerHTML = '<div class="mg-head"><p class="mg-title"></p><button type="button" class="mg-close" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5 L19 19 M19 5 L5 19"/></svg></button></div><div class="mg-main"><img alt="" draggable="false"></div><p class="mg-count"></p><div class="mg-thumbs"></div><a class="mg-visit" target="_blank" rel="noopener">Visit website <span aria-hidden="true">↗</span></a>';
+  layer.innerHTML = '<div class="mg-bar"><p class="mg-title"></p><a class="mg-btn mg-link" target="_blank" rel="noopener" aria-label="Open the website"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 L17 7"/><path d="M8 7 H17 V16"/></svg></a><button type="button" class="mg-btn mg-close" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5 L19 19 M19 5 L5 19"/></svg></button></div><div class="mg-feed"></div>';
   document.body.append(layer);
-  const titleEl = layer.querySelector('.mg-title'), main = layer.querySelector('.mg-main'), big = main.querySelector('img'), count = layer.querySelector('.mg-count'), thumbs = layer.querySelector('.mg-thumbs'), visit = layer.querySelector('.mg-visit');
-  let cur = 0, idx = 0, lastBtn = null;
-  function show(n, dir = 0) {
-    idx = (n + SHOTS[cur].length) % SHOTS[cur].length; layer.classList.remove('zoom'); main.scrollTop = 0;
-    big.style.transition = 'none'; big.style.opacity = '0'; big.style.transform = `translateX(${dir * 40}px)`; big.src = SHOTS[cur][idx]; void big.offsetWidth; big.style.transition = ''; big.style.opacity = '1'; big.style.transform = '';
-    count.textContent = `${idx + 1} / ${SHOTS[cur].length}`; [...thumbs.children].forEach((t, k) => t.classList.toggle('on', k === idx));
-    const t = thumbs.children[idx]; if (t) t.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
-  }
+  const titleEl = layer.querySelector('.mg-title'), feed = layer.querySelector('.mg-feed'), link = layer.querySelector('.mg-link');
+  let lastBtn = null, io = null;
   function open(i, btn) {
-    cur = i; lastBtn = btn; titleEl.textContent = titles[i] + (PROTO.has(i) ? ' · prototype' : ''); visit.href = URLS[i];
-    thumbs.innerHTML = SHOTS[i].map((s, k) => `<button type="button" class="mg-t" aria-label="Screenshot ${k + 1}"><img src="${s}" alt="" draggable="false"></button>`).join('');
-    layer.hidden = false; void layer.offsetWidth; layer.classList.add('on'); root.classList.add('ms-open'); show(0); layer.querySelector('.mg-close').focus({ preventScroll: true });
+    lastBtn = btn; titleEl.textContent = titles[i] + (PROTO.has(i) ? ' · prototype' : ''); link.href = URLS[i];
+    feed.innerHTML = SHOTS[i].map((s, k) => `<figure class="mg-shot" style="--dir:${k % 2 ? 1 : -1}"><img src="${s}" alt="" draggable="false"></figure>`).join('');
+    feed.scrollTop = 0; layer.hidden = false; void layer.offsetWidth; layer.classList.add('on'); root.classList.add('ms-open');
+    if (io) io.disconnect();
+    io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { root: feed, threshold: 0.12 });
+    [...feed.children].forEach((f, k) => { f.style.transitionDelay = `${Math.min(k, 2) * 90}ms`; io.observe(f); });
+    layer.querySelector('.mg-close').focus({ preventScroll: true });
   }
-  function close() { if (layer.hidden) return; layer.classList.remove('on'); root.classList.remove('ms-open'); setTimeout(() => { layer.hidden = true; }, 260); if (lastBtn) lastBtn.focus({ preventScroll: true }); }
-  thumbs.addEventListener('click', (e) => { const t = e.target.closest('.mg-t'); if (t) show([...thumbs.children].indexOf(t), [...thumbs.children].indexOf(t) > idx ? 1 : -1); });
-  main.addEventListener('click', () => layer.classList.toggle('zoom'));                 // expand / shrink the screenshot (it is not a link)
-  let sx = 0, sy = 0;                                                                     // swipe left / right to change screenshot
-  main.addEventListener('touchstart', (e) => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
-  main.addEventListener('touchend', (e) => { const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy; if (!layer.classList.contains('zoom') && Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) show(idx + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1); }, { passive: true });
+  function close() { if (layer.hidden) return; layer.classList.remove('on'); root.classList.remove('ms-open'); setTimeout(() => { layer.hidden = true; feed.innerHTML = ''; }, 260); if (lastBtn) lastBtn.focus({ preventScroll: true }); }
   field.addEventListener('click', (e) => { const b = e.target.closest('.mf'); if (b) open(+b.dataset.i, b); });
   layer.querySelector('.mg-close').addEventListener('click', close);
-  addEventListener('keydown', (e) => { if (layer.hidden) return; if (e.key === 'Escape') close(); else if (e.key === 'ArrowRight') show(idx + 1, 1); else if (e.key === 'ArrowLeft') show(idx - 1, -1); });
+  addEventListener('keydown', (e) => { if (!layer.hidden && e.key === 'Escape') close(); });
   addEventListener('resize', () => { if (layer.hidden && field.clientWidth !== lastW) scatter(); });
 }
