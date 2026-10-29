@@ -92,14 +92,17 @@ const ICONS = {
   const showHalf = (dx, card) => {
     const side = dx > 0 ? 1 : -1, on = halves[side], off = halves[-side], k = Math.min(1, Math.abs(dx) / 120);
     if (card && on.dataset.i !== card.dataset.icon) { on.innerHTML = ICONS[card.dataset.icon] || ''; on.dataset.i = card.dataset.icon; }
-    on.style.setProperty('--k', k.toFixed(2)); off.style.setProperty('--k', 0);
+    on.style.setProperty('--k', k.toFixed(2)); on.style.setProperty('--spin', `${(dx * 0.35).toFixed(1)}deg`); on.style.setProperty('--sc', (0.8 + k * 0.45).toFixed(2)); off.style.setProperty('--k', 0);
+    cards.forEach((c) => { const p = order.indexOf(+c.dataset.n); if (p > 0) c.style.setProperty('--p', (p - k * 0.7).toFixed(2)); });   // the cards behind lean forward as the top one is pulled away
   };
-  const hideHalves = () => Object.values(halves).forEach((h) => h.style.setProperty('--k', 0));
+  const hideHalves = () => { Object.values(halves).forEach((h) => { h.style.setProperty('--k', 0); h.style.setProperty('--sc', 0.8); }); apply(); };
+  const popHalf = (side) => { const h = halves[side]; h.classList.remove('pop'); void h.offsetWidth; h.classList.add('pop'); setTimeout(() => h.classList.remove('pop'), 500); };
+  cards.forEach((c, i) => { c.dataset.n = i; });
   const apply = () => cards.forEach((c, i) => { const p = order.indexOf(i); c.style.setProperty('--p', p); c.classList.toggle('top', p === 0); });
   apply();
-  const flyAway = (card, dir) => {
+  const flyAway = (card, dir, power = 1) => {
     busy = true; card.classList.remove('drag'); card.classList.add('fly');
-    card.style.setProperty('--dx', `${dir * wrap.offsetWidth * 1.1}px`); card.style.setProperty('--dr', `${dir * 16}deg`);
+    card.style.setProperty('--dx', `${dir * wrap.offsetWidth * 1.1 * power}px`); card.style.setProperty('--dr', `${dir * 16 * power}deg`); card.style.setProperty('--fly', `${(0.42 / power).toFixed(2)}s`);
     setTimeout(() => {
       card.classList.add('drag', 'gone');                            // the card has left the deck for good
       order = order.slice(1); apply();
@@ -109,11 +112,11 @@ const ICONS = {
   };
   wrap.addEventListener('pointerdown', (e) => {
     if (!mq.matches || busy || !order.length) return; const top = cards[order[0]]; if (!top.contains(e.target)) return;
-    drag = { id: e.pointerId, x: e.clientX, y: e.clientY, dx: 0, top, moved: false };
+    drag = { id: e.pointerId, x: e.clientX, y: e.clientY, dx: 0, top, moved: false, lx: e.clientX, lt: performance.now(), v: 0 };
   });
   wrap.addEventListener('pointermove', (e) => {
     if (!drag || e.pointerId !== drag.id) return;
-    drag.dx = e.clientX - drag.x; const dy = e.clientY - drag.y;
+    drag.dx = e.clientX - drag.x; const dy = e.clientY - drag.y; const now = performance.now(); drag.v = drag.v * 0.5 + ((e.clientX - drag.lx) / Math.max(1, now - drag.lt)) * 0.5; drag.lx = e.clientX; drag.lt = now;
     if (!drag.moved && Math.abs(drag.dx) > 8 && Math.abs(drag.dx) > Math.abs(dy)) { drag.moved = true; drag.top.classList.add('drag'); drag.top.setPointerCapture(e.pointerId); }
     if (drag.moved) { showHalf(drag.dx, drag.top); drag.top.style.setProperty('--dx', `${drag.dx}px`); drag.top.style.setProperty('--dy', `${dy * 0.2}px`); drag.top.style.setProperty('--dr', `${drag.dx * 0.06}deg`); }
   });
@@ -122,7 +125,7 @@ const ICONS = {
     const d = drag; drag = null;
     if (d.moved) {
       d.moved = false; wrap.dataset.swiped = '1'; setTimeout(() => delete wrap.dataset.swiped, 60);
-      if (Math.abs(d.dx) > 70) flyAway(d.top, d.dx > 0 ? 1 : -1);
+      if (Math.abs(d.dx) > 70 || (Math.abs(d.v) > 0.5 && Math.abs(d.dx) > 24)) { popHalf(d.dx > 0 ? 1 : -1); flyAway(d.top, d.dx > 0 ? 1 : -1, Math.min(2.4, Math.max(1, Math.abs(d.v) * 1.6))); }      // a quick flick sends it further and faster
       else { hideHalves(); d.top.classList.remove('drag'); ['--dx', '--dy', '--dr'].forEach((k) => d.top.style.removeProperty(k)); }
     }
   };

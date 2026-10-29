@@ -768,3 +768,14 @@ html.ms-open { overflow: hidden; }
   .svc-half.right { border-radius: 100% 0 0 100% / 48% 0 0 52%; padding-left: 16%; }
   .svc-half svg { width: 42%; }
 }
+
+/* swipe dynamics: the half stretches and its icon spins with your finger, pops when the card leaves; the cards behind lean forward */
+@media (max-width: 900px) {
+  .svc-half { transform-origin: 100% 50%; transform: translateX(calc((1 - var(--k, 0)) * -40%)) scaleX(var(--sc, .8)); }
+  .svc-half.right { transform-origin: 0 50%; transform: translateX(calc((1 - var(--k, 0)) * 40%)) scaleX(var(--sc, .8)); }
+  .svc-half svg { transform: rotate(var(--spin, 0deg)) scale(calc(.7 + var(--k, 0) * .5)); transition: transform .12s linear; }
+  .svc-half.pop { animation: half-pop .45s cubic-bezier(.2, .9, .3, 1.4); }
+  @keyframes half-pop { 0% { filter: brightness(1); } 35% { filter: brightness(1.15); transform: translateX(0) scaleX(1.5); } 100% { filter: brightness(1); } }
+  .svc-wrap .panel.fly { transition: translate var(--fly, .4s) cubic-bezier(.4, 0, .8, .4), rotate var(--fly, .4s) ease, opacity var(--fly, .4s) ease; }
+  .svc-wrap .panel:not(.top):not(.drag) { transition: translate .35s cubic-bezier(.3, 1.4, .5, 1), rotate .35s ease, scale .35s ease, opacity .35s ease; }
+}
