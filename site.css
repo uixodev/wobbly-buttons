@@ -993,3 +993,6 @@ html.ms-open { overflow: hidden; }
 .chat-sugg button { border-radius: 0; clip-path: url(#bub-a); padding: 12px 20px 13px; box-shadow: none; }
 .chat-sugg { filter: drop-shadow(0 8px 8px rgba(17, 17, 17, .18)); }
 .chat-sugg button:nth-child(2) { clip-path: url(#bub-b); } .chat-sugg button:nth-child(3) { clip-path: url(#bub-c); }
+
+.chat-fab.ping::after { content: ""; position: absolute; right: 4px; top: 4px; width: 16px; height: 16px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px #fff; }
+.chat-fab { position: relative; }

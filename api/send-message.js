@@ -1,48 +1,55 @@
-// Serverless function (Vercel style: put this repo's /api folder on Vercel, or copy the body to a Netlify / Cloudflare function).
-// The chat on the site POSTs { name, contact, message } here; this forwards it to YOUR WhatsApp with Meta's official WhatsApp Business Cloud API,
-// so visitors never see your number.
+// A visitor's message → your WhatsApp (Meta WhatsApp Business Cloud API). Visitors never see your number.
+// Two-way chat: the message is remembered per visitor (sid), and the WhatsApp message id is stored so your reply can be matched back (see whatsapp-webhook.js).
 //
-// Environment variables (set them in the hosting dashboard, never in the page):
-//   WA_TOKEN          permanent access token of your Meta system user (or the temporary one while testing)
-//   WA_PHONE_ID       the "Phone number ID" of the WhatsApp Business number you send FROM (Meta dashboard → WhatsApp → API setup)
-//   OWNER_NUMBER      YOUR own WhatsApp number, country code + digits only, e.g. 447123456789 (messages arrive here)
-//   WA_TEMPLATE       name of an approved message template with 3 body variables: {{1}} name, {{2}} reply-to, {{3}} message (recommended; see README)
-//   WA_TEMPLATE_LANG  language code of that template, default en_US
-//   ALLOWED_ORIGIN    your site address, e.g. https://viraa.me  (optional but recommended)
-// Without WA_TEMPLATE it sends a plain text message, which WhatsApp only delivers if you have messaged the business number in the last 24 hours.
+// Environment variables (hosting dashboard, never the page):
+//   WA_TOKEN, WA_PHONE_ID, OWNER_NUMBER   WhatsApp Cloud API token, the Phone number ID you send FROM, and YOUR WhatsApp number (country code + digits)
+//   WA_TEMPLATE, WA_TEMPLATE_LANG         approved template with 3 body variables {{1}} name {{2}} reply-to {{3}} message (recommended)
+//   ALLOWED_ORIGIN                        your site address (optional)
+//   + the Upstash Redis variables (see _lib.js) for the two-way part
 
-const hits = new Map();                     // tiny in-memory rate limit: 5 messages per IP per hour
+import { redis, redisReady, cors, validSid, TTL } from './_lib.js';
+
+const hits = new Map();                     // tiny in-memory rate limit: 20 messages per IP per hour
 
 export default async function handler(req, res) {
-  const origin = process.env.ALLOWED_ORIGIN || '*';
-  res.setHeader('Access-Control-Allow-Origin', origin); res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS'); res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  if (req.method === 'OPTIONS') return res.status(204).end();
+  if (cors(req, res)) return;
   if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'method' });
 
   const ip = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() || 'unknown', now = Date.now();
   const recent = (hits.get(ip) || []).filter((t) => now - t < 3600e3);
-  if (recent.length >= 5) return res.status(429).json({ ok: false, error: 'rate' });
+  if (recent.length >= 20) return res.status(429).json({ ok: false, error: 'rate' });
 
   const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body || {};
   const clean = (v, n) => String(v || '').replace(/[\u0000-\u001f]+/g, ' ').trim().slice(0, n);
-  const name = clean(body.name, 80), contact = clean(body.contact, 120), message = clean(body.message, 800);
+  const name = clean(body.name, 80), contact = clean(body.contact, 120), message = clean(body.message, 800), sid = body.sid;
   if (body.website) return res.status(200).json({ ok: true });            // honeypot field: bots fill it in, people never see it
   if (!message || !contact) return res.status(400).json({ ok: false, error: 'missing' });
 
-  // tidy the settings people most often paste wrongly: stray spaces / quotes / a leading "Bearer " on the token, "+" or spaces in the numbers
   const token = String(process.env.WA_TOKEN || '').trim().replace(/^["']|["']$/g, '').replace(/^Bearer\s+/i, '').trim();
   const phoneId = String(process.env.WA_PHONE_ID || '').replace(/\D/g, ''), owner = String(process.env.OWNER_NUMBER || '').replace(/\D/g, '');
   const missing = [!token && 'WA_TOKEN', !phoneId && 'WA_PHONE_ID', !owner && 'OWNER_NUMBER'].filter(Boolean);
   if (missing.length) { console.error('Missing environment variables (set them for Production, then redeploy):', missing.join(', ')); return res.status(500).json({ ok: false, error: 'config' }); }
-  if (!/^EA/.test(token)) console.error('WA_TOKEN does not look like a Meta access token (they start with EA...). Check you pasted the token, not the phone number ID.');
-  const one = (v) => v.replace(/\s+/g, ' ');                                   // template variables cannot contain line breaks
+  if (!/^EA/.test(token)) console.error('WA_TOKEN does not look like a Meta access token (they start with EA...).');
+
+  const one = (v) => v.replace(/\s+/g, ' ');
+  const tag = validSid(sid) ? ` [#${sid.slice(0, 4)}]` : '';
   const payload = process.env.WA_TEMPLATE
-    ? { messaging_product: 'whatsapp', to: owner, type: 'template', template: { name: process.env.WA_TEMPLATE, language: { code: process.env.WA_TEMPLATE_LANG || 'en_US' }, components: [{ type: 'body', parameters: [name || 'Someone', contact, message].map((t) => ({ type: 'text', text: one(t) || '-' })) }] } }
-    : { messaging_product: 'whatsapp', to: owner, type: 'text', text: { body: `New message from your website\nName: ${name || '—'}\nReply to: ${contact}\n\n${message}` } };
+    ? { messaging_product: 'whatsapp', to: owner, type: 'template', template: { name: process.env.WA_TEMPLATE, language: { code: process.env.WA_TEMPLATE_LANG || 'en_US' }, components: [{ type: 'body', parameters: [(name || 'Someone') + tag, contact, message].map((t) => ({ type: 'text', text: one(t) || '-' })) }] } }
+    : { messaging_product: 'whatsapp', to: owner, type: 'text', text: { body: `New message from your website${tag}\nName: ${name || '—'}\nReply to: ${contact}\n\n${message}\n\n(Use WhatsApp's Reply on this message to answer in the chat.)` } };
   try {
     const r = await fetch(`https://graph.facebook.com/v20.0/${phoneId}/messages`, { method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
     if (!r.ok) { console.error('WhatsApp API error', r.status, await r.text()); return res.status(502).json({ ok: false, error: 'upstream' }); }
     recent.push(now); hits.set(ip, recent);
+    // two-way: remember the conversation and which WhatsApp message belongs to which visitor
+    if (redisReady() && validSid(sid)) {
+      try {
+        const j = await r.json(), wamid = j?.messages?.[0]?.id;
+        await redis('RPUSH', `chat:${sid}`, JSON.stringify({ from: 'visitor', text: message, t: now }));
+        await redis('EXPIRE', `chat:${sid}`, TTL);
+        if (wamid) await redis('SET', `wa:${wamid}`, sid, 'EX', TTL);
+        await redis('SET', 'last-sid', sid, 'EX', TTL);                // replies not sent with "Reply" go to the most recent visitor
+      } catch (e) { console.error('Redis error (message was still delivered):', e.message); }
+    }
     return res.status(200).json({ ok: true });
   } catch (e) { return res.status(502).json({ ok: false, error: 'upstream' }); }
 }
