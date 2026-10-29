@@ -695,7 +695,7 @@ html:not(.js) .ink-layer.drop, .project .blob.static .ink-layer.drop { display: 
 .mgal { position: fixed; inset: 0; z-index: 90; display: flex; flex-direction: column; background: rgba(247, 243, 239, .42); -webkit-backdrop-filter: blur(22px) saturate(1.1); backdrop-filter: blur(22px) saturate(1.1); opacity: 0; transition: opacity .45s ease; }
 .mgal[hidden] { display: none; } .mgal.on { opacity: 1; }
 .mg-bar { flex: none; display: flex; align-items: center; gap: 10px; padding: max(12px, env(safe-area-inset-top)) 14px 10px 16px; }
-.mg-title { flex: 1; min-width: 0; margin: 0; font: 400 1.4rem/1.1 var(--serif); }
+.mg-title { flex: 0 1 auto; min-width: 0; margin: 0 auto 0 0; padding: 12px 20px 13px; background: #fff; color: var(--ink); font: 400 1.25rem/1.1 var(--serif); border-radius: 17px 21px 16px 22px / 20px 15px 22px 17px; box-shadow: 0 8px 14px -8px rgba(17, 17, 17, .35); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .mg-btn { flex: none; width: 46px; height: 46px; display: grid; place-items: center; padding: 0; border: 0; background: #fff; color: var(--ink); text-decoration: none; box-shadow: 0 8px 14px -8px rgba(17, 17, 17, .35); -webkit-tap-highlight-color: transparent; transition: background .2s ease, transform .3s cubic-bezier(.3, 1.6, .5, 1); }
 .mg-link { border-radius: 52% 48% 55% 45% / 47% 56% 44% 53%; }
 .mg-close { border-radius: 46% 54% 48% 52% / 55% 45% 56% 44%; }
