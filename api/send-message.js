@@ -29,12 +29,18 @@ export default async function handler(req, res) {
   if (body.website) return res.status(200).json({ ok: true });            // honeypot field: bots fill it in, people never see it
   if (!message || !contact) return res.status(400).json({ ok: false, error: 'missing' });
 
+  // tidy the settings people most often paste wrongly: stray spaces / quotes / a leading "Bearer " on the token, "+" or spaces in the numbers
+  const token = String(process.env.WA_TOKEN || '').trim().replace(/^["']|["']$/g, '').replace(/^Bearer\s+/i, '').trim();
+  const phoneId = String(process.env.WA_PHONE_ID || '').replace(/\D/g, ''), owner = String(process.env.OWNER_NUMBER || '').replace(/\D/g, '');
+  const missing = [!token && 'WA_TOKEN', !phoneId && 'WA_PHONE_ID', !owner && 'OWNER_NUMBER'].filter(Boolean);
+  if (missing.length) { console.error('Missing environment variables (set them for Production, then redeploy):', missing.join(', ')); return res.status(500).json({ ok: false, error: 'config' }); }
+  if (!/^EA/.test(token)) console.error('WA_TOKEN does not look like a Meta access token (they start with EA...). Check you pasted the token, not the phone number ID.');
   const one = (v) => v.replace(/\s+/g, ' ');                                   // template variables cannot contain line breaks
   const payload = process.env.WA_TEMPLATE
-    ? { messaging_product: 'whatsapp', to: process.env.OWNER_NUMBER, type: 'template', template: { name: process.env.WA_TEMPLATE, language: { code: process.env.WA_TEMPLATE_LANG || 'en_US' }, components: [{ type: 'body', parameters: [name || 'Someone', contact, message].map((t) => ({ type: 'text', text: one(t) || '-' })) }] } }
-    : { messaging_product: 'whatsapp', to: process.env.OWNER_NUMBER, type: 'text', text: { body: `New message from your website\nName: ${name || '—'}\nReply to: ${contact}\n\n${message}` } };
+    ? { messaging_product: 'whatsapp', to: owner, type: 'template', template: { name: process.env.WA_TEMPLATE, language: { code: process.env.WA_TEMPLATE_LANG || 'en_US' }, components: [{ type: 'body', parameters: [name || 'Someone', contact, message].map((t) => ({ type: 'text', text: one(t) || '-' })) }] } }
+    : { messaging_product: 'whatsapp', to: owner, type: 'text', text: { body: `New message from your website\nName: ${name || '—'}\nReply to: ${contact}\n\n${message}` } };
   try {
-    const r = await fetch(`https://graph.facebook.com/v20.0/${process.env.WA_PHONE_ID}/messages`, { method: 'POST', headers: { Authorization: `Bearer ${process.env.WA_TOKEN}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    const r = await fetch(`https://graph.facebook.com/v20.0/${phoneId}/messages`, { method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
     if (!r.ok) { console.error('WhatsApp API error', r.status, await r.text()); return res.status(502).json({ ok: false, error: 'upstream' }); }
     recent.push(now); hits.set(ip, recent);
     return res.status(200).json({ ok: true });
