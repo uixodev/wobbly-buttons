@@ -19,31 +19,39 @@ export default async function handler(req, res) {
   }
   if (req.method !== 'POST') return res.status(405).end();
 
-  let buf = await raw(req);
-  if (!buf.length && req.body) buf = Buffer.from(typeof req.body === 'string' ? req.body : JSON.stringify(req.body));     // some hosts hand over an already-parsed body
-  const secret = process.env.WA_APP_SECRET;
+  let buf = await raw(req), rawBody = buf.length > 0;
+  if (!rawBody && req.body) buf = Buffer.from(typeof req.body === 'string' ? req.body : JSON.stringify(req.body));     // some hosts hand over an already-parsed body (then the signature cannot be checked exactly)
+  const note = (o) => redisReady() ? redis('SET', 'wh:last', JSON.stringify({ t: Date.now(), ...o }), 'EX', TTL).catch(() => {}) : null;     // read back by /api/status
+  const secret = String(process.env.WA_APP_SECRET || '').trim().replace(/^["']|["']$/g, '');
   if (secret) {
     const sig = String(req.headers['x-hub-signature-256'] || ''), want = 'sha256=' + crypto.createHmac('sha256', secret).update(buf).digest('hex');
-    if (sig.length !== want.length || !crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(want))) { console.error('Webhook signature mismatch'); return res.status(401).end(); }
+    if (sig.length !== want.length || !crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(want))) {
+      console.error(`Webhook signature mismatch (body ${rawBody ? 'raw' : 're-serialised'}, ${buf.length} bytes, signature header ${sig ? 'present' : 'missing'}). WA_APP_SECRET probably isn't the App secret of the app that owns this WhatsApp number.`);
+      await note({ result: 'signature-mismatch', body: rawBody ? 'raw' : 're-serialised', header: !!sig });
+      return res.status(401).end();
+    }
   } else console.error('WA_APP_SECRET is not set: webhook calls are not being verified');
 
   let data; try { data = JSON.parse(buf.toString('utf8') || '{}'); } catch (e) { return res.status(400).end(); }
   const owner = String(process.env.OWNER_NUMBER || '').replace(/\D/g, '');
   const msgs = (data.entry || []).flatMap((e) => (e.changes || []).flatMap((c) => c.value?.messages || [])), statuses = (data.entry || []).flatMap((e) => (e.changes || []).flatMap((c) => c.value?.statuses || []));
   console.log(`Webhook received: ${msgs.length} message(s), ${statuses.length} status update(s), redis ${redisReady() ? 'connected' : 'NOT configured'}`);   // visible in Vercel Logs: proves Meta is reaching this function
+  const outcome = [];
   try {
     if (!redisReady()) console.error('Upstash Redis is not configured: replies cannot be stored.');
     if (redisReady()) for (const entry of data.entry || []) for (const ch of entry.changes || []) for (const m of ch.value?.messages || []) {
-      if (String(m.from) !== owner) { console.log(`Ignored a message from ...${String(m.from).slice(-4)}: it is not OWNER_NUMBER (...${owner.slice(-4)}). If that is you, fix OWNER_NUMBER to match.`); continue; }      // only YOUR replies are relayed to visitors
+      if (String(m.from) !== owner) { console.log(`Ignored a message from ...${String(m.from).slice(-4)}: it is not OWNER_NUMBER (...${owner.slice(-4)}). If that is you, fix OWNER_NUMBER to match.`); outcome.push('not-owner'); continue; }      // only YOUR replies are relayed to visitors
       const text = m.type === 'text' ? m.text?.body : '';
-      if (!text) { console.log(`Ignored a ${m.type} message (only text replies are relayed).`); continue; }
+      if (!text) { console.log(`Ignored a ${m.type} message (only text replies are relayed).`); outcome.push('not-text'); continue; }
       let sid = m.context?.id ? await redis('GET', `wa:${m.context.id}`) : null;      // you used WhatsApp's "Reply" on a forwarded message
       if (!sid) sid = await redis('GET', 'last-sid');                                // otherwise: the most recent visitor
-      if (!validSid(sid)) { console.log('No visitor to attach the reply to (no recent conversation stored).'); continue; }
+      if (!validSid(sid)) { console.log('No visitor to attach the reply to (no recent conversation stored).'); outcome.push('no-visitor'); continue; }
       console.log(`Reply stored for visitor ${sid.slice(0, 4)}… (${m.context?.id ? 'matched by Reply' : 'sent to the latest visitor'}).`);
       await redis('RPUSH', `chat:${sid}`, JSON.stringify({ from: 'vira', text: String(text).slice(0, 1000), t: Date.now() }));
       await redis('EXPIRE', `chat:${sid}`, TTL);
+      outcome.push(m.context?.id ? 'stored-by-reply' : 'stored-latest-visitor');
     }
-  } catch (e) { console.error('Webhook error:', e.message); }
+  } catch (e) { console.error('Webhook error:', e.message); outcome.push('error: ' + e.message); }
+  await note({ result: 'accepted', signature: secret ? 'verified' : 'not-checked', messages: msgs.length, statuses: statuses.length, outcome });
   return res.status(200).end();                                      // always answer 200 so Meta does not retry
 }
