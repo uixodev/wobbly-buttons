@@ -726,3 +726,6 @@ html.ms-open { overflow: hidden; }
   .svc-wrap.done ~ .svc-swipe { visibility: hidden; }
   .svc-cat .tail-wave { animation: none; }
 }
+.mg-link { background: var(--accent); color: #111; }
+.mg-close { background: #111; color: #fff; }
+.mg-link:active { background: #fff; } .mg-close:active { background: var(--accent); }
