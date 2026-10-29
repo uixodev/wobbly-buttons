@@ -86,6 +86,15 @@ const ICONS = {
   const wrap = document.getElementById('svc-wrap'); if (!wrap) return;
   const cards = [...wrap.querySelectorAll('.panel')], mq = matchMedia('(max-width: 900px)');
   let order = cards.map((_, i) => i), busy = false, drag = null;
+  // big imperfect half-circles at the screen edges show the top card's icon while you swipe (left or right, purple)
+  const mkHalf = (side) => { const h = document.createElement('div'); h.className = 'svc-half ' + side; h.setAttribute('aria-hidden', 'true'); wrap.append(h); return h; };
+  const halves = { '-1': mkHalf('left'), 1: mkHalf('right') };
+  const showHalf = (dx, card) => {
+    const side = dx > 0 ? 1 : -1, on = halves[side], off = halves[-side], k = Math.min(1, Math.abs(dx) / 120);
+    if (card && on.dataset.i !== card.dataset.icon) { on.innerHTML = ICONS[card.dataset.icon] || ''; on.dataset.i = card.dataset.icon; }
+    on.style.setProperty('--k', k.toFixed(2)); off.style.setProperty('--k', 0);
+  };
+  const hideHalves = () => Object.values(halves).forEach((h) => h.style.setProperty('--k', 0));
   const apply = () => cards.forEach((c, i) => { const p = order.indexOf(i); c.style.setProperty('--p', p); c.classList.toggle('top', p === 0); });
   apply();
   const flyAway = (card, dir) => {
@@ -95,18 +104,18 @@ const ICONS = {
       card.classList.add('drag', 'gone');                            // the card has left the deck for good
       order = order.slice(1); apply();
       card.classList.remove('fly'); card.style.removeProperty('--dx'); card.style.removeProperty('--dy'); card.style.removeProperty('--dr');
-      busy = false; if (!order.length) wrap.classList.add('done');
+      busy = false; hideHalves(); if (!order.length) wrap.classList.add('done');
     }, 400);
   };
   wrap.addEventListener('pointerdown', (e) => {
-    if (!mq.matches || busy) return; const top = cards[order[0]]; if (!top.contains(e.target)) return;
+    if (!mq.matches || busy || !order.length) return; const top = cards[order[0]]; if (!top.contains(e.target)) return;
     drag = { id: e.pointerId, x: e.clientX, y: e.clientY, dx: 0, top, moved: false };
   });
   wrap.addEventListener('pointermove', (e) => {
     if (!drag || e.pointerId !== drag.id) return;
     drag.dx = e.clientX - drag.x; const dy = e.clientY - drag.y;
     if (!drag.moved && Math.abs(drag.dx) > 8 && Math.abs(drag.dx) > Math.abs(dy)) { drag.moved = true; drag.top.classList.add('drag'); drag.top.setPointerCapture(e.pointerId); }
-    if (drag.moved) { drag.top.style.setProperty('--dx', `${drag.dx}px`); drag.top.style.setProperty('--dy', `${dy * 0.2}px`); drag.top.style.setProperty('--dr', `${drag.dx * 0.06}deg`); }
+    if (drag.moved) { showHalf(drag.dx, drag.top); drag.top.style.setProperty('--dx', `${drag.dx}px`); drag.top.style.setProperty('--dy', `${dy * 0.2}px`); drag.top.style.setProperty('--dr', `${drag.dx * 0.06}deg`); }
   });
   const end = (e) => {
     if (!drag || e.pointerId !== drag.id) return;
@@ -114,10 +123,14 @@ const ICONS = {
     if (d.moved) {
       d.moved = false; wrap.dataset.swiped = '1'; setTimeout(() => delete wrap.dataset.swiped, 60);
       if (Math.abs(d.dx) > 70) flyAway(d.top, d.dx > 0 ? 1 : -1);
-      else { d.top.classList.remove('drag'); ['--dx', '--dy', '--dr'].forEach((k) => d.top.style.removeProperty(k)); }
+      else { hideHalves(); d.top.classList.remove('drag'); ['--dx', '--dy', '--dr'].forEach((k) => d.top.style.removeProperty(k)); }
     }
   };
   wrap.addEventListener('pointerup', end);
-  wrap.addEventListener('pointercancel', () => { if (drag) { drag.top.classList.remove('drag'); ['--dx', '--dy', '--dr'].forEach((k) => drag.top.style.removeProperty(k)); drag = null; } });
+  wrap.addEventListener('pointercancel', () => { hideHalves(); if (drag) { drag.top.classList.remove('drag'); ['--dx', '--dy', '--dr'].forEach((k) => drag.top.style.removeProperty(k)); drag = null; } });
+  wrap.querySelector('.svc-again')?.addEventListener('click', () => {           // "again": the deck comes back and the loop repeats
+    cards.forEach((c) => { c.classList.remove('gone', 'drag', 'fly'); });
+    order = cards.map((_, i) => i); apply(); wrap.classList.remove('done'); hideHalves();
+  });
   wrap.addEventListener('click', (e) => { if (wrap.dataset.swiped) { e.preventDefault(); e.stopPropagation(); } }, true);
 })();
