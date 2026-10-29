@@ -398,7 +398,7 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .hs-name .vn { position: relative; display: inline-block; }
 .h-dot { display: inline-block; transform-origin: 50% 85%; animation: dot-bounce 2.6s ease-in-out infinite; }
 @keyframes dot-bounce { 0%, 80%, 100% { transform: translateY(0) scale(1, 1); } 86% { transform: translateY(-.1em) scale(.94, 1.1); } 92% { transform: translateY(0) scale(1.08, .9); } }
-.h-under { position: absolute; left: 0; right: 6%; bottom: -.08em; width: 94%; height: .1em; fill: none; stroke: var(--ink); stroke-width: 2.4; stroke-linecap: round; overflow: visible; }
+.h-under { position: absolute; left: 0; right: 6%; bottom: -.08em; width: 94%; height: .1em; fill: none; stroke: var(--accent); stroke-width: 2.4; stroke-linecap: round; overflow: visible; }
 .h-under path { vector-effect: non-scaling-stroke; }
 .hero-story.s1 .hs-hi, .hero-story.s2 .hs-name, .hero-story.s3 .hs-p, .hero-story.s4 .hs-b { opacity: 1; transform: none; }
 .hero-story.s1 .hs-hi, .hero-story.s2 .hs-hi { opacity: 1; transform: none; }
@@ -408,7 +408,7 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .hero-story .hero-cat { width: 100%; margin: 0; }
 .hero-story .hero-cat svg { max-height: 42svh; }
 .hero-story .hero-copy { padding: 0; }
-.hero-story .hero-copy .lede { margin: 0 auto; max-width: 38rem; text-align: center; color: #111; font-weight: 600; font-size: clamp(1.15rem, 1.5vw, 1.4rem); line-height: 1.5; }
+.hero-story .hero-copy .lede { margin: 0 auto; max-width: 38rem; text-align: center; color: #111; font-weight: 450; font-size: clamp(1.15rem, 1.5vw, 1.4rem); line-height: 1.5; }
 .hero-story .actions { justify-content: center; }
 .hero-story .scroll-hint { position: absolute; left: 50%; bottom: 14px; right: auto; transform: translateX(-50%); align-items: center; margin: 0; opacity: 1; transition: opacity .4s ease; }
 .hero-story:not(.s0) .scroll-hint { opacity: 0; }
@@ -729,3 +729,13 @@ html.ms-open { overflow: hidden; }
 .mg-btn { transition: background .25s ease, color .25s ease, transform .3s cubic-bezier(.3, 1.6, .5, 1); }
 .mg-link:active, .mg-link.tapped { background: var(--accent); color: #111; }
 .mg-close:active, .mg-close.tapped { background: #111; color: #fff; }
+
+/* "amazing": hand-drawn purple underline plus a doodle star */
+.lede .amz { position: relative; display: inline-block; white-space: nowrap; }
+.lede .amz-under { position: absolute; left: -2%; bottom: -.28em; width: 104%; height: .5em; fill: none; stroke: var(--accent); stroke-width: 3; stroke-linecap: round; overflow: visible; }
+.lede .amz-star { position: absolute; right: -1.05em; top: -.85em; width: .95em; height: .95em; fill: none; stroke: var(--accent); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; overflow: visible; transform: rotate(12deg); }
+.lede .amz-under path, .lede .amz-star path { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset .9s ease .3s; vector-effect: non-scaling-stroke; }
+.lede .w.on .amz-under path, .lede .w.on .amz-star path, .lede .amz.on path, .hero-story.static .lede path { stroke-dashoffset: 0; }
+.hero-story .h-under path { stroke: var(--accent); }
+.lede .amz { padding-right: .95em; }
+.lede .amz-star { right: 0; top: -.55em; width: .85em; height: .85em; }

@@ -52,8 +52,12 @@ if (story && story.classList.contains('hero-story')) {
     // split the intro into words so they can appear one at a time
     const lede = story.querySelector('.lede'); let words = [];
     if (lede) {
-      const text = lede.textContent.trim().split(/\s+/); lede.setAttribute('aria-label', lede.textContent.trim()); lede.textContent = '';
-      text.forEach((t, i) => { const s = document.createElement('span'); s.className = 'w'; s.setAttribute('aria-hidden', 'true'); s.textContent = t; lede.append(s); if (i < text.length - 1) lede.append(' '); });
+      lede.setAttribute('aria-label', lede.textContent.trim());
+      const kids = [...lede.childNodes]; lede.textContent = '';
+      kids.forEach((n) => {                                                  // words become spans; marked elements (the underlined word, the star) stay intact and appear as one step
+        if (n.nodeType === 3) n.textContent.split(/(\s+)/).forEach((t) => { if (!t) return; if (/^\s+$/.test(t)) lede.append(' '); else { const s = document.createElement('span'); s.className = 'w'; s.setAttribute('aria-hidden', 'true'); s.textContent = t; lede.append(s); } });
+        else { n.classList.add('w'); n.setAttribute('aria-hidden', 'true'); lede.append(n); }
+      });
       words = [...lede.querySelectorAll('.w')];
     }
     let ticking = false, cur = -1;
