@@ -52,13 +52,13 @@ if (mq.matches && stage && cards.length) {
   function show(i, btn) {
     lastBtn = btn; titleEl.textContent = titles[i] + (PROTO.has(i) ? ' · demo' : ''); link.href = URLS[i];
     feed.innerHTML = SHOTS[i].map((s, k) => `<figure class="mg-shot" style="--dir:${k % 2 ? 1 : -1}"><img src="${s}" alt="" draggable="false"></figure>`).join('');
-    feed.scrollTop = 0; layer.hidden = false; void layer.offsetWidth; layer.classList.add('on'); root.classList.add('ms-open');
+    layer.hidden = false; void layer.offsetWidth; feed.scrollTop = 0; feed.scrollTo({ top: 0, behavior: 'instant' }); layer.classList.add('on'); root.classList.add('ms-open');
     if (io) io.disconnect();
     io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { root: feed, threshold: 0.12 });
     [...feed.children].forEach((f, k) => { f.style.transitionDelay = `${Math.min(k, 2) * 90}ms`; io.observe(f); });
     layer.querySelector('.mg-close').focus({ preventScroll: true });
   }
-  function close() { if (layer.hidden) return; field.querySelectorAll('.mf.opening').forEach((b) => b.classList.remove('opening')); layer.classList.remove('on'); root.classList.remove('ms-open'); setTimeout(() => { layer.hidden = true; feed.innerHTML = ''; }, 260); if (lastBtn) lastBtn.focus({ preventScroll: true }); }
+  function close() { if (layer.hidden) return; field.querySelectorAll('.mf.opening').forEach((b) => b.classList.remove('opening')); layer.classList.remove('on'); root.classList.remove('ms-open'); setTimeout(() => { layer.hidden = true; feed.innerHTML = ''; feed.scrollTop = 0; }, 260); if (lastBtn) lastBtn.focus({ preventScroll: true }); }
   layer.querySelectorAll('.mg-btn').forEach((b) => b.addEventListener('pointerdown', () => { b.classList.add('tapped'); setTimeout(() => b.classList.remove('tapped'), 450); }));     // white until tapped, then it flashes its colour
   field.addEventListener('click', (e) => { const b = e.target.closest('.mf'); if (b) open(+b.dataset.i, b); });
   layer.querySelector('.mg-close').addEventListener('click', close);
