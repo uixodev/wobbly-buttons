@@ -779,3 +779,9 @@ html.ms-open { overflow: hidden; }
   .svc-wrap .panel.fly { transition: translate var(--fly, .4s) cubic-bezier(.4, 0, .8, .4), rotate var(--fly, .4s) ease, opacity var(--fly, .4s) ease; }
   .svc-wrap .panel:not(.top):not(.drag) { transition: translate .35s cubic-bezier(.3, 1.4, .5, 1), rotate .35s ease, scale .35s ease, opacity .35s ease; }
 }
+/* keep the flat side glued to the screen edge: scale from the flat side, and tuck it 2px past the edge */
+@media (max-width: 900px) {
+  .svc-half.left { transform-origin: 0 50%; left: calc(50% - 50vw - 2px); }
+  .svc-half.right { transform-origin: 100% 50%; right: calc(50% - 50vw - 2px); }
+  @keyframes half-pop { 0% { filter: brightness(1); } 35% { filter: brightness(1.15); transform: translateX(0) scaleX(1.35); } 100% { filter: brightness(1); } }
+}
