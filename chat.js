@@ -22,7 +22,8 @@ if (log && quick && form) {
   const waLink = (text) => `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(text)}`;
   const scroll = () => { log.scrollTop = log.scrollHeight; };
 
-  function bubble(text, who) { const b = document.createElement('div'); b.className = `cb ${who}`; if (typeof text === 'string') b.textContent = text; else b.append(text); log.append(b); scroll(); return b; }
+  let shapeN = 0;
+  function bubble(text, who) { const b = document.createElement('div'); b.className = `cb ${who} sh${(shapeN++ % 3) + 1}`; if (typeof text === 'string') b.textContent = text; else b.append(text); log.append(b); scroll(); return b; }
   async function say(text, extra) {
     const t = bubble('', 'bot typing'); t.innerHTML = '<i></i><i></i><i></i>'; await wait(650 + Math.min(900, text.length * 8));
     t.classList.remove('typing'); t.textContent = text; if (extra) t.append(extra); scroll();

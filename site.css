@@ -979,3 +979,17 @@ html.ms-open { overflow: hidden; }
 .chat-quick { padding-left: 18px; }
 .chat-log { padding-left: 18px; padding-right: 18px; }
 @media (max-width: 900px) { .chat-log { height: min(24rem, 56svh); } }
+
+/* everything inside the chat is hand-cut too: bubbles, chips, the message box and the buttons all use wobbly shapes */
+.cb { border-radius: 0; padding: 13px 18px 14px; }
+.cb.sh1 { clip-path: url(#bub-a); } .cb.sh2 { clip-path: url(#bub-b); } .cb.sh3 { clip-path: url(#bub-c); }
+.cb.typing { clip-path: url(#bub-b); }
+.cq { border-radius: 0; padding: 9px 15px 10px; }
+.cq:nth-child(3n+1) { clip-path: url(#bub-a); } .cq:nth-child(3n+2) { clip-path: url(#bub-b); } .cq:nth-child(3n) { clip-path: url(#bub-c); }
+.chat-form input { border-radius: 0; clip-path: url(#bub-b); padding: 12px 18px; }
+.chat-form input:focus { box-shadow: none; background: #ece4f4; }
+.chat-form button, .chat-x, .chat-av { border-radius: 46% 54% 52% 48% / 54% 44% 56% 46%; }
+.cb-wa { border-radius: 0; clip-path: url(#bub-c); padding: 12px 18px; }
+.chat-sugg button { border-radius: 0; clip-path: url(#bub-a); padding: 12px 20px 13px; box-shadow: none; }
+.chat-sugg { filter: drop-shadow(0 8px 8px rgba(17, 17, 17, .18)); }
+.chat-sugg button:nth-child(2) { clip-path: url(#bub-b); } .chat-sugg button:nth-child(3) { clip-path: url(#bub-c); }
