@@ -12,15 +12,15 @@ if (mq.matches && stage && cards.length) {
   ].map((l) => l.map((n) => `assets/shot-${n}.webp`));
   const logos = [...stage.querySelectorAll('.logo-obj img')].map((i) => i.getAttribute('src'));
   const titles = cards.map((c) => c.querySelector('h3').textContent.trim());
-  const PROTO = new Set([3]);
+  const PROTO = new Set([3, 5, 6]);   // demos
   const root = document.documentElement; root.classList.add('ink-mobile');
 
   // folders: scattered at random (clear of each other) in a tall field
   const field = document.createElement('div'); field.className = 'mfield'; field.setAttribute('role', 'list');
   titles.forEach((t, i) => {
     const b = document.createElement('button'); b.type = 'button'; b.className = 'mf'; b.setAttribute('role', 'listitem'); b.dataset.i = i; b.style.setProperty('--r', `${(Math.random() * 10 - 5).toFixed(1)}deg`);   // (set once)
-    b.setAttribute('aria-label', `Open ${t}${PROTO.has(i) ? ' (prototype)' : ''}`);
-    b.innerHTML = `<span class="mf-back"></span><span class="mf-sheets">${SHOTS[i].slice(0, 3).map((s, n) => `<i style="background-image:url(${s});--l:${[8, 31, 54][n]}%;--rot:${[-7, 1, 7][n]}deg"></i>`).join('')}</span><span class="mf-front"></span><img ${i === 1 || i === 2 ? 'class="inv" ' : ''}src="${logos[i]}" alt="" draggable="false">`;
+    b.setAttribute('aria-label', `Open ${t}${PROTO.has(i) ? ' (demo)' : ''}`);
+    b.innerHTML = `<span class="mf-back"></span><span class="mf-sheets">${SHOTS[i].slice(0, 3).map((s, n) => `<i style="background-image:url(${s});--n:${n};--l:${[8, 31, 54][n]}%;--rot:${[-7, 1, 7][n]}deg"></i>`).join('')}</span><span class="mf-front"></span><img ${i === 1 || i === 2 ? 'class="inv" ' : ''}src="${logos[i]}" alt="" draggable="false">`;
     field.append(b);
   });
   stage.after(field);
@@ -44,9 +44,13 @@ if (mq.matches && stage && cards.length) {
   layer.innerHTML = '<div class="mg-bar"><p class="mg-title"></p><a class="mg-btn mg-link" target="_blank" rel="noopener" aria-label="Open the website"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 L17 7"/><path d="M8 7 H17 V16"/></svg></a><button type="button" class="mg-btn mg-close" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5 L19 19 M19 5 L5 19"/></svg></button></div><div class="mg-feed"></div>';
   document.body.append(layer);
   const titleEl = layer.querySelector('.mg-title'), feed = layer.querySelector('.mg-feed'), link = layer.querySelector('.mg-link');
-  let lastBtn = null, io = null;
+  let lastBtn = null, io = null, opening = false;
   function open(i, btn) {
-    lastBtn = btn; titleEl.textContent = titles[i] + (PROTO.has(i) ? ' · prototype' : ''); link.href = URLS[i];
+    if (opening) return; opening = true; lastBtn = btn; btn.classList.add('opening');          // first the folder opens, then the screenshots reveal themselves
+    setTimeout(() => { show(i, btn); opening = false; }, 650);
+  }
+  function show(i, btn) {
+    lastBtn = btn; titleEl.textContent = titles[i] + (PROTO.has(i) ? ' · demo' : ''); link.href = URLS[i];
     feed.innerHTML = SHOTS[i].map((s, k) => `<figure class="mg-shot" style="--dir:${k % 2 ? 1 : -1}"><img src="${s}" alt="" draggable="false"></figure>`).join('');
     feed.scrollTop = 0; layer.hidden = false; void layer.offsetWidth; layer.classList.add('on'); root.classList.add('ms-open');
     if (io) io.disconnect();
@@ -54,7 +58,7 @@ if (mq.matches && stage && cards.length) {
     [...feed.children].forEach((f, k) => { f.style.transitionDelay = `${Math.min(k, 2) * 90}ms`; io.observe(f); });
     layer.querySelector('.mg-close').focus({ preventScroll: true });
   }
-  function close() { if (layer.hidden) return; layer.classList.remove('on'); root.classList.remove('ms-open'); setTimeout(() => { layer.hidden = true; feed.innerHTML = ''; }, 260); if (lastBtn) lastBtn.focus({ preventScroll: true }); }
+  function close() { if (layer.hidden) return; field.querySelectorAll('.mf.opening').forEach((b) => b.classList.remove('opening')); layer.classList.remove('on'); root.classList.remove('ms-open'); setTimeout(() => { layer.hidden = true; feed.innerHTML = ''; }, 260); if (lastBtn) lastBtn.focus({ preventScroll: true }); }
   field.addEventListener('click', (e) => { const b = e.target.closest('.mf'); if (b) open(+b.dataset.i, b); });
   layer.querySelector('.mg-close').addEventListener('click', close);
   addEventListener('keydown', (e) => { if (!layer.hidden && e.key === 'Escape') close(); });

@@ -692,20 +692,26 @@ html:not(.js) .ink-layer.drop, .project .blob.static .ink-layer.drop { display: 
 .mf-sheets i { position: absolute; left: var(--l); bottom: 52%; width: 36%; aspect-ratio: 320 / 600; max-height: 52%; background-size: cover; background-position: top; border: 1px solid #111; border-radius: 4px 4px 0 0; transform: rotate(var(--rot)); transform-origin: 50% 100%; }
 .mf img { position: absolute; z-index: 3; left: 50%; top: 56%; transform: translate(-50%, -50%); width: auto; height: auto; max-width: 46%; max-height: 32%; pointer-events: none; }
 .mf:active { transform: rotate(var(--r)) scale(.97); }
-.mgal { position: fixed; inset: 0; z-index: 90; display: flex; flex-direction: column; background: var(--bg); opacity: 0; transition: opacity .3s ease; }
+.mgal { position: fixed; inset: 0; z-index: 90; display: flex; flex-direction: column; background: rgba(247, 243, 239, .42); -webkit-backdrop-filter: blur(22px) saturate(1.1); backdrop-filter: blur(22px) saturate(1.1); opacity: 0; transition: opacity .45s ease; }
 .mgal[hidden] { display: none; } .mgal.on { opacity: 1; }
 .mg-bar { flex: none; display: flex; align-items: center; gap: 10px; padding: max(12px, env(safe-area-inset-top)) 14px 10px 16px; }
 .mg-title { flex: 1; min-width: 0; margin: 0; font: 400 1.4rem/1.1 var(--serif); }
-.mg-btn { flex: none; width: 46px; height: 46px; display: grid; place-items: center; padding: 0; border: 1.6px solid var(--ink); background: var(--bg); color: var(--ink); text-decoration: none; -webkit-tap-highlight-color: transparent; transition: background .2s ease, transform .3s cubic-bezier(.3, 1.6, .5, 1); }
+.mg-btn { flex: none; width: 46px; height: 46px; display: grid; place-items: center; padding: 0; border: 0; background: #fff; color: var(--ink); text-decoration: none; box-shadow: 0 8px 14px -8px rgba(17, 17, 17, .35); -webkit-tap-highlight-color: transparent; transition: background .2s ease, transform .3s cubic-bezier(.3, 1.6, .5, 1); }
 .mg-link { border-radius: 52% 48% 55% 45% / 47% 56% 44% 53%; }
 .mg-close { border-radius: 46% 54% 48% 52% / 55% 45% 56% 44%; }
 .mg-btn:active { transform: scale(.92) rotate(-4deg); background: var(--accent); }
 .mg-btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .mg-feed { flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; padding: 6px 14px max(28px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 18px; overscroll-behavior: contain; }
-.mg-shot { margin: 0; flex: none; border: 1.5px solid #111; border-radius: 16px; overflow: hidden; background: #fff; box-shadow: 0 14px 22px -14px rgba(17, 17, 17, .4); opacity: 0; transform: translateX(calc(var(--dir) * 42px)) scale(.97); transition: opacity .7s ease, transform .85s cubic-bezier(.2, .8, .2, 1); will-change: transform, opacity; }
+.mg-shot { margin: 0; flex: none; border: 0; border-radius: 16px; overflow: hidden; background: #fff; box-shadow: 0 16px 26px -16px rgba(17, 17, 17, .45); opacity: 0; transform: translateY(26px) scale(.95); transition: opacity .8s ease, transform 1s cubic-bezier(.2, .8, .2, 1); will-change: transform, opacity; }
 .mg-shot.in { opacity: 1; transform: none; }
 .mg-shot img { display: block; width: 100%; height: auto; pointer-events: none; }
-@media (prefers-reduced-motion: reduce) { .mg-shot { transition: none; opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .mg-shot { transition: none; opacity: 1; transform: none; } .mgal { transition: none; } }
+/* the tapped folder opens (flap tilts, pages rise) before the gallery fades in */
+.mf .mf-front { transform-origin: 50% 100%; transition: transform .55s cubic-bezier(.3, 1.3, .5, 1); }
+.mf .mf-sheets i { transition: bottom .6s cubic-bezier(.3, 1.3, .5, 1) calc(var(--n, 0) * 70ms), transform .6s ease; }
+.mf.opening .mf-front { transform: perspective(300px) rotateX(-28deg); }
+.mf.opening .mf-sheets i { bottom: 78%; }
+.mf.opening { z-index: 5; transform: rotate(0deg) scale(1.06); transition: transform .5s ease; }
 html.ms-open { overflow: hidden; }
 .mf img.inv { filter: brightness(0) invert(1); }
 

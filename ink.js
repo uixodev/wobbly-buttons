@@ -41,7 +41,7 @@ function init() {
   }
   function place() {
     // random scatter: every folder gets its own random spot, kept clear of the others and of the hint text (best of many tries)
-    const placed = [], gap = 18, top = 70, bw = (k) => k.w * 1.0, bh = (k) => k.h * 1.0 + (k.i === 3 ? 40 : 14);
+    const placed = [], gap = 18, top = 70, bw = (k) => k.w * 1.0, bh = (k) => k.h * 1.0 + (PROTO.has(k.i) ? 40 : 14);
     for (const k of logos) {
       let best = null, bs = -1;
       for (let n = 0; n < 160; n++) {
@@ -53,8 +53,8 @@ function init() {
     }
   }
 
-  const PROTO = new Set([3]);
-  const tag = document.createElement('span'); tag.className = 'proto-tag hand'; tag.innerHTML = '<svg viewBox="0 0 44 30" aria-hidden="true"><path d="M40 24 C28 26 12 22 6 8 M6 8 L5 19 M6 8 L16 11"/></svg><span>prototype</span>'; tag.setAttribute('aria-hidden', 'true'); stage.append(tag);
+  const PROTO = new Set([3, 5, 6]);       // demos
+  const tags = {}; PROTO.forEach((i) => { const t = document.createElement('span'); t.className = 'proto-tag hand'; t.textContent = 'demo'; t.setAttribute('aria-hidden', 'true'); stage.append(t); tags[i] = t; });
   const visit = (k) => { logos.forEach((o) => { if (o !== k) o.open = false; }); k.open = !k.open; k.vsc -= 2; wake(); };   // a click expands (or folds away) the screenshots around the folder
 
   // ── drag ──
@@ -90,14 +90,14 @@ function init() {
   const G = 0, REST = 0.42;       // no gravity: folders stay wherever they are placed (or dropped)
   const rad = (k) => (k.w + k.h) * 0.27;
   function step(k, dt) {
-    if (k.drag) { k.x += (k.tx - k.x) * Math.min(1, dt * 24); k.y += (k.ty - k.y) * Math.min(1, dt * 24); k.x = clamp(k.x, k.w / 2, W - k.w / 2); k.y = clamp(k.y, k.h / 2, H - k.h / 2 - (k.i === 3 ? 38 : 0)); k.vx = k.vy = 0; k.rest = false; }
+    if (k.drag) { k.x += (k.tx - k.x) * Math.min(1, dt * 24); k.y += (k.ty - k.y) * Math.min(1, dt * 24); k.x = clamp(k.x, k.w / 2, W - k.w / 2); k.y = clamp(k.y, k.h / 2, H - k.h / 2 - (PROTO.has(k.i) ? 38 : 0)); k.vx = k.vy = 0; k.rest = false; }
     else if (!started) { /* waiting to fall */ }
     else {
       k.vy += G * dt; const damp = Math.pow(0.04, dt); k.vx *= damp; k.vy *= damp; if (Math.abs(k.vx) + Math.abs(k.vy) < 4) k.vx = k.vy = 0;      // a thrown folder slides and stops
       if (openLogo && win._rect && k !== openLogo) { const r = win._rect, g = 26, hw = k.w / 2, hh = k.h / 2;   // an open window is a solid block: logos slide off it
         if (k.x > r.x - g - hw && k.x < r.x + r.w + g + hw && k.y > r.y - g - hh && k.y < r.y + r.h + g + hh) { const dl = k.x - (r.x - g - hw), dr = r.x + r.w + g + hw - k.x; k.vx += (dl < dr ? -1 : 1) * 900 * dt; } }
       k.x += k.vx * dt; k.y += k.vy * dt;
-      const hw = k.w / 2, hh = k.h / 2, floor = H - hh - 6 - (k.i === 3 ? 38 : 0);
+      const hw = k.w / 2, hh = k.h / 2, floor = H - hh - 6 - (PROTO.has(k.i) ? 38 : 0);
       if (k.y > floor) { k.y = floor; if (k.vy > 160) { k.vrot += (Math.random() - 0.5) * k.vy * 0.04; k.vsc -= Math.min(k.vy, 1500) * 0.0035; } k.vy = k.vy > 160 ? -k.vy * REST : 0; k.vx *= Math.pow(0.05, dt); if (Math.abs(k.vx) < 6) k.vx = 0; }   // bounce, scuff and slide to a stop
       if (k.x < hw) { k.x = hw; k.vx = Math.abs(k.vx) * REST; } if (k.x > W - hw) { k.x = W - hw; k.vx = -Math.abs(k.vx) * REST; }
       if (k.y < hh) { k.y = hh; k.vy = Math.abs(k.vy) * REST; }
@@ -119,7 +119,7 @@ function init() {
   }
   function draw() {
     for (const k of logos) {
-      if (PROTO.has(k.i)) { const tw = tag.offsetWidth, th = tag.offsetHeight; tag.classList.remove('flip'); tag.style.transform = `translate(${clamp(k.x - tw / 2 + 14, 4, W - tw - 4).toFixed(1)}px, ${Math.min(k.y + k.el.offsetHeight * k.sc / 2 + 12, H - th - 2).toFixed(1)}px) rotate(-3deg)`; tag.classList.toggle('on', cur.on === k.i && !openLogo); }
+      if (PROTO.has(k.i)) { const tag = tags[k.i], tw = tag.offsetWidth, th = tag.offsetHeight; tag.style.transform = `translate(${clamp(k.x - tw / 2 + 14, 4, W - tw - 4).toFixed(1)}px, ${Math.min(k.y + k.el.offsetHeight * k.sc / 2 + 12, H - th - 2).toFixed(1)}px) rotate(-3deg)`; tag.classList.toggle('on', cur.on === k.i && !openLogo); }
       const bob = 0;
       k.el.style.transform = `translate(${(k.x - k.w / 2).toFixed(1)}px, ${(k.y - k.h / 2 + bob).toFixed(1)}px) rotate(${k.rot.toFixed(2)}deg) scale(${k.sc.toFixed(3)})`;
     }
