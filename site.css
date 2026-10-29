@@ -879,7 +879,6 @@ html.ms-open { overflow: hidden; }
 .chat { margin-top: clamp(20px, 3vh, 34px); max-width: 26rem; background: #fff; border: 1.5px solid var(--ink); border-radius: 22px 18px 24px 17px / 18px 24px 17px 22px; overflow: hidden; box-shadow: 7px 9px 0 rgba(17, 17, 17, .08); }
 .chat-head { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1.5px solid var(--ink); background: var(--bg); }
 .chat-av { flex: none; width: 36px; height: 36px; padding: 6px; background: #111; border-radius: 52% 48% 55% 45% / 47% 56% 44% 53%; display: grid; place-items: center; }
-.chat-av svg { width: 100%; height: 100%; fill: #F7F3EF; } .chat-av ellipse { fill: #111; }
 .chat-who { display: grid; gap: 2px; } .chat-who b { font: 400 1.15rem/1 var(--serif); } .chat-who i { font: 400 .6rem/1.2 var(--mono); letter-spacing: .1em; text-transform: uppercase; font-style: normal; opacity: .55; }
 .chat-log { height: 13.5rem; overflow-y: auto; padding: 14px 14px 6px; display: flex; flex-direction: column; gap: 9px; scroll-behavior: smooth; overscroll-behavior: contain; }
 .cb { max-width: 86%; padding: 10px 14px 11px; font: 400 .98rem/1.4 var(--body); border-radius: 16px 18px 16px 6px / 15px 17px 15px 7px; animation: cb-in .35s cubic-bezier(.3, 1.4, .5, 1) both; }
@@ -922,7 +921,6 @@ html.ms-open { overflow: hidden; }
 .chat-dock.open .chat-launch { opacity: 0; transform: translateY(10px); pointer-events: none; }
 .chat-fab { width: 68px; height: 66px; padding: 0; border: 0; background: #fff; border-radius: 54% 46% 52% 48% / 47% 55% 45% 53%; display: grid; place-items: center; cursor: pointer; box-shadow: 0 12px 20px -10px rgba(17, 17, 17, .4); -webkit-tap-highlight-color: transparent; transition: transform .35s cubic-bezier(.3, 1.6, .5, 1), border-radius .6s ease; animation: fab-bob 4s ease-in-out infinite; }
 .chat-fab:hover, .chat-fab:focus-visible { transform: rotate(-6deg) scale(1.08); border-radius: 46% 54% 49% 51% / 54% 46% 55% 45%; outline: none; }
-.chat-fab svg { width: 34px; height: 38px; fill: #111; } .chat-fab ellipse { fill: #fff; } .chat-fab circle { fill: var(--accent); }
 @keyframes fab-bob { 50% { transform: translateY(-4px); } }
 .chat-sugg { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
 .chat-sugg button { padding: 10px 16px 11px; border: 0; background: #fff; color: #111; font: 400 .98rem/1.2 var(--body); border-radius: 18px 20px 18px 6px / 17px 19px 17px 7px; box-shadow: 0 10px 16px -10px rgba(17, 17, 17, .4); cursor: pointer; -webkit-tap-highlight-color: transparent; opacity: 0; transform: translateY(10px) scale(.95); animation: sugg-in .5s cubic-bezier(.3, 1.4, .5, 1) forwards; transition: transform .25s cubic-bezier(.3, 1.6, .5, 1), background .2s ease; }
@@ -953,3 +951,21 @@ html.ms-open { overflow: hidden; }
 .chat-av { width: 52px; height: 50px; }
 .chat-av .chat-logo { font-size: 2.1rem; }
 .chat-log { padding-top: 10px; }
+
+.chat-logo { width: auto; height: auto; }
+.chat-logo svg.vira-mark { width: 1.9em; height: 1.9em; fill: currentColor; }
+.chat-fab .chat-logo { font-size: 3rem; }
+.chat-av { overflow: visible; display: grid; place-items: center; }
+.chat-av .chat-logo { font-size: 1.15rem; }
+/* "ask me anything" doodle */
+.chat-ask { position: absolute; left: 96px; bottom: 6px; display: flex; align-items: flex-end; gap: 4px; pointer-events: none; transform: rotate(-4deg); transition: opacity .2s ease; }
+.chat-ask .hand { margin: 0; font-size: 1.55rem; line-height: 1; white-space: nowrap; order: 2; padding-bottom: 6px; }
+.chat-ask svg { order: 1; width: 52px; height: 34px; fill: none; stroke: var(--ink); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; overflow: visible; transform: scaleX(-1) translateY(-2px); }
+.chat-dock.open .chat-ask { opacity: 0; }
+.chat-launch { position: relative; }
+.chat-dock { padding-bottom: 0; }
+.chat-dock { margin-bottom: -14px; }
+@media (max-width: 900px) { .chat-dock { margin-bottom: 0; } }
+.chat-ask svg { transform: translateY(-2px); }
+.chat-dock { margin-bottom: -64px; }
+@media (max-width: 900px) { .chat-dock { margin-bottom: -8px; } }
