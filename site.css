@@ -761,3 +761,10 @@ html.ms-open { overflow: hidden; }
   .svc-wrap.done .svc-end { pointer-events: auto; }
   .svc-end .svc-again { pointer-events: auto; }
 }
+/* the edge halves are tall half-circles: flat side on the screen edge, curve bulging inward, as tall as the deck */
+@media (max-width: 900px) {
+  .svc-half { top: 0; height: 100%; width: clamp(110px, 36vw, 170px); aspect-ratio: auto; margin-top: 0; }
+  .svc-half.left { border-radius: 0 100% 100% 0 / 0 52% 48% 0; padding-right: 16%; }
+  .svc-half.right { border-radius: 100% 0 0 100% / 48% 0 0 52%; padding-left: 16%; }
+  .svc-half svg { width: 42%; }
+}
