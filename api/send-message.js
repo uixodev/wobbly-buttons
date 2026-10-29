@@ -1,13 +1,15 @@
 // Serverless function (Vercel style: put this repo's /api folder on Vercel, or copy the body to a Netlify / Cloudflare function).
-// The chat on the site POSTs { name, contact, message } here; this forwards it to YOUR WhatsApp, so visitors never see your number.
+// The chat on the site POSTs { name, contact, message } here; this forwards it to YOUR WhatsApp with Meta's official WhatsApp Business Cloud API,
+// so visitors never see your number.
 //
 // Environment variables (set them in the hosting dashboard, never in the page):
-//   CALLMEBOT_PHONE   your WhatsApp number with country code, digits only, e.g. 447123456789
-//   CALLMEBOT_KEY     the key CallMeBot sends you after you activate it (https://www.callmebot.com/blog/free-api-whatsapp-messages/)
+//   WA_TOKEN          permanent access token of your Meta system user (or the temporary one while testing)
+//   WA_PHONE_ID       the "Phone number ID" of the WhatsApp Business number you send FROM (Meta dashboard → WhatsApp → API setup)
+//   OWNER_NUMBER      YOUR own WhatsApp number, country code + digits only, e.g. 447123456789 (messages arrive here)
+//   WA_TEMPLATE       name of an approved message template with 3 body variables: {{1}} name, {{2}} reply-to, {{3}} message (recommended; see README)
+//   WA_TEMPLATE_LANG  language code of that template, default en_US
 //   ALLOWED_ORIGIN    your site address, e.g. https://viraa.me  (optional but recommended)
-//
-// Want the official route instead? Replace the fetch below with a call to the WhatsApp Cloud API (graph.facebook.com/v20.0/<PHONE_ID>/messages)
-// using WA_TOKEN / WA_PHONE_ID / OWNER_NUMBER; the rest stays the same.
+// Without WA_TEMPLATE it sends a plain text message, which WhatsApp only delivers if you have messaged the business number in the last 24 hours.
 
 const hits = new Map();                     // tiny in-memory rate limit: 5 messages per IP per hour
 
@@ -27,11 +29,13 @@ export default async function handler(req, res) {
   if (body.website) return res.status(200).json({ ok: true });            // honeypot field: bots fill it in, people never see it
   if (!message || !contact) return res.status(400).json({ ok: false, error: 'missing' });
 
-  const text = `New message from your website\nName: ${name || '—'}\nReply to: ${contact}\n\n${message}`;
-  const url = `https://api.callmebot.com/whatsapp.php?phone=${encodeURIComponent(process.env.CALLMEBOT_PHONE || '')}&text=${encodeURIComponent(text)}&apikey=${encodeURIComponent(process.env.CALLMEBOT_KEY || '')}`;
+  const one = (v) => v.replace(/\s+/g, ' ');                                   // template variables cannot contain line breaks
+  const payload = process.env.WA_TEMPLATE
+    ? { messaging_product: 'whatsapp', to: process.env.OWNER_NUMBER, type: 'template', template: { name: process.env.WA_TEMPLATE, language: { code: process.env.WA_TEMPLATE_LANG || 'en_US' }, components: [{ type: 'body', parameters: [name || 'Someone', contact, message].map((t) => ({ type: 'text', text: one(t) || '-' })) }] } }
+    : { messaging_product: 'whatsapp', to: process.env.OWNER_NUMBER, type: 'text', text: { body: `New message from your website\nName: ${name || '—'}\nReply to: ${contact}\n\n${message}` } };
   try {
-    const r = await fetch(url);
-    if (!r.ok) return res.status(502).json({ ok: false, error: 'upstream' });
+    const r = await fetch(`https://graph.facebook.com/v20.0/${process.env.WA_PHONE_ID}/messages`, { method: 'POST', headers: { Authorization: `Bearer ${process.env.WA_TOKEN}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    if (!r.ok) { console.error('WhatsApp API error', r.status, await r.text()); return res.status(502).json({ ok: false, error: 'upstream' }); }
     recent.push(now); hits.set(ip, recent);
     return res.status(200).json({ ok: true });
   } catch (e) { return res.status(502).json({ ok: false, error: 'upstream' }); }
