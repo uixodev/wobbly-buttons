@@ -248,12 +248,13 @@
         <h2 class="label" id="blog-title" data-reveal>03 / Blog</h2>
         <p class="display" data-reveal>Explore my <em>blog</em>.</p>
         <p class="lede blog-intro" data-reveal>Notes on design, code and how I work with AI — written for people with ideas.</p>
-        <div data-reveal><a href="#blog" class="wobbly" data-variant="solid">Read the notes <span aria-hidden="true">→</span></a></div>
-        <div class="note note-play">
-          <p class="hand">ideas, process<br />and a little AI</p>
-          <svg class="scribble draw" viewBox="0 0 90 60" aria-hidden="true"><path pathLength="1" d="M6 50 C30 54 62 48 78 14 M78 14 L68 20 M78 14 L82 26"/></svg>
+        <div class="chat" id="chat" data-reveal role="region" aria-label="Chat with Vira">
+          <div class="chat-head"><span class="chat-av" aria-hidden="true"><svg viewBox="0 0 100 112"><path d="M12 100 C14 62 26 10 50 10 C74 10 86 62 88 100 C80 104 72 96 68 82 C60 76 40 76 32 82 C28 96 20 104 12 100Z"/><circle cx="86" cy="12" r="6.5"/><ellipse cx="41" cy="46" rx="5.5" ry="8"/><ellipse cx="59" cy="46" rx="5.5" ry="8"/></svg></span><span class="chat-who"><b>Vira</b><i>say hi — I read every message</i></span></div>
+          <div class="chat-log" id="chat-log" aria-live="polite"></div>
+          <div class="chat-quick" id="chat-quick"></div>
+          <form class="chat-form" id="chat-form"><input type="text" id="chat-input" placeholder="Type a message…" autocomplete="off" aria-label="Type a message" maxlength="400" /><button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12 L20 4 L14 20 L11 13 Z"/></svg></button></form>
         </div>
-      </div>
+        </div>
 
       <div class="bento covers">
         <figure class="tile blog-tile cover-tile" style="--clip:url(#shape-wave1)" data-reveal>
@@ -362,6 +363,7 @@
   <script type="module" src="mobile.js"></script>
   <script type="module" src="hero.js"></script>
   <script type="module" src="covers.js"></script>
+  <script type="module" src="chat.js"></script>
   <script type="module" src="footer.js"></script>
   <script type="module" src="nav.js"></script>
   <script type="module" src="click-sparks.js"></script>

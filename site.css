@@ -874,3 +874,30 @@ html.ms-open { overflow: hidden; }
 .dm-mark { position: absolute; right: 8%; top: 12%; font: 400 clamp(1.6rem, 4vw, 2.6rem)/1 var(--serif); font-style: normal; }
 .cv-domain.good .dm-mark { color: #111; } .cv-domain.bad .dm-mark { color: #c0392b; }
 @media (prefers-reduced-motion: reduce) { .cv-domain.bad .dm-bar { animation: none; } .dm-caret { animation: none; } }
+
+/* ═════════ CHAT (chat.js) ═════════ */
+.chat { margin-top: clamp(20px, 3vh, 34px); max-width: 26rem; background: #fff; border: 1.5px solid var(--ink); border-radius: 22px 18px 24px 17px / 18px 24px 17px 22px; overflow: hidden; box-shadow: 7px 9px 0 rgba(17, 17, 17, .08); }
+.chat-head { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1.5px solid var(--ink); background: var(--bg); }
+.chat-av { flex: none; width: 36px; height: 36px; padding: 6px; background: #111; border-radius: 52% 48% 55% 45% / 47% 56% 44% 53%; display: grid; place-items: center; }
+.chat-av svg { width: 100%; height: 100%; fill: #F7F3EF; } .chat-av ellipse { fill: #111; }
+.chat-who { display: grid; gap: 2px; } .chat-who b { font: 400 1.15rem/1 var(--serif); } .chat-who i { font: 400 .6rem/1.2 var(--mono); letter-spacing: .1em; text-transform: uppercase; font-style: normal; opacity: .55; }
+.chat-log { height: 17rem; overflow-y: auto; padding: 14px 14px 6px; display: flex; flex-direction: column; gap: 9px; scroll-behavior: smooth; overscroll-behavior: contain; }
+.cb { max-width: 86%; padding: 10px 14px 11px; font: 400 .98rem/1.4 var(--body); border-radius: 16px 18px 16px 6px / 15px 17px 15px 7px; animation: cb-in .35s cubic-bezier(.3, 1.4, .5, 1) both; }
+.cb.bot { align-self: flex-start; background: #F1ECE6; color: #111; }
+.cb.me { align-self: flex-end; background: #111; color: #fff; border-radius: 18px 16px 6px 16px / 17px 15px 7px 15px; }
+@keyframes cb-in { from { opacity: 0; transform: translateY(8px) scale(.97); } }
+.cb.typing { display: flex; gap: 4px; padding: 14px 16px; }
+.cb.typing i { width: 6px; height: 6px; border-radius: 50%; background: #111; opacity: .35; animation: cb-dot 1s ease-in-out infinite; } .cb.typing i:nth-child(2) { animation-delay: .15s; } .cb.typing i:nth-child(3) { animation-delay: .3s; }
+@keyframes cb-dot { 50% { opacity: 1; transform: translateY(-3px); } }
+.cb-wa { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 10px; padding: 10px 14px; background: var(--accent); color: #111; text-decoration: none; border-radius: 999px 940px 999px 960px / 880px 999px 940px 999px; font: 400 .72rem/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; transition: transform .3s cubic-bezier(.3, 1.6, .5, 1); }
+.cb-wa:hover { transform: rotate(-1.5deg) scale(1.03); }
+.chat-quick { display: flex; flex-wrap: wrap; gap: 7px; padding: 4px 14px 10px; min-height: 12px; }
+.cq { padding: 7px 12px; border: 1.5px solid var(--ink); border-radius: 999px 940px 999px 960px / 880px 999px 940px 999px; background: transparent; color: var(--ink); font: 400 .64rem/1.1 var(--mono); letter-spacing: .08em; text-transform: uppercase; cursor: pointer; transition: background .2s ease, color .2s ease, transform .3s cubic-bezier(.3, 1.6, .5, 1); -webkit-tap-highlight-color: transparent; }
+.cq:hover, .cq:focus-visible { background: #111; color: #fff; transform: rotate(-1.5deg); outline: none; }
+.chat-form { display: flex; gap: 8px; padding: 10px 12px; border-top: 1.5px solid var(--ink); background: var(--bg); }
+.chat-form input { flex: 1; min-width: 0; padding: 10px 14px; border: 1.5px solid rgba(17, 17, 17, .4); border-radius: 999px; background: #fff; font: 400 1rem/1 var(--body); color: #111; outline: none; -webkit-user-select: text; user-select: text; }
+.chat-form input:focus { border-color: #111; }
+.chat-form button { flex: none; width: 42px; height: 42px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50% 46% 52% 48% / 48% 52% 46% 50%; background: #111; color: #fff; cursor: pointer; transition: background .2s ease, color .2s ease, transform .3s cubic-bezier(.3, 1.6, .5, 1); }
+.chat-form button:hover { background: var(--accent); color: #111; transform: rotate(-8deg) scale(1.08); }
+.chat-form button svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
+@media (prefers-reduced-motion: reduce) { .cb, .cb.typing i { animation: none; } }
