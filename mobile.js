@@ -7,7 +7,7 @@ const cards = [...document.querySelectorAll('.ink-fallback .project')];
 if (mq.matches && stage && cards.length) {
   const URLS = ['https://www.mvsugaringbristol.com/', 'https://oksana-nails.vercel.app/#book', 'https://www.masterforgeneralcontracting.com/', 'https://my-bristol-college-app-publish.vercel.app/', 'https://sweet-orchard.github.io/Jakub-portfolio/', 'https://randomspark.app', 'https://sweet-orchard.github.io/unit10-cribbs-causeway-project/'];
   const SHOTS = [
-    ['mariia-1', 'mariia-2', 'mariia-3', 'mariia-4'], ['oksana-1', 'oksana-2', 'oksana-3'], ['master-3', 'master-4', 'master-1', 'master-2'],
+    ['mariia-1', 'mariia-2', 'mariia-3', 'mariia-4', 'mariia-5'], ['oksana-1', 'oksana-2', 'oksana-3'], ['master-3', 'master-4', 'master-1', 'master-2'],
     ['bristol-1', 'bristol-2', 'bristol-3', 'bristol-4'], ['jakub-1', 'jakub-2', 'jakub-3', 'jakub-4'], ['spark-1', 'spark-2', 'spark-3'], ['cribbs-1', 'cribbs-2', 'cribbs-3'],
   ].map((l) => l.map((n) => `assets/shot-${n}.webp`));
   const logos = [...stage.querySelectorAll('.logo-obj img')].map((i) => i.getAttribute('src'));
