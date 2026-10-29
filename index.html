@@ -255,39 +255,23 @@
         </div>
       </div>
 
-      <div class="bento">
-        <div class="col">
-        <figure class="tile blog-tile tile-jelly" style="--clip:url(#shape-wave1)" data-reveal>
-          <div class="tile-stage">
-            <span class="vira-logo jelly-logo" data-text="vira"></span>
-          </div>
+      <div class="bento covers">
+        <figure class="tile blog-tile cover-tile" style="--clip:url(#shape-wave1)" data-reveal>
+          <div class="tile-stage cv cv-ai" data-cover="cv-ai" role="img" aria-label="Interactive cover: move the cursor over perfect dashed AI shapes and they turn into hand-drawn ones"></div>
           <figcaption class="blog-cap"><span class="blog-tag">AI</span><b>How I use AI tools — and keep my own style</b><span aria-hidden="true">→</span></figcaption>
         </figure>
-        <figure class="tile blog-tile tile-physics" style="--clip:url(#shape-wave2)" data-reveal>
-          <div class="tile-stage"><canvas class="physics-canvas" aria-label="Cover: spheres you can push with the cursor" role="img"></canvas></div>
+        <figure class="tile blog-tile cover-tile" style="--clip:url(#shape-wave2)" data-reveal>
+          <div class="tile-stage cv cv-price" data-cover="cv-price" role="img" aria-label="Interactive cover: switch features on and watch the stack of blocks and the price range grow"></div>
           <figcaption class="blog-cap"><span class="blog-tag">Pricing</span><b>What a small-business website really costs</b><span aria-hidden="true">→</span></figcaption>
         </figure>
-        </div>
-        <div class="col">
-        <figure class="tile blog-tile tile-flower" style="--clip:url(#shape-wave2)" data-reveal>
-          <div class="tile-stage"><canvas class="flower-canvas" aria-label="Cover: a flower that follows your cursor" role="img"></canvas></div>
+        <figure class="tile blog-tile cover-tile" style="--clip:url(#shape-wave2)" data-reveal>
+          <div class="tile-stage cv cv-process" data-cover="cv-process" role="img" aria-label="Interactive cover: a little ghost walks along the four steps of a project"></div>
           <figcaption class="blog-cap"><span class="blog-tag">Process</span><b>What a project with me looks like, step by step</b><span aria-hidden="true">→</span></figcaption>
         </figure>
-        <figure class="tile blog-tile tile-liquid" style="--clip:url(#shape-wave1)" data-reveal>
-          <div class="tile-stage">
-            <svg class="liquid-svg" viewBox="0 0 400 260" role="img" aria-label="Cover: five things your homepage must say">
-              <defs>
-                <filter id="liquid" x="-10%" y="-10%" width="120%" height="120%">
-                  <feTurbulence id="liquid-noise" type="fractalNoise" baseFrequency="0.008 0.02" numOctaves="2" seed="3" result="n"/>
-                  <feDisplacementMap id="liquid-map" in="SourceGraphic" in2="n" scale="26" xChannelSelector="R" yChannelSelector="G"/>
-                </filter>
-              </defs>
-              <g filter="url(#liquid)" class="liquid-text"><text x="200" y="118" text-anchor="middle">5 SECONDS</text><text x="200" y="228" text-anchor="middle">5 SECONDS</text></g>
-            </svg>
-          </div>
+        <figure class="tile blog-tile cover-tile" style="--clip:url(#shape-wave1)" data-reveal>
+          <div class="tile-stage cv cv-tips" data-cover="cv-tips" role="img" aria-label="Interactive cover: a five-second countdown ticks off five homepage checks"></div>
           <figcaption class="blog-cap"><span class="blog-tag">Tips</span><b>Five things your homepage must say in five seconds</b><span aria-hidden="true">→</span></figcaption>
         </figure>
-        </div>
       </div>
     </section>
 
@@ -377,6 +361,7 @@
   <script type="module" src="ink.js"></script>
   <script type="module" src="mobile.js"></script>
   <script type="module" src="hero.js"></script>
+  <script type="module" src="covers.js"></script>
   <script type="module" src="footer.js"></script>
   <script type="module" src="nav.js"></script>
   <script type="module" src="click-sparks.js"></script>

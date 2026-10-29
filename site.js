@@ -1,7 +1,5 @@
 // Vira — page behaviour: scroll reveals, self-drawing hand-drawn lines, the newsletter form, and the blog cover animations.
 
-import { initPlayground } from './playground.js';
-
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // ── reveal on scroll: fades things up, and makes the hand-drawn lines draw themselves ──
@@ -55,6 +53,3 @@ if (matchMedia('(hover: none)').matches && 'IntersectionObserver' in window) {
     a.addEventListener('pointerleave', () => { on = false; cur.classList.remove('on'); root.classList.remove('icon-cursor'); });
   });
 })();
-
-// ── the blog covers (live canvases) ──
-initPlayground({ reduced });
