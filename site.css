@@ -934,3 +934,22 @@ html.ms-open { overflow: hidden; }
 .chat-x svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; }
 @media (max-width: 900px) { .chat-dock { min-height: 150px; } .chat-dock .chat { width: 100%; } }
 @media (prefers-reduced-motion: reduce) { .chat-fab { animation: none; } .chat-sugg button { animation: none; opacity: 1; transform: none; } .chat-dock .chat { transition: none; } }
+
+/* the chat uses the real logo mark, and no outlines anywhere: soft shadows and hand-cut shapes instead */
+.chat-fab { width: 76px; height: 74px; }
+.chat-fab .chat-logo { font-size: 2.35rem; line-height: 1; color: #111; --eye: #fff; cursor: pointer; display: block; }
+.chat-av { width: 44px; height: 44px; padding: 0; background: #fff; box-shadow: 0 6px 12px -6px rgba(17, 17, 17, .35); }
+.chat-av .chat-logo { font-size: 1.7rem; line-height: 1; color: #111; --eye: #fff; display: block; }
+.chat { border: 0; background: #fff; border-radius: 26px 20px 28px 18px / 20px 28px 18px 24px; box-shadow: 0 22px 36px -20px rgba(17, 17, 17, .45), 0 3px 10px rgba(17, 17, 17, .06); }
+.chat-head { border-bottom: 0; background: #fff; padding-bottom: 4px; }
+.chat-form { border-top: 0; background: #fff; }
+.chat-form input { border: 0; background: #F1ECE6; border-radius: 999px 960px 999px 940px / 940px 999px 960px 999px; }
+.chat-form input:focus { box-shadow: 0 0 0 2px var(--accent); }
+.cq { border: 0; background: #F1ECE6; border-radius: 999px 940px 999px 960px / 880px 999px 940px 999px; }
+.cq:hover, .cq:focus-visible { background: #111; color: #fff; }
+.cb.bot { background: #F1ECE6; }
+.chat-fab { width: 92px; height: 90px; }
+.chat-fab .chat-logo { font-size: 3.4rem; }
+.chat-av { width: 52px; height: 50px; }
+.chat-av .chat-logo { font-size: 2.1rem; }
+.chat-log { padding-top: 10px; }
