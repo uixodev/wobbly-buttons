@@ -34,6 +34,9 @@ if (log && quick && form) {
   let who = null; try { who = JSON.parse(store.get('vira-chat-who') || 'null'); } catch (e) {}
   if (who && !who.anon && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(who.contact || '')) who = null;      // an older chat saved a phone number: ask again, now for an email
   let next = 0, pollTimer = 0;
+  const liveBar = document.getElementById('chat-live'), endBtn = document.getElementById('chat-end'), sub = document.querySelector('.chat-who i');
+  const setLive = (on) => { if (liveBar) liveBar.hidden = !on; if (sub) sub.textContent = on ? 'Direct chat · live' : 'Chat bot'; };
+  setLive(!!who?.anon);
   const wait = (ms) => new Promise((r) => setTimeout(r, reduced ? 0 : ms));
   const scroll = () => { log.scrollTop = log.scrollHeight; };
 
@@ -79,7 +82,7 @@ if (log && quick && form) {
   async function sendLive(text, echo = true) {                      // anonymous: no name, no email, just the message
     busy = true; mode = 'idle'; input.placeholder = 'Type a message…'; quick.replaceChildren(); if (echo) bubble(text, 'me'); await wait(250);
     const ok = await post({ message: text, anon: true });
-    if (ok) { who = { anon: true, name: '', contact: '' }; store.set('vira-chat-who', JSON.stringify(who)); await say('Sent! I’ll reply right here in this chat as soon as I see it, so keep it open. If you close it, come back on this device and my answer will be waiting.'); startPolling(); }
+    if (ok) { who = { anon: true, name: '', contact: '' }; store.set('vira-chat-who', JSON.stringify(who)); setLive(true); await say('Sent! I’ll reply right here in this chat as soon as I see it, so keep it open. If you close it, come back on this device and my answer will be waiting.'); startPolling(); }
     else { await say('That didn’t go through — could you try again in a moment?'); mode = 'live'; input.placeholder = 'Write your message…'; }
     busy = false;
   }
@@ -87,6 +90,16 @@ if (log && quick && form) {
     bubble(text, 'me');
     if (!(await post({ name: who.name, contact: who.contact, anon: !!who.anon, message: text }))) await say('That one didn’t go through — could you try again in a moment?');
   }
+  // the visitor ends the direct chat: tell Vira, forget the conversation on this device and go back to the bot
+  async function endDirect() {
+    if (busy) return; busy = true; clearInterval(pollTimer); quick.replaceChildren();
+    await post({ message: '(They closed the live chat — no need to reply.)', anon: true });
+    who = null; try { localStorage.removeItem('vira-chat-who'); } catch (e) {}
+    sid = (crypto.randomUUID?.() || String(Math.random()).slice(2) + Date.now()).replace(/-/g, ''); store.set('vira-chat-sid', sid); next = 0;
+    setLive(false); mode = 'idle'; input.placeholder = 'Type a message…';
+    await say('Direct chat closed. Thanks for stopping by — you can start a new one any time.'); chips(START); busy = false;
+  }
+  endBtn?.addEventListener('click', endDirect);
   // ── Secret commands (for you, the developer). Type them in the chat box; they are never sent to WhatsApp or stored. ──
   //   /clear  wipes this browser's chat data (chat code, name) and every cached copy of the site, then reloads
   //   /update refreshes the cached copies of the site's files and reloads (keeps the chat)    /help  lists them
