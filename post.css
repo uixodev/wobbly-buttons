@@ -30,3 +30,4 @@
 .more-card .blog-tag { grid-column: auto; }
 .more-card b { font: 700 1.05rem/1.25 "Domine", var(--serif); }
 @media (max-width: 560px) { .more-card { grid-template-columns: 1fr auto; } .more-card .blog-tag { grid-column: 1 / -1; } }
+.post-cta .wobbly[data-variant="solid"][data-state="hover"] .wb-shape { fill: #fff; stroke: #fff; }
