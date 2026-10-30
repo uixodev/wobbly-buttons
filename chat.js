@@ -69,7 +69,15 @@ if (log && quick && form) {
     else chips(A.next.length ? A.next : ['do', 'process']);
     busy = false;
   }
-  const post = async (p) => { try { const r = await fetch(SEND_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...p, sid, website: '' }) }); return r.ok && (await r.json()).ok; } catch (e) { return false; } };
+  let lastErr = '';                                                       // why the last send failed (shown to the visitor as a short code, and by /debug)
+  const post = async (p) => {
+    try {
+      const r = await fetch(SEND_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...p, sid, website: '' }) });
+      const j = await r.json().catch(() => ({}));
+      lastErr = r.ok && j.ok ? '' : `HTTP ${r.status}${j.error ? ' ' + j.error : ''}`;
+      return r.ok && !!j.ok;
+    } catch (e) { lastErr = `network: ${e.name || 'error'}${navigator.onLine === false ? ' (offline)' : ''}`; return false; }
+  };
   const isEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
   async function send() {
     busy = true; mode = 'idle'; input.placeholder = 'Type a message…';
@@ -79,19 +87,19 @@ if (log && quick && form) {
       who = { name: draft.name, contact: draft.contact }; store.set('vira-chat-who', JSON.stringify(who));
       await say(`Got it, ${draft.name} — your message is on its way to me. ✓`);
       await say(`What happens next: I’ll reply by email to ${draft.contact}, so keep an eye on your inbox (and your spam folder). You don’t need to keep this chat open.`); startPolling();
-    } else { await say('Hmm, that didn’t go through. Could you try the contact section below instead?', null); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); }
+    } else { await say(`Hmm, that didn’t go through (${lastErr}). Could you try the contact section below instead?`, null); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); }
     draft = { message: '', name: '', contact: '' }; chips(['do', 'process', 'price']); busy = false;
   }
   async function sendLive(text, echo = true) {                      // anonymous: no name, no email, just the message
     busy = true; mode = 'idle'; input.placeholder = 'Type a message…'; quick.replaceChildren(); if (echo) bubble(text, 'me'); await wait(250);
     const ok = await post({ message: text, anon: true });
     if (ok) { who = { anon: true, name: '', contact: '' }; store.set('vira-chat-who', JSON.stringify(who)); setLive(true); await say('Sent! I’ll reply right here in this chat as soon as I see it, so keep it open. If you close it, come back on this device and my answer will be waiting.'); startPolling(); }
-    else { await say('That didn’t go through — could you try again in a moment?'); mode = 'live'; input.placeholder = 'Write your message…'; }
+    else { await say(`That didn’t go through (${lastErr}) — could you try again in a moment?`); mode = 'live'; input.placeholder = 'Write your message…'; }
     busy = false;
   }
   async function followUp(text) {                                   // later messages go straight to Viraa, no questions asked
     bubble(text, 'me');
-    if (!(await post({ name: who.name, contact: who.contact, anon: !!who.anon, message: text }))) await say('That one didn’t go through — could you try again in a moment?');
+    if (!(await post({ name: who.name, contact: who.contact, anon: !!who.anon, message: text }))) await say(`That one didn’t go through (${lastErr}) — could you try again in a moment?`);
   }
   // the visitor ends the direct chat: tell Viraa, forget the conversation on this device and go back to the bot
   async function endDirect() {
@@ -115,7 +123,8 @@ if (log && quick && form) {
     location.reload();
   };
   const COMMANDS = {
-    '/help': async () => say('Secret commands: /clear wipes this browser’s chat data and cache, /update refreshes the cached site files. Neither is sent to me.'),
+    '/help': async () => say('Secret commands: /clear wipes this browser’s chat data and cache, /update refreshes the cached site files, /debug shows why the last message failed. None are sent to me.'),
+    '/debug': async () => say(`Site: ${location.host} · online: ${navigator.onLine} · secure: ${isSecureContext} · last send problem: ${lastErr || 'none'} · chat code: ${sid.slice(0, 4)}… · storage: ${store.get('vira-chat-sid') ? 'ok' : 'blocked'}`),
     '/clear': async () => { await say('Clearing the chat data and cache, then reloading…'); await refreshCache(true); },
     '/update': async () => { await say('Refreshing the cached site files, then reloading…'); await refreshCache(false); },
   };
