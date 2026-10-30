@@ -133,4 +133,5 @@ if (log && quick && form) {
   closeBtn?.addEventListener('click', closeChat);
   addEventListener('keydown', (e) => { if (e.key === 'Escape' && dock.classList.contains('open')) closeChat(); });
   sugg.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => openChat(b.dataset.k)));
+  if (new URLSearchParams(location.search).get('chat')) setTimeout(() => { document.getElementById('chat-dock')?.scrollIntoView({ block: 'center' }); openChat(); }, 700);      // arriving from the pop-up on another page
 }

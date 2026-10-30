@@ -25,3 +25,4 @@ html.gt-lock { overflow: hidden; }
 .gt-handle { grid-area: h; font: 400 1rem/1.25 var(--body); overflow-wrap: anywhere; }
 @media (max-width: 520px) { .gt-links { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .gt-wrap, .gt-backdrop { transition: none; } }
+@media (max-width: 520px) { .gt-mail { font-size: .8rem; padding: 1.35em 1.2em; display: flex; width: 100%; } }

@@ -33,7 +33,7 @@ To use a real photo or screenshot, add an `<img src="…" alt="…">` as the **f
 
 ## Things to fill in
 
-- `hello@viraa.me` (the email links) and the Instagram / GitHub / Pinterest links (`href="#"`).
+- `dearviraa@gmail.com` (the email links). The social links are listed in `contact.js` and in the footer in `index.html`.
 - Hook the newsletter form up to a mailing service (the handler is in `site.js`).
 - "View all projects" and the project cards link to `#work` until the project pages exist.
 - The footer says © 2024 (from the wireframe).
