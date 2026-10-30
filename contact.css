@@ -1,0 +1,27 @@
+/* "Get in touch" pop-up (built by contact.js). Hand-cut shapes only. */
+html.gt-lock { overflow: hidden; }
+.gt { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 16px; }
+.gt[hidden] { display: none; }
+.gt-backdrop { position: absolute; inset: 0; background: rgba(17, 17, 17, .5); opacity: 0; transition: opacity .25s ease; }
+.gt.on .gt-backdrop { opacity: 1; }
+.gt-wrap { position: relative; width: min(35rem, 100%); max-height: calc(100svh - 32px); filter: drop-shadow(0 24px 26px rgba(17, 17, 17, .3)); opacity: 0; transform: translateY(18px) scale(.95) rotate(-.8deg); transition: opacity .25s ease, transform .4s cubic-bezier(.3, 1.4, .5, 1); }
+.gt.on .gt-wrap { opacity: 1; transform: none; }
+.gt-card { position: relative; max-height: calc(100svh - 32px); overflow-y: auto; overscroll-behavior: contain; padding: clamp(34px, 6vw, 50px) clamp(26px, 5vw, 44px) clamp(34px, 6vw, 46px); background: #fff; clip-path: url(#gt-card); outline: none; }
+.gt-card .label { margin: 0 0 6px; }
+.gt-title { margin: 0 0 12px; font: 400 clamp(2.8rem, 8vw, 4rem)/1 var(--serif); letter-spacing: 0; }
+.gt-title em { font-style: italic; }
+.gt-lede { margin: 0 0 22px; max-width: 26rem; font: 400 1.05rem/1.5 var(--body); color: #4f4944; }
+.gt-x { position: absolute; top: clamp(18px, 3vw, 26px); right: clamp(18px, 3vw, 26px); width: 42px; height: 40px; padding: 0; border: 0; background: #111; color: #fff; border-radius: 52% 48% 55% 45% / 47% 56% 44% 53%; display: grid; place-items: center; cursor: pointer; transition: background .2s ease, color .2s ease, transform .3s cubic-bezier(.3, 1.6, .5, 1); }
+.gt-x svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.gt-x:hover, .gt-x:focus-visible { background: var(--accent); color: #111; transform: rotate(8deg); outline: none; }
+.gt-mail { margin: 0 0 26px; font-size: .98rem; padding: 1.35em 2.2em; }
+.gt-links { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; filter: drop-shadow(0 4px 5px rgba(17, 17, 17, .12)); }
+.gt-links a { display: grid; grid-template-columns: auto 1fr; grid-template-areas: "i n" "i h"; align-items: center; column-gap: 12px; padding: 17px 18px 19px; background: #F1ECE6; color: var(--ink); text-decoration: none; clip-path: url(#gt-a); transition: background .25s ease, transform .3s cubic-bezier(.3, 1.6, .5, 1); }
+.gt-links li:nth-child(2n) a { clip-path: url(#gt-b); }
+.gt-links li:nth-child(3n) a { clip-path: url(#gt-c); }
+.gt-links a:hover, .gt-links a:focus-visible { background: var(--accent); transform: translateY(-3px) rotate(-.6deg); outline: none; }
+.gt-links svg { grid-area: i; width: 24px; height: 24px; }
+.gt-name { grid-area: n; font: 400 .66rem/1.2 var(--mono); letter-spacing: .14em; text-transform: uppercase; opacity: .65; }
+.gt-handle { grid-area: h; font: 400 1rem/1.25 var(--body); overflow-wrap: anywhere; }
+@media (max-width: 520px) { .gt-links { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .gt-wrap, .gt-backdrop { transition: none; } }

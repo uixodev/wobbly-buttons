@@ -1,0 +1,64 @@
+// "Get in touch" pop-up. Any element with the data-contact attribute opens it (its normal link still works if JavaScript is off).
+// Edit the LINKS list below to change what is shown. Shared by the home page and the blog posts.
+import { init as wobbly } from './wobbly-buttons.js';
+
+const ICONS = {"email": "<rect x=\"3\" y=\"5\" width=\"18\" height=\"14\" rx=\"2\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linejoin=\"round\"/><path d=\"M3.5 6.5 L12 13 L20.5 6.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>", "instagram": "<path fill=\"currentColor\" d=\"M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077\"/>", "youtube": "<path fill=\"currentColor\" d=\"M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z\"/>", "github": "<path fill=\"currentColor\" d=\"M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12\"/>", "pinterest": "<path fill=\"currentColor\" d=\"M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.39 18.592.026 11.985.026L12.017 0z\"/>", "x": "<path fill=\"currentColor\" d=\"M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z\"/>", "linkedin": "<path fill=\"currentColor\" d=\"M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z\"/>"};
+const LINKS = [["email", "Email", "hello@viraa.me", "mailto:hello@viraa.me"], ["instagram", "Instagram", "@viraa.me", "https://www.instagram.com/viraa.me/"], ["x", "X", "@viraadesign", "https://x.com/viraadesign"], ["linkedin", "LinkedIn", "Vira Saienko", "https://www.linkedin.com/in/vira-saienko-0b1553376/"], ["github", "GitHub", "viraadesign", "https://github.com/viraadesign"], ["youtube", "YouTube", "Vira on YouTube", "https://www.youtube.com/channel/UCazyO5O_MnWvDCU0AyzK_VA"], ["pinterest", "Pinterest", "Vira on Pinterest", "https://pin.it/54FZQxllv"]];
+
+const NS = 'http://www.w3.org/2000/svg';
+const svg = (k) => `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONS[k]}</svg>`;
+const shapes = `<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+  <clipPath id="gt-card" clipPathUnits="objectBoundingBox"><path d="M.02 .025 C.14 -.005 .3 .02 .5 .008 S.84 -.008 .98 .022 C1.006 .3 .99 .68 .985 .972 C.88 1.006 .7 .985 .5 .993 S.16 1.008 .018 .976 C-.004 .66 .012 .3 .02 .025Z"/></clipPath>
+  <clipPath id="gt-a" clipPathUnits="objectBoundingBox"><path d="M.01 .12 C.1 .0 .24 .1 .42 .04 C.62 -.02 .82 .1 .99 .03 L.995 .86 C.9 .98 .76 .9 .56 .96 C.36 1.02 .16 .9 .0 .97Z"/></clipPath>
+  <clipPath id="gt-b" clipPathUnits="objectBoundingBox"><path d="M.0 .06 C.14 .0 .3 .12 .5 .05 C.7 -.02 .86 .1 1 .02 L.99 .9 C.84 .99 .68 .88 .5 .95 C.3 1.02 .14 .9 .01 .98Z"/></clipPath>
+  <clipPath id="gt-c" clipPathUnits="objectBoundingBox"><path d="M.005 .1 C.12 .02 .28 .08 .5 .03 C.72 -.02 .88 .08 .995 .0 L1 .88 C.86 .97 .7 .92 .5 .97 C.3 1.02 .12 .92 .0 .99Z"/></clipPath>
+</defs></svg>`;
+
+const html = `
+<div class="gt" id="gt" hidden>
+  <div class="gt-backdrop" data-gt-close></div>
+  <div class="gt-wrap">
+    <div class="gt-card" role="dialog" aria-modal="true" aria-labelledby="gt-title" tabindex="-1">
+      <button type="button" class="gt-x" data-gt-close aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6 L18 18 M18 6 L6 18"/></svg></button>
+      <p class="label">Get in touch</p>
+      <h2 id="gt-title" class="gt-title">Let’s <em>talk</em>.</h2>
+      <p class="gt-lede">Email is the quickest way to reach me. You can also find me in these places:</p>
+      <a class="wobbly gt-mail" data-variant="solid" href="${LINKS[0][3]}">${LINKS[0][2]} <span aria-hidden="true">→</span></a>
+      <ul class="gt-links">
+        ${LINKS.slice(1).map(([k, name, handle, href]) => `<li><a href="${href}" target="_blank" rel="noopener" aria-label="${name}: ${handle}">${svg(k)}<span class="gt-name">${name}</span><span class="gt-handle">${handle}</span></a></li>`).join('')}
+      </ul>
+    </div>
+  </div>
+</div>`;
+
+const host = document.createElement('div');
+host.innerHTML = shapes + html;
+document.body.append(...host.childNodes);
+const root = document.getElementById('gt'), card = root.querySelector('.gt-card');
+wobbly(root);
+
+let opener = null;
+const focusables = () => [...card.querySelectorAll('a[href], button')].filter((n) => !n.hidden);
+function open(from) {
+  opener = from || document.activeElement; root.hidden = false; void root.offsetWidth;
+  root.classList.add('on'); document.documentElement.classList.add('gt-lock');
+  setTimeout(() => card.focus({ preventScroll: true }), 30);
+}
+function close() {
+  root.classList.remove('on'); document.documentElement.classList.remove('gt-lock');
+  setTimeout(() => { if (!root.classList.contains('on')) root.hidden = true; }, 260);
+  opener?.focus?.({ preventScroll: true });
+}
+document.addEventListener('click', (e) => {
+  const t = e.target.closest?.('[data-contact]'); if (t) { e.preventDefault(); open(t); return; }
+  if (e.target.closest?.('[data-gt-close]')) close();
+});
+addEventListener('keydown', (e) => {
+  if (root.hidden) return;
+  if (e.key === 'Escape') { close(); return; }
+  if (e.key === 'Tab') {
+    const f = focusables(), first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && (document.activeElement === first || document.activeElement === card)) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+});
