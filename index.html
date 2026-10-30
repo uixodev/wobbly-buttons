@@ -22,6 +22,7 @@
       <clipPath id="shape-a" clipPathUnits="objectBoundingBox"><path d="M0.00 0.12 C0.00 0.02 0.28 0.05 0.50 0.01 C0.74 -0.03 1.00 0.01 1.00 0.26 C1.00 0.50 0.96 0.70 0.98 0.86 C1.00 1.00 0.80 0.98 0.60 0.97 C0.40 0.96 0.25 1.01 0.10 0.97 C-0.03 0.93 0.03 0.72 0.01 0.52 C0.00 0.34 0.00 0.22 0.00 0.12Z"/></clipPath>
       <clipPath id="shape-b" clipPathUnits="objectBoundingBox"><path d="M0.03 0.07 C0.14 -0.01 0.32 0.04 0.50 0.02 C0.70 0.00 0.88 -0.02 0.97 0.07 C1.02 0.14 0.99 0.30 1.00 0.50 C1.01 0.70 1.00 0.86 0.96 0.94 C0.88 1.02 0.70 0.98 0.50 1.00 C0.30 1.01 0.12 1.02 0.04 0.95 C-0.02 0.88 0.01 0.70 0.00 0.50 C-0.01 0.30 -0.02 0.14 0.03 0.07Z"/></clipPath>
       <clipPath id="shape-c" clipPathUnits="objectBoundingBox"><path d="M0.04 0.04 C0.20 -0.02 0.36 0.06 0.55 0.03 C0.74 0.00 0.90 0.00 0.97 0.10 C1.01 0.18 0.96 0.34 0.99 0.52 C1.02 0.72 0.98 0.88 0.90 0.95 C0.80 1.02 0.62 0.98 0.46 1.00 C0.28 1.02 0.10 1.01 0.03 0.93 C-0.03 0.84 0.04 0.66 0.02 0.48 C0.00 0.30 -0.03 0.12 0.04 0.04Z"/></clipPath>
+      <clipPath id="news-blob" clipPathUnits="objectBoundingBox"><path d="M.5 .02 C.8 -.01 1.01 .24 .98 .55 C.96 .86 .74 1.01 .47 .98 C.2 .97 -.01 .78 .02 .47 C.04 .2 .24 .04 .5 .02Z"/></clipPath>
       <clipPath id="live-strip" clipPathUnits="objectBoundingBox"><path d="M.004 .24 C.07 .02 .22 .14 .46 .07 C.7 .0 .9 .14 .996 .05 L1 .8 C.92 1.02 .74 .88 .5 .96 C.28 1.04 .1 .9 .0 .98Z"/></clipPath>
       <clipPath id="live-btn" clipPathUnits="objectBoundingBox"><path d="M.05 .3 C.1 .0 .45 .12 .7 .06 C.9 .0 1.0 .15 .97 .5 C1.0 .8 .9 1.02 .62 .94 C.36 1.02 .1 .98 .04 .86 C-.02 .62 .0 .42 .05 .3Z"/></clipPath>
       <clipPath id="shape-wave1" clipPathUnits="objectBoundingBox"><path d="M0.01 0.10 C0.18 -0.03 0.33 0.09 0.52 0.04 C0.70 -0.01 0.88 0.07 1.00 0.01 L0.99 0.84 C0.86 0.93 0.72 0.80 0.54 0.89 C0.34 0.99 0.18 0.85 0.00 0.95Z"/></clipPath>
@@ -348,12 +349,14 @@
       </div>
       <div class="f-col f-news"><h4 class="label">Stay in touch</h4>
         <p class="mono">Occasional updates on new projects, experiments and useful web tips.</p>
-        <form class="news" novalidate>
+        <form class="news" action="https://buttondown.com/api/emails/embed-subscribe/uixo" method="post" novalidate>
           <label class="sr-only" for="news-email">Your email address</label>
-          <input id="news-email" type="email" placeholder="Your email address" autocomplete="email" />
+          <input id="news-email" type="email" name="email" placeholder="Your email address" autocomplete="email" />
+          <input type="hidden" name="embed" value="1" />
           <button type="submit" aria-label="Subscribe"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12 H19 M13 6 L19 12 L13 18"/></svg></button>
         </form>
         <label class="check"><input type="checkbox" /> <span>Yes, send me updates</span></label>
+        <p class="news-fine mono">Sent by Buttondown. Unsubscribe any time. <a href="privacy.html#newsletter">Privacy</a></p>
         <p class="news-msg mono" role="status" aria-live="polite"></p>
       </div>
             </div>

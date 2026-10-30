@@ -204,15 +204,15 @@ a { color: inherit; }
 .social svg { width: 20px; height: 20px; fill: none; stroke: var(--bg); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 .social svg .fill, .social svg.fill { fill: var(--bg); stroke: none; }
 .f-news .mono { margin-bottom: 18px; max-width: 24rem; }
-.news { display: flex; align-items: center; border: 1px solid var(--bg); border-radius: 999px; padding: 5px 5px 5px 22px; max-width: 26rem; background: rgba(247, 243, 239, .04); }
+.news { display: flex; align-items: center; border: 0; clip-path: url(#live-strip); padding: 9px 9px 11px 26px; max-width: 26rem; background: rgba(247, 243, 239, .13); }
 .news input { flex: 1; min-width: 0; border: 0; background: none; outline: none; font: 400 .88rem var(--mono); color: var(--bg); padding: 10px 0; }
 .news input::placeholder { color: rgba(247, 243, 239, .5); }
-.news button { flex: none; width: 46px; height: 46px; border-radius: 50%; border: 0; background: var(--bg); cursor: pointer; display: grid; place-items: center; transition: transform .3s cubic-bezier(.3, 1.6, .5, 1); }
+.news button { flex: none; width: 48px; height: 46px; border-radius: 0; clip-path: url(#news-blob); border: 0; background: var(--bg); cursor: pointer; display: grid; place-items: center; transition: transform .3s cubic-bezier(.3, 1.6, .5, 1); }
 .news button:hover { transform: scale(1.08); }
 .news button svg { width: 20px; height: 20px; stroke: var(--ink); fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-.news:focus-within { box-shadow: 0 0 0 3px rgba(247, 243, 239, .25); }
+.news:focus-within { background: rgba(247, 243, 239, .2); }
 .check { display: flex; align-items: center; gap: 10px; margin-top: 16px; font: 400 .8rem var(--mono); color: var(--cream-soft); cursor: pointer; }
-.check input { appearance: none; width: 20px; height: 20px; border: 1px solid rgba(247, 243, 239, .55); border-radius: 4px; background: none; display: grid; place-items: center; cursor: pointer; }
+.check input { appearance: none; width: 22px; height: 21px; border: 0; border-radius: 0; clip-path: url(#news-blob); background: rgba(247, 243, 239, .25); display: grid; place-items: center; cursor: pointer; }
 .check input:checked { background: var(--bg); border-color: var(--bg); }
 .check input:checked::after { content: ""; width: 9px; height: 5px; border-left: 1.6px solid var(--ink); border-bottom: 1.6px solid var(--ink); transform: rotate(-45deg) translate(1px, -1px); }
 .news-msg { min-height: 1.4em; margin-top: 12px; color: var(--bg); }
@@ -1021,3 +1021,6 @@ html.ms-open { overflow: hidden; }
 .live-end:hover, .live-end:focus-visible { background: var(--accent); color: #111; transform: rotate(-2deg); outline: none; }
 @keyframes live-pulse { 50% { transform: scale(1.5); opacity: .5; } }
 @media (prefers-reduced-motion: reduce) { .live-dot { animation: none; } }
+
+.news-fine { margin: 10px 0 0; font-size: .66rem; letter-spacing: .06em; opacity: .65; }
+.news-fine a { color: inherit; text-underline-offset: 3px; }

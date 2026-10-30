@@ -13,22 +13,30 @@ if ('IntersectionObserver' in window && !reduced) {
   targets.forEach((t) => t.classList.add('is-in'));
 }
 
-// ── newsletter: there is no backend yet, so it validates and says thanks locally ──
+// ── newsletter: the form sends the address to Buttondown (it emails a confirmation and adds the unsubscribe link) ──
 const form = document.querySelector('.news');
 if (form) {
   const msg = document.querySelector('.news-msg');
   const box = document.querySelector('.check input');
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const email = form.querySelector('input').value.trim();
-    if (!/^\S+@\S+\.\S+$/.test(email)) { msg.textContent = 'Please enter a valid email address.'; return; }
+  let sending = false;
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault(); if (sending) return;
+    const email = form.querySelector('[name="email"]').value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { msg.textContent = 'Please enter a valid email address.'; return; }
     if (!box.checked) { msg.textContent = 'Tick the box to say yes to updates.'; return; }
-    msg.textContent = 'Thank you! (This form isn’t connected yet.)';
-    form.reset(); box.checked = false;
+    sending = true; msg.textContent = 'Subscribing…';
+    try {
+      // Buttondown's embed endpoint does not allow reading the reply from another site, so we send it and trust it (we only get here after the checks above).
+      await fetch(form.action, { method: 'POST', mode: 'no-cors', body: new URLSearchParams({ email, embed: '1' }) });
+      msg.textContent = 'Almost there! Check your inbox for a message to confirm your email.';
+      form.reset(); box.checked = false;
+    } catch (err) {
+      form.target = '_blank'; form.removeAttribute('novalidate'); form.submit();       // no connection to the fetch: let the browser send it the normal way
+      msg.textContent = 'Opening the confirmation page…';
+    }
+    sending = false;
   });
 }
-
-
 
 // ── touch screens: black-and-white covers / tiles turn to colour while they are in the middle band of the screen ──
 if (matchMedia('(hover: none)').matches && 'IntersectionObserver' in window) {
