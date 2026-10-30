@@ -1,4 +1,4 @@
-// Vira — page behaviour: scroll reveals, self-drawing hand-drawn lines, the newsletter form, and the blog cover animations.
+// Viraa — page behaviour: scroll reveals, self-drawing hand-drawn lines, the newsletter form, and the blog cover animations.
 
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 

@@ -1,4 +1,4 @@
-// A little chat with Vira. Quick replies answer common questions (edit ANSWERS below). To leave a message, the visitor writes it, gives a name and a way to reply,
+// A little chat with Viraa. Quick replies answer common questions (edit ANSWERS below). To leave a message, the visitor writes it, gives a name and a way to reply,
 // and the chat sends it to /api/send-message (see api/send-message.js), which forwards it to your WhatsApp. Visitors never see your number.
 // Replies: when you answer on WhatsApp, api/whatsapp-webhook.js stores your reply and this chat picks it up from /api/messages every few seconds.
 
@@ -11,7 +11,7 @@ const INFO = {
   open: true,                                   // true: "I'm open for new projects"  ·  false: "I'm fully booked right now" (see the avail answer)
 };
 const ANSWERS = {
-  do: { q: 'What do you do?', a: `I’m Vira, ${INFO.who}. I design and build distinctive websites for beauty studios, small businesses and creative people — with personality in every detail.`, next: ['services', 'work', 'process'] },
+  do: { q: 'What do you do?', a: `I’m Viraa, ${INFO.who}. I design and build distinctive websites for beauty studios, small businesses and creative people — with personality in every detail.`, next: ['services', 'work', 'process'] },
   services: { q: 'What can you help with?', a: `I can help with ${INFO.services}. Not sure which one you need? Tell me about your idea and we’ll work it out.`, next: ['process', 'price', 'msg'] },
   process: { q: 'How does a project work?', a: 'We start with a chat about you and your idea. Then: hello → sketch → build → launch. You see it early, we tweak it together, and I look after the launch.', next: ['price', 'avail', 'msg'] },
   price: { q: 'About pricing', a: 'Every project is a bit different, so I quote after hearing about your idea. Tell me what you need and I’ll give you an honest range — no surprises.', next: ['avail', 'msg', 'do'] },
@@ -28,7 +28,7 @@ const log = document.getElementById('chat-log'), quick = document.getElementById
 if (log && quick && form) {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   let started = false, busy = false;
-  // two-way: each visitor gets a private conversation id; once they have left a first message, they can keep chatting and Vira's WhatsApp replies appear here
+  // two-way: each visitor gets a private conversation id; once they have left a first message, they can keep chatting and Viraa's WhatsApp replies appear here
   const store = { get: (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} } };
   let sid = store.get('vira-chat-sid'); if (!sid) { sid = (crypto.randomUUID?.() || String(Math.random()).slice(2) + Date.now()).replace(/-/g, ''); store.set('vira-chat-sid', sid); }
   let who = null; try { who = JSON.parse(store.get('vira-chat-who') || 'null'); } catch (e) {}
@@ -86,11 +86,11 @@ if (log && quick && form) {
     else { await say('That didn’t go through — could you try again in a moment?'); mode = 'live'; input.placeholder = 'Write your message…'; }
     busy = false;
   }
-  async function followUp(text) {                                   // later messages go straight to Vira, no questions asked
+  async function followUp(text) {                                   // later messages go straight to Viraa, no questions asked
     bubble(text, 'me');
     if (!(await post({ name: who.name, contact: who.contact, anon: !!who.anon, message: text }))) await say('That one didn’t go through — could you try again in a moment?');
   }
-  // the visitor ends the direct chat: tell Vira, forget the conversation on this device and go back to the bot
+  // the visitor ends the direct chat: tell Viraa, forget the conversation on this device and go back to the bot
   async function endDirect() {
     if (busy) return; busy = true; clearInterval(pollTimer); quick.replaceChildren();
     await post({ message: '(They closed the live chat — no need to reply.)', anon: true });
@@ -144,7 +144,7 @@ if (log && quick && form) {
   async function start() {
     if (started) return Promise.resolve(); started = true; busy = true;
     if (who) { await say(who.anon ? 'Welcome back! Type below to keep chatting — my replies show up here.' : `Welcome back${who.name ? ', ' + who.name : ''}! I reply by email (${who.contact}), but you can add to your message below.`); await pullReplies(true); startPolling(); chips(START); busy = false; return; }
-    await say('Hi! I’m Vira — well, her little chat helper. What would you like to know?'); chips(START); busy = false;
+    await say('Hi! I’m Viraa — well, her little chat helper. What would you like to know?'); chips(START); busy = false;
   }
   // closed by default: a white button and a few suggestions; opening shows the chat (a suggestion also asks that question)
   const openChat = (key) => {

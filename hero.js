@@ -40,7 +40,7 @@ if (cc) {
 }
 
 // Hero scroll story: the section is tall and its content is pinned. How far you have scrolled through it decides how many steps are on:
-// 0 cat alone · 1 "Hi," · 2 "I'm Vira." · 3 intro · 4 buttons. It runs both ways (scroll back up and they leave again).
+// 0 cat alone · 1 "Hi," · 2 "I'm Viraa." · 3 intro · 4 buttons. It runs both ways (scroll back up and they leave again).
 const story = document.getElementById('hero');
 if (story && story.classList.contains('hero-story')) {
   const reducedS = matchMedia('(prefers-reduced-motion: reduce)').matches;

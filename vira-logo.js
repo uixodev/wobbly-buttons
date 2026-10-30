@@ -1,4 +1,4 @@
-// Interactive "vira" logo: the A-blob leans toward the cursor, its eyes follow it,
+// Interactive "viraa" logo: the A-blob leans toward the cursor, its eyes follow it,
 // the dot floats loosely, and a press squishes the body. Blinks on its own.
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -36,8 +36,9 @@ const GLYPHS = [
   { x: 60, tilt: 3, dy: -0.5, shapes: [{ pts: [[7, -46], [7, -26], [6.5, -7]] }, { pts: circle(7, -75, 8.5, 9), closed: true, fill: true }] }, // i
   { x: 82, tilt: -1.5, dy: 0.4, shapes: [{ pts: [[7, -7], [7, -26], [8, -40], [16, -48], [28, -50], [38, -45]] }] },                       // r
   { x: 128, tilt: 2.5, dy: -0.4, shapes: [{ pts: circle(25, -27, 19, 12), closed: true }, { pts: [[44, -48], [44, -27], [44.5, -7], [49, -5]] }] }, // a
+  { x: 189, tilt: -2, dy: 0.5, shapes: [{ pts: circle(25, -27, 19, 12), closed: true }, { pts: [[44, -48], [44, -27], [43.5, -7], [48.5, -5.5]] }] }, // a (second)
 ];
-const WORD_W = 190, STROKE = 16;
+const WORD_W = 248, STROKE = 16;
 
 const openPath = (P) => {
   const n = P.length; let d = `M${P[0][0].toFixed(2)} ${P[0][1].toFixed(2)}`;
@@ -66,7 +67,7 @@ class ViraLogo {
 
     const word = document.createElement('span');
     word.className = 'vira-word';
-    const text = root.dataset.text || 'vira';
+    const text = root.dataset.text || 'viraa';
     word.setAttribute('aria-hidden', 'true');
     // hand-built SVG letters (the data-text attribute only sets the accessible name)
     const wsvg = el('svg', { viewBox: `0 -90 ${WORD_W} 100`, class: 'vira-wordsvg' });

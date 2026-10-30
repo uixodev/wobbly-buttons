@@ -971,7 +971,7 @@ html.ms-open { overflow: hidden; }
 .chat-dock { padding-bottom: 0; }
 .chat-dock { margin-bottom: -14px; }
 @media (max-width: 900px) { .chat-dock { margin-bottom: 0; } }
-.chat-ask svg { transform: translateY(-2px); }
+.chat-ask svg { transform: translateY(-23px); }
 .chat-dock { margin-bottom: -64px; }
 @media (max-width: 900px) { .chat-dock { margin-bottom: -8px; } }
 
@@ -1024,3 +1024,6 @@ html.ms-open { overflow: hidden; }
 
 .news-fine { margin: 10px 0 0; font-size: .66rem; letter-spacing: .06em; opacity: .65; }
 .news-fine a { color: inherit; text-underline-offset: 3px; }
+
+/* the purple band above the contact section: on narrow screens the section is very tall, so use a much gentler wave */
+@media (max-width: 700px) { #contact::before { clip-path: url(#band-b-soft); top: -24px; } }
