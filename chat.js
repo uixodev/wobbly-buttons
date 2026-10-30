@@ -18,9 +18,10 @@ const ANSWERS = {
   avail: { q: 'Are you available?', a: INFO.open ? 'I’m open for new projects. The quickest way to start is a short message — it takes a minute.' : 'I’m fully booked right now, but leave a message and I’ll tell you when I have space.', next: ['msg', 'do'] },
   work: { q: 'Show me your work', a: 'Sure — I’ll take you to my projects.', action: () => document.getElementById('work')?.scrollIntoView({ behavior: 'smooth' }), next: ['process', 'price', 'msg'] },
   blog: { q: 'Read your blog', a: 'Here are my notes on design, pricing, domains and how I work with AI.', action: () => document.getElementById('blog')?.scrollIntoView({ behavior: 'smooth' }), next: ['price', 'msg'] },
-  msg: { q: 'Leave me a message', a: 'I’d love that. What would you like to tell me?', ask: 'message', next: [] },
+  msg: { q: 'Leave me a message', a: 'I’d love that. What would you like to tell me? Then I’ll ask for your name and email so I can get back to you.', ask: 'message', next: [] },
+  live: { q: 'Chat with me live, anonymously', a: 'Sure — no name or email needed. Type your message below and it goes straight to me, and my replies show up here in this chat. Please don’t share anything private.', ask: 'live', next: [] },
 };
-const START = ['do', 'services', 'process', 'price'];
+const START = ['do', 'process', 'price', 'msg', 'live'];
 
 const dock = document.getElementById('chat-dock'), fab = document.getElementById('chat-fab'), sugg = document.getElementById('chat-sugg'), closeBtn = document.getElementById('chat-x');
 const log = document.getElementById('chat-log'), quick = document.getElementById('chat-quick'), form = document.getElementById('chat-form'), input = document.getElementById('chat-input'), root = document.getElementById('chat');
@@ -31,6 +32,7 @@ if (log && quick && form) {
   const store = { get: (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} } };
   let sid = store.get('vira-chat-sid'); if (!sid) { sid = (crypto.randomUUID?.() || String(Math.random()).slice(2) + Date.now()).replace(/-/g, ''); store.set('vira-chat-sid', sid); }
   let who = null; try { who = JSON.parse(store.get('vira-chat-who') || 'null'); } catch (e) {}
+  if (who && !who.anon && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(who.contact || '')) who = null;      // an older chat saved a phone number: ask again, now for an email
   let next = 0, pollTimer = 0;
   const wait = (ms) => new Promise((r) => setTimeout(r, reduced ? 0 : ms));
   const scroll = () => { log.scrollTop = log.scrollHeight; };
@@ -57,24 +59,33 @@ if (log && quick && form) {
   async function choose(k) {
     if (busy) return; busy = true; quick.replaceChildren(); const A = ANSWERS[k]; bubble(A.q, 'me'); await wait(250);
     await say(A.a); A.action?.();
-    if (A.ask) { mode = 'message'; input.placeholder = 'Write your message…'; input.focus({ preventScroll: true }); }
+    if (A.ask) { mode = A.ask; input.placeholder = 'Write your message…'; input.focus({ preventScroll: true }); }
     else chips(A.next.length ? A.next : ['do', 'process']);
     busy = false;
   }
+  const post = async (p) => { try { const r = await fetch(SEND_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...p, sid, website: '' }) }); return r.ok && (await r.json()).ok; } catch (e) { return false; } };
+  const isEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
   async function send() {
     busy = true; mode = 'idle'; input.placeholder = 'Type a message…';
     await say('Sending…');
-    let ok = false;
-    try { const r = await fetch(SEND_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...draft, sid, website: '' }) }); ok = r.ok && (await r.json()).ok; } catch (e) { ok = false; }
-    if (ok) { who = { name: draft.name, contact: draft.contact }; store.set('vira-chat-who', JSON.stringify(who)); await say('Sent! Thank you — I’ve got it on my phone. You can keep typing here: when I reply, my answer will appear in this chat.'); startPolling(); }
-    else await say('Hmm, that didn’t go through. Could you try the contact section below instead?', null);
-    if (!ok) document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+    const ok = await post(draft);
+    if (ok) {
+      who = { name: draft.name, contact: draft.contact }; store.set('vira-chat-who', JSON.stringify(who));
+      await say(`Got it, ${draft.name} — your message is on its way to me. ✓`);
+      await say(`I’ll answer here in this chat, or by email at ${draft.contact}. You can keep typing below.`); startPolling();
+    } else { await say('Hmm, that didn’t go through. Could you try the contact section below instead?', null); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); }
     draft = { message: '', name: '', contact: '' }; chips(['do', 'process', 'price']); busy = false;
   }
+  async function sendLive(text) {                                   // anonymous: no name, no email, just the message
+    busy = true; mode = 'idle'; input.placeholder = 'Type a message…'; quick.replaceChildren(); bubble(text, 'me'); await wait(250);
+    const ok = await post({ message: text, anon: true });
+    if (ok) { who = { anon: true, name: '', contact: '' }; store.set('vira-chat-who', JSON.stringify(who)); await say('Sent — I’ll answer here. Keep this chat open (or come back on this device) to see my reply.'); startPolling(); }
+    else { await say('That didn’t go through — could you try again in a moment?'); mode = 'live'; input.placeholder = 'Write your message…'; }
+    busy = false;
+  }
   async function followUp(text) {                                   // later messages go straight to Vira, no questions asked
-    bubble(text, 'me'); let ok = false;
-    try { const r = await fetch(SEND_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: who.name, contact: who.contact, message: text, sid, website: '' }) }); ok = r.ok && (await r.json()).ok; } catch (e) { ok = false; }
-    if (!ok) await say('That one didn’t go through — could you try again in a moment?');
+    bubble(text, 'me');
+    if (!(await post({ name: who.name, contact: who.contact, anon: !!who.anon, message: text }))) await say('That one didn’t go through — could you try again in a moment?');
   }
   // ── Secret commands (for you, the developer). Type them in the chat box; they are never sent to WhatsApp or stored. ──
   //   /clear  wipes this browser's chat data (chat code, name) and every cached copy of the site, then reloads
@@ -97,17 +108,18 @@ if (log && quick && form) {
     const cmd = COMMANDS[text.trim().toLowerCase()];
     if (cmd) { busy = true; quick.replaceChildren(); bubble(text, 'me'); await wait(250); await cmd(); busy = false; return; }
     if (who && mode === 'idle') { quick.replaceChildren(); await followUp(text); return; }
+    if (mode === 'live') { await sendLive(text); return; }
     busy = true; quick.replaceChildren(); bubble(text, 'me'); await wait(250);
     if (mode === 'idle' || mode === 'message') { draft.message = text; mode = 'name'; await say('Thanks! Who am I talking to? (just your first name is fine)'); input.placeholder = 'Your name…'; }
-    else if (mode === 'name') { draft.name = text; mode = 'contact'; await say(`Nice to meet you, ${text}. How can I reply — an email address or a WhatsApp number?`); input.placeholder = 'Email or WhatsApp number…'; }
-    else if (mode === 'contact') { draft.contact = text; await send(); return; }
+    else if (mode === 'name') { draft.name = text; mode = 'contact'; await say(`Nice to meet you, ${text}. What’s your email address? (Gmail or any other is fine)`); input.placeholder = 'Your email…'; }
+    else if (mode === 'contact') { if (!isEmail(text)) { await say('That doesn’t look like an email address — could you check it? (for example name@gmail.com)'); busy = false; return; } draft.contact = text; await send(); return; }
     busy = false;
   }
   form.addEventListener('submit', (e) => { e.preventDefault(); const v = input.value.trim(); if (!v) return; input.value = ''; free(v); });
 
   async function start() {
     if (started) return Promise.resolve(); started = true; busy = true;
-    if (who) { await say(`Welcome back${who.name ? ', ' + who.name : ''}! Type below to message me — my replies show up here.`); await pullReplies(true); startPolling(); chips(START); busy = false; return; }
+    if (who) { await say(who.anon ? 'Welcome back! Type below to keep chatting — my replies show up here.' : `Welcome back${who.name ? ', ' + who.name : ''}! Type below to message me — my replies show up here.`); await pullReplies(true); startPolling(); chips(START); busy = false; return; }
     await say('Hi! I’m Vira — well, her little chat helper. What would you like to know?'); chips(START); busy = false;
   }
   // closed by default: a white button and a few suggestions; opening shows the chat (a suggestion also asks that question)

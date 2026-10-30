@@ -21,9 +21,10 @@ export default async function handler(req, res) {
 
   const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body || {};
   const clean = (v, n) => String(v || '').replace(/[\u0000-\u001f]+/g, ' ').trim().slice(0, n);
-  const name = clean(body.name, 80), contact = clean(body.contact, 120), message = clean(body.message, 800), sid = body.sid;
+  const anon = body.anon === true;                                         // anonymous live chat: no name, no email
+  const name = anon ? 'Anonymous' : clean(body.name, 80), contact = anon ? 'Anonymous (answer in the chat)' : clean(body.contact, 120), message = clean(body.message, 800), sid = body.sid;
   if (body.website) return res.status(200).json({ ok: true });            // honeypot field: bots fill it in, people never see it
-  if (!message || !contact) return res.status(400).json({ ok: false, error: 'missing' });
+  if (!message || (!anon && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(contact))) return res.status(400).json({ ok: false, error: 'missing' });      // a normal message needs an email to reply to
 
   const token = String(process.env.WA_TOKEN || '').trim().replace(/^["']|["']$/g, '').replace(/^Bearer\s+/i, '').trim();
   const phoneId = String(process.env.WA_PHONE_ID || '').replace(/\D/g, ''), owner = String(process.env.OWNER_NUMBER || '').replace(/\D/g, '');

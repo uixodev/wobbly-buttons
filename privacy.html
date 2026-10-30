@@ -57,13 +57,13 @@
     <article class="priv">
       <p class="label">Privacy</p>
       <h1>How your <em>messages</em> are handled.</h1>
-      <p class="updated">Last updated 29 October 2026</p>
+      <p class="updated">Last updated 30 October 2026</p>
 
       <div class="wob-shadow"><div class="short">
         <p class="label" style="margin-bottom:10px">The short version</p>
         <ul>
           <li>This is my personal website. I’m Vira, a web designer in Bristol, UK.</li>
-          <li>The only thing the site collects is what you choose to type into the chat: a message, a first name and a way to reply.</li>
+          <li>The only thing the site collects is what you choose to type into the chat: a message, and (unless you choose the anonymous option) a first name and an email address.</li>
           <li>There are no cookies, no advertising, and no analytics on this site.</li>
           <li>Your message is sent to me on WhatsApp. My number is never shown to you.</li>
           <li>The copy on the website’s database is kept for 30 days after the last message in a conversation. Copies in WhatsApp are not deleted automatically — see below.</li>
@@ -79,11 +79,12 @@
       <p>If you choose to leave me a message, the chat collects:</p>
       <ul>
         <li><b>Your message</b>, and any later messages you type in the same chat.</li>
-        <li><b>Your name</b> (a first name is fine), exactly as you type it.</li>
-        <li><b>How I can reply</b> — the email address or WhatsApp number you type in.</li>
+        <li><b>Your name</b> (a first name is fine), exactly as you type it. Not asked for in the anonymous option.</li>
+        <li><b>Your email address</b>, so I can reply to you. Not asked for in the anonymous option.</li>
         <li><b>A random chat code</b> your browser creates the first time you open the chat. It has no connection to who you are. It only lets the chat find your conversation again, and lets my replies reach you.</li>
         <li><b>My replies</b> to you, which are part of the same conversation.</li>
       </ul>
+      <p><b>Anonymous live chat.</b> If you choose “Chat with me live, anonymously”, the chat doesn’t ask for your name or email. I receive only your messages (marked “Anonymous”) and the random chat code, and my replies appear in the chat. The messages travel and are kept exactly as described below, including the 30-day rule. It’s anonymous in the sense that I don’t ask who you are: if you write your name or details in a message I will see them, and the website’s host still keeps ordinary technical logs (see below).</p>
       <p>Please don’t put anything sensitive in the chat, such as health details, bank details or passwords.</p>
 
       <h2>What it does not collect</h2>
@@ -107,7 +108,7 @@
       <h2>Where it is kept, and for how long</h2>
       <div class="keep">
         <div><b>On the website’s database (Upstash Redis, via Vercel)</b><span>Each conversation is kept for <b style="display:inline;font:inherit;letter-spacing:0;text-transform:none">30 days after its latest message</b>, then the database removes it automatically. Every new message, from you or from me, restarts the 30 days for that conversation. A couple of small lookup entries that connect my WhatsApp replies to your chat expire after 30 days too.</span></div>
-        <div><b>In your browser</b><span>Your chat code, and the name and way-to-reply you gave, are stored on your device so the chat can remember you. This has no expiry date and stays until you clear it. You can do that below, or by clearing this site’s data in your browser settings.</span></div>
+        <div><b>In your browser</b><span>Your chat code, and the name and email address you gave (if any), are stored on your device so the chat can remember you. This has no expiry date and stays until you clear it. You can do that below, or by clearing this site’s data in your browser settings.</span></div>
         <div><b>On WhatsApp (my phone and Meta)</b><span>The message that reaches me is a normal WhatsApp message. It stays on my phone until I delete it, and Meta, which runs WhatsApp, keeps its own records under its own rules. <b style="display:inline;font:inherit;letter-spacing:0;text-transform:none">Deleting your conversation from the website’s database does not delete these copies, and nothing deletes them automatically.</b> I can delete the messages on my phone if you ask, but I can’t control what Meta keeps.</span></div>
         <div><b>Hosting logs and backups</b><span>The site is hosted on Vercel, which keeps its own technical logs (such as when a request was made and its result, which can include an IP address) under its own rules and retention. My functions also write short log lines, for example the last four digits of a phone number or the first four characters of a chat code, and my code doesn’t write the text of your message to them. I don’t make my own backups of the chat database, but my providers may keep theirs.</span></div>
       </div>
