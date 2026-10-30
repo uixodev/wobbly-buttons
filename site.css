@@ -4,6 +4,8 @@
    ───────────────────────────────────────────────────────────────────────────── */
 @font-face { font-family: "Instrument Serif"; src: url("fonts/instrument-serif.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
 @font-face { font-family: "Instrument Serif"; src: url("fonts/instrument-serif-italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: "Domine"; src: url("fonts/domine-medium.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Domine"; src: url("fonts/domine-bold.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: swap; }
 @font-face { font-family: "Newsreader"; src: url("fonts/newsreader.woff2") format("woff2"); font-weight: 300 800; font-style: normal; font-display: swap; }
 @font-face { font-family: "JetBrains Mono"; src: url("fonts/jetbrains-mono.woff2") format("woff2"); font-weight: 400 500; font-style: normal; font-display: swap; }
 @font-face { font-family: "Reenie Beanie"; src: url("fonts/reenie-beanie.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
@@ -17,6 +19,7 @@
   --sand: #EBE2D8;
   --gutter: clamp(18px, 4.6vw, 76px);
   --serif: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+  --head: "Domine", Georgia, serif;
   --body: "Newsreader", Georgia, serif;
   --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --hand: "Reenie Beanie", "Segoe Script", cursive;
@@ -38,7 +41,7 @@ a { color: inherit; }
 .mono { margin: 0; font: 400 .88rem/1.75 var(--mono); color: #5d5751; letter-spacing: .01em; }
 .mono-lede { margin: 0 0 2rem; font: 400 clamp(.88rem, 1.05vw, 1rem)/1.85 var(--mono); color: #4f4a45; }
 .hand { margin: 0; font: 400 clamp(1.25rem, 1.75vw, 1.75rem)/1.1 var(--hand); color: #2a2623; }
-.display { margin: .3em 0 .4em; font: 400 clamp(2.7rem, 4.8vw, 4.9rem)/1.02 var(--serif); letter-spacing: -.012em; }
+.display { margin: .3em 0 .4em; font: 500 clamp(2.3rem, 4.2vw, 4.2rem)/1.1 var(--head); letter-spacing: -.01em; }
 .display em, h1 em { font-style: italic; }
 .lede { margin: 0 0 2.2rem; max-width: 33rem; color: #5b554f; font: 300 clamp(1.05rem, 1.25vw, 1.22rem)/1.62 var(--body); }
 .link-arrow { font: 400 .84rem var(--mono); letter-spacing: .03em; text-decoration: underline; text-underline-offset: 7px; text-decoration-thickness: 1px; transition: color .2s ease; }
@@ -146,7 +149,7 @@ a { color: inherit; }
 .project .blob { aspect-ratio: 1.22; transition: transform .6s cubic-bezier(.2, .7, .2, 1); }
 .project-link:hover .blob { transform: translateY(-6px) rotate(-.6deg); }
 .project-meta { display: flex; align-items: baseline; justify-content: space-between; margin: 18px 0 2px; }
-.project h3 { margin: 0; font: 400 clamp(1.4rem, 1.8vw, 1.75rem)/1.1 var(--serif); }
+.project h3 { margin: 0; font: 700 clamp(1.2rem, 1.5vw, 1.5rem)/1.2 var(--head); }
 .arrow { font: 400 1rem var(--mono); transition: transform .3s ease; }
 .project-link:hover .arrow { transform: translateX(6px); color: var(--accent); }
 
@@ -392,9 +395,9 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 /* ═════════ HERO: a scroll story. The cat is alone at first; as you scroll the page adds "Hi," → "I'm Vira." → the intro → the buttons ═════════ */
 .hero-story { height: 380svh; position: relative; }
 .hero-pin { position: sticky; top: 0; height: 100svh; min-height: 560px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(8px, 2vh, 22px); text-align: center; padding: 64px var(--gutter, 24px) 36px; box-sizing: border-box; }
-.hero-story .hs-title { margin: 0; display: flex; align-items: baseline; justify-content: center; gap: .28em; flex-wrap: wrap; font: 400 clamp(3rem, 8.2vw, 7.6rem)/.95 var(--serif); letter-spacing: -.025em; min-height: 1em; }
+.hero-story .hs-title { margin: 0; display: flex; align-items: baseline; justify-content: center; gap: .28em; flex-wrap: wrap; font: 500 clamp(2.6rem, 7vw, 6.4rem)/1 var(--head); letter-spacing: -.02em; min-height: 1em; }
 .hs { opacity: 0; transform: translateY(26px); transition: opacity .7s ease, transform .9s cubic-bezier(.2, .7, .2, 1); }
-.hs-name em { font-style: italic; font-size: .62em; margin-right: .08em; }
+.hs-name em { font-style: normal; font-size: .62em; margin-right: .08em; }
 .hs-name .vn { position: relative; display: inline-block; }
 .h-dot { display: inline-block; transform-origin: 50% 85%; animation: dot-bounce 2.6s ease-in-out infinite; }
 @keyframes dot-bounce { 0%, 80%, 100% { transform: translateY(0) scale(1, 1); } 86% { transform: translateY(-.1em) scale(.94, 1.1); } 92% { transform: translateY(0) scale(1.08, .9); } }
@@ -591,7 +594,7 @@ html:not(.js) .ink-layer.drop, .project .blob.static .ink-layer.drop { display: 
 .iw-cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; filter: grayscale(1) contrast(1.06) brightness(1.03); transition: filter .6s ease; }
 .iw-body:hover .iw-cover img { filter: none; }
 .iw-meta { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 20px 16px; border-top: 1.5px solid var(--ink); background: var(--bg); }
-.iw-meta h3 { margin: 0; font: 400 clamp(1.4rem, 2.2vw, 1.9rem)/1.1 var(--serif); }
+.iw-meta h3 { margin: 0; font: 700 clamp(1.2rem, 1.9vw, 1.6rem)/1.2 var(--head); }
 .iw-meta p { margin: 4px 0 0; font: 400 .66rem/1.3 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
 .iw-link { flex: none; display: inline-flex; align-items: center; gap: .5em; padding: .8em 1.3em; border: 1.5px solid var(--ink); border-radius: 999px 940px 999px 960px / 880px 999px 940px 999px; color: var(--ink); text-decoration: none; font: 400 .72rem/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; transition: background .25s ease, transform .4s cubic-bezier(.3, 1.6, .5, 1); }
 .iw-link:hover, .iw-link:focus-visible { background: var(--accent); transform: rotate(-2deg) scale(1.04); outline: none; }
@@ -599,7 +602,7 @@ html:not(.js) .ink-layer.drop, .project .blob.static .ink-layer.drop { display: 
 .iw-close svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
 .iw-close:hover, .iw-close:focus-visible { background: var(--accent); transform: rotate(8deg) scale(1.08); outline: none; }
 .iw-cta { align-items: flex-start; justify-content: center; padding: clamp(24px, 4vw, 48px); gap: 14px; background: var(--accent); }
-.iw-cta h3 { margin: 0; font: 400 clamp(2rem, 4.4vw, 3.6rem)/1 var(--serif); }
+.iw-cta h3 { margin: 0; font: 500 clamp(1.7rem, 3.8vw, 3rem)/1.1 var(--head); }
 .iw-cta p { margin: 0; max-width: 28rem; font: 400 1.05rem/1.55 var(--body); color: #111; }
 @media (max-width: 900px) { .ink-stage { height: clamp(600px, 86svh, 760px); } .iw-meta { flex-wrap: wrap; } .iw-close { right: 32px; top: 32px; } }
 @media (prefers-reduced-motion: reduce) { .ink-tag, .ink-zzz { transition: none; } }
@@ -796,7 +799,7 @@ html.ms-open { overflow: hidden; }
 .post-tag { grid-area: tag; justify-self: start; padding: 4px 10px 5px; border: 1px solid currentColor; border-radius: 999px 940px 999px 960px / 880px 999px 940px 999px; font: 400 .64rem/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; }
 .post-arrow { grid-area: arrow; font: 400 1.2rem/1 var(--mono); transition: transform .4s cubic-bezier(.3, 1.6, .5, 1); }
 .post-link:hover .post-arrow { transform: translate(4px, -4px); }
-.post h3 { grid-area: t; margin: 14px 0 0; font: 400 clamp(1.55rem, 2.3vw, 2.15rem)/1.12 var(--serif); letter-spacing: -.01em; }
+.post h3 { grid-area: t; margin: 14px 0 0; font: 700 clamp(1.3rem, 2vw, 1.8rem)/1.2 var(--head); letter-spacing: 0; }
 .post p { grid-area: p; margin: 0; max-width: 34rem; color: #4f4944; font-size: 1.02rem; line-height: 1.55; }
 .post-link:hover p { color: #111; }
 .post-meta { grid-area: m; display: flex; gap: 14px; margin-top: 8px; font: 400 .66rem/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; opacity: .65; }
@@ -807,7 +810,7 @@ html.ms-open { overflow: hidden; }
 /* blog: the four animated covers are the entry points to the articles */
 .blog-intro { color: #111; font-weight: 450; max-width: 24rem; }
 .blog-cap { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; margin-top: 12px; align-items: start; }
-.blog-cap b { grid-column: 1; font: 400 clamp(1.15rem, 1.5vw, 1.4rem)/1.2 var(--serif); letter-spacing: -.005em; }
+.blog-cap b { grid-column: 1; font: 700 clamp(1rem, 1.3vw, 1.2rem)/1.25 var(--head); letter-spacing: 0; }
 .blog-tag { grid-column: 1 / -1; font: 400 .62rem/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; opacity: .6; }
 .blog-cap > span[aria-hidden] { grid-row: 2; grid-column: 2; font: 400 1rem/1 var(--mono); }
 .blog-tile { cursor: pointer; }
@@ -1000,3 +1003,6 @@ html.ms-open { overflow: hidden; }
 .chat-note { margin: 0; padding: 4px 20px 8px; font: 400 .62rem/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; opacity: .6; }
 .chat-note a, .priv-link { color: inherit; text-underline-offset: 4px; }
 .footer-dark .priv-link { color: inherit; }
+
+.display em { font-style: normal; color: var(--orchid, #AD86CF); }
+.contact .display em { color: #fff; }
