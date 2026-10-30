@@ -1004,3 +1004,8 @@ html.ms-open { overflow: hidden; }
 .chat-note a, .priv-link { color: inherit; text-underline-offset: 4px; }
 .footer-dark .priv-link { color: inherit; }
 
+
+.blog-tile { position: relative; }
+.blog-link { color: inherit; text-decoration: none; }
+.blog-link::after { content: ""; position: absolute; inset: 0; }
+.blog-link:focus-visible { outline: 2px dashed currentColor; outline-offset: 4px; }
