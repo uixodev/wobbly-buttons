@@ -16,10 +16,12 @@
     .priv-back { font: 400 .72rem/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink); text-decoration: none; padding: 10px 16px; background: #fff; border-radius: 999px 940px 999px 960px / 880px 999px 940px 999px; box-shadow: 0 8px 14px -8px rgba(17, 17, 17, .3); transition: background .25s ease, transform .3s cubic-bezier(.3, 1.6, .5, 1); }
     .priv-back:hover { background: var(--accent); transform: rotate(-2deg); }
     .priv { max-width: 46rem; margin: 0 auto; padding: clamp(28px, 6vw, 70px) 0 clamp(60px, 9vw, 120px); }
-    .priv h1 { margin: 10px 0 14px; font: 400 clamp(2.6rem, 7.2vw, 4.6rem)/1.1 var(--serif); letter-spacing: .035em; word-spacing: .08em; }
+    @font-face { font-family: "DM Serif Display"; src: url("fonts/dm-serif-display.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+    @font-face { font-family: "DM Serif Display"; src: url("fonts/dm-serif-display-italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
+    .priv h1 { margin: 10px 0 14px; font: 400 clamp(2.4rem, 6.8vw, 4.3rem)/1.1 "DM Serif Display", var(--serif); letter-spacing: 0; }
     .priv h1 em { font-style: italic; }
     .priv .updated { font: 400 .7rem/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; opacity: .6; margin: 0 0 clamp(26px, 4vw, 44px); }
-    .priv h2 { margin: clamp(40px, 6vw, 64px) 0 14px; font: 400 clamp(1.9rem, 4vw, 2.7rem)/1.2 var(--serif); letter-spacing: .03em; word-spacing: .06em; }
+    .priv h2 { margin: clamp(40px, 6vw, 64px) 0 14px; font: 400 clamp(1.7rem, 3.6vw, 2.4rem)/1.2 "DM Serif Display", var(--serif); letter-spacing: 0; }
     .priv p, .priv li { font: 400 1.1rem/1.65 var(--body); color: #2b2724; }
     .priv p { margin: 0 0 14px; }
     .priv ul, .priv ol { margin: 0 0 14px; padding-left: 1.3em; }
