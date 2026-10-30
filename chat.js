@@ -76,8 +76,8 @@ if (log && quick && form) {
     } else { await say('Hmm, that didn’t go through. Could you try the contact section below instead?', null); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); }
     draft = { message: '', name: '', contact: '' }; chips(['do', 'process', 'price']); busy = false;
   }
-  async function sendLive(text) {                                   // anonymous: no name, no email, just the message
-    busy = true; mode = 'idle'; input.placeholder = 'Type a message…'; quick.replaceChildren(); bubble(text, 'me'); await wait(250);
+  async function sendLive(text, echo = true) {                      // anonymous: no name, no email, just the message
+    busy = true; mode = 'idle'; input.placeholder = 'Type a message…'; quick.replaceChildren(); if (echo) bubble(text, 'me'); await wait(250);
     const ok = await post({ message: text, anon: true });
     if (ok) { who = { anon: true, name: '', contact: '' }; store.set('vira-chat-who', JSON.stringify(who)); await say('Sent! I’ll reply right here in this chat as soon as I see it, so keep it open. If you close it, come back on this device and my answer will be waiting.'); startPolling(); }
     else { await say('That didn’t go through — could you try again in a moment?'); mode = 'live'; input.placeholder = 'Write your message…'; }
@@ -103,12 +103,23 @@ if (log && quick && form) {
     '/clear': async () => { await say('Clearing the chat data and cache, then reloading…'); await refreshCache(true); },
     '/update': async () => { await say('Refreshing the cached site files, then reloading…'); await refreshCache(false); },
   };
+  // a typed message from someone who has not picked an option yet: offer the two ways to continue
+  let pending = '';
+  async function offerChoice(text) {
+    busy = true; quick.replaceChildren(); bubble(text, 'me'); pending = text; await wait(250);
+    await say('Thanks! How would you like me to answer? I can reply to you by email, or you can wait here and chat with me live — no details needed.');
+    const opt = (label, fn) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'cq'; b.textContent = label; b.addEventListener('click', async () => { if (busy) return; quick.replaceChildren(); bubble(label, 'me'); await wait(250); await fn(); }); quick.append(b); };
+    opt('Send it — reply to me by email', async () => { busy = true; draft.message = pending; mode = 'name'; await say('Great! Who am I talking to? (just your first name is fine)'); input.placeholder = 'Your name…'; input.focus({ preventScroll: true }); busy = false; });
+    opt('Wait here — chat live', async () => { await sendLive(pending, false); });
+    busy = false;
+  }
   async function free(text) {
     if (busy) return;
     const cmd = COMMANDS[text.trim().toLowerCase()];
     if (cmd) { busy = true; quick.replaceChildren(); bubble(text, 'me'); await wait(250); await cmd(); busy = false; return; }
     if (who && mode === 'idle') { quick.replaceChildren(); await followUp(text); return; }
     if (mode === 'live') { await sendLive(text); return; }
+    if (mode === 'idle' && !who) { await offerChoice(text); return; }
     busy = true; quick.replaceChildren(); bubble(text, 'me'); await wait(250);
     if (mode === 'idle' || mode === 'message') { draft.message = text; mode = 'name'; await say('Thanks! Who am I talking to? (just your first name is fine)'); input.placeholder = 'Your name…'; }
     else if (mode === 'name') { draft.name = text; mode = 'contact'; await say(`Nice to meet you, ${text}. What’s your email address? (Gmail or any other is fine)`); input.placeholder = 'Your email…'; }
