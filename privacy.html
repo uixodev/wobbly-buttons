@@ -13,8 +13,7 @@
   <style>
     .priv-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-block: 18px; }
     .priv-top .vira-logo { font-size: 1.35rem; }
-    .priv-back { font: 400 .72rem/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink); text-decoration: none; padding: 10px 16px; background: #fff; border-radius: 999px 940px 999px 960px / 880px 999px 940px 999px; box-shadow: 0 8px 14px -8px rgba(17, 17, 17, .3); transition: background .25s ease, transform .3s cubic-bezier(.3, 1.6, .5, 1); }
-    .priv-back:hover { background: var(--accent); transform: rotate(-2deg); }
+    .priv-back.wobbly { font-size: .78rem; padding: 1.15em 1.7em; }
     .priv { max-width: 46rem; margin: 0 auto; padding: clamp(28px, 6vw, 70px) 0 clamp(60px, 9vw, 120px); }
     .priv h1 { margin: 10px 0 14px; font: 400 clamp(2.9rem, 8vw, 5.2rem)/1.02 var(--serif); letter-spacing: 0; }
     .priv h1 em { font-style: italic; }
@@ -43,7 +42,7 @@
 <body>
   <header class="wrap priv-top">
     <a class="vira-logo" href="./" data-text="vira" aria-label="Vira — back to the home page"></a>
-    <a class="priv-back" href="./">← Back to the site</a>
+    <a class="priv-back wobbly" data-variant="solid" href="./">← Back to the site</a>
   </header>
 
   <main class="wrap">
