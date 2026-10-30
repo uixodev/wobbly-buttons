@@ -198,13 +198,10 @@ a { color: inherit; }
 .f-col ul { list-style: none; margin: 0; padding: 0; }
 .f-col li { font: 400 .92rem/1 var(--mono); color: var(--cream-soft); padding-block: 11px; }
 .f-col a { text-decoration: none; transition: color .2s ease; } .f-col a:hover { color: var(--bg); text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 1px; }
-.social { display: flex; flex-wrap: wrap; gap: 14px 16px; margin: 0; padding: 0; list-style: none; max-width: 11rem; }
-.social li { margin: 0; padding: 0; }
-.social a { display: flex; align-items: center; font-size: 0; gap: 0; padding: 6px; margin: -6px; }
-.social a:hover { text-decoration: none; }
-.social a:hover svg { transform: translateY(-3px) rotate(-6deg); }
-.social a:hover svg .fill { fill: var(--accent); }
-.social svg { width: 24px; height: 24px; transition: transform .3s cubic-bezier(.3, 1.6, .5, 1); fill: none; stroke: var(--bg); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.social { list-style: none; margin: 0; padding: 0; }
+.f-col .social li { padding-block: 5px; }
+.social a { display: flex; align-items: center; gap: 14px; }
+.social svg { width: 20px; height: 20px; fill: none; stroke: var(--bg); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 .social svg .fill, .social svg.fill { fill: var(--bg); stroke: none; }
 .f-news .mono { margin-bottom: 18px; max-width: 24rem; }
 .news { display: flex; align-items: center; border: 1px solid var(--bg); border-radius: 999px; padding: 5px 5px 5px 22px; max-width: 26rem; background: rgba(247, 243, 239, .04); }
