@@ -4,15 +4,23 @@
 
 const SEND_URL = '/api/send-message', MSG_URL = '/api/messages';      // where messages are sent (the serverless function in /api). Change it if you host the function elsewhere.
 
+// ── Your information: change the text here and the chat's answers update. ─────────────────────────────────────────────────────────────────────────
+const INFO = {
+  who: 'a web designer in Bristol, UK',
+  services: 'web design, development, creative extras, website refreshes and ongoing support',
+  open: true,                                   // true: "I'm open for new projects"  ·  false: "I'm fully booked right now" (see the avail answer)
+};
 const ANSWERS = {
-  do: { q: 'What do you do?', a: 'I design and build distinctive websites for beauty studios, small businesses and creative people — with personality in every detail.', next: ['work', 'process', 'price'] },
+  do: { q: 'What do you do?', a: `I’m Vira, ${INFO.who}. I design and build distinctive websites for beauty studios, small businesses and creative people — with personality in every detail.`, next: ['services', 'work', 'process'] },
+  services: { q: 'What can you help with?', a: `I can help with ${INFO.services}. Not sure which one you need? Tell me about your idea and we’ll work it out.`, next: ['process', 'price', 'msg'] },
   process: { q: 'How does a project work?', a: 'We start with a chat about you and your idea. Then: hello → sketch → build → launch. You see it early, we tweak it together, and I look after the launch.', next: ['price', 'avail', 'msg'] },
   price: { q: 'About pricing', a: 'Every project is a bit different, so I quote after hearing about your idea. Tell me what you need and I’ll give you an honest range — no surprises.', next: ['avail', 'msg', 'do'] },
-  avail: { q: 'Are you available?', a: 'I’m open for new projects. The quickest way to start is a short message — it takes a minute.', next: ['msg', 'do'] },
+  avail: { q: 'Are you available?', a: INFO.open ? 'I’m open for new projects. The quickest way to start is a short message — it takes a minute.' : 'I’m fully booked right now, but leave a message and I’ll tell you when I have space.', next: ['msg', 'do'] },
   work: { q: 'Show me your work', a: 'Sure — I’ll take you to my projects.', action: () => document.getElementById('work')?.scrollIntoView({ behavior: 'smooth' }), next: ['process', 'price', 'msg'] },
+  blog: { q: 'Read your blog', a: 'Here are my notes on design, pricing, domains and how I work with AI.', action: () => document.getElementById('blog')?.scrollIntoView({ behavior: 'smooth' }), next: ['price', 'msg'] },
   msg: { q: 'Leave me a message', a: 'I’d love that. What would you like to tell me?', ask: 'message', next: [] },
 };
-const START = ['do', 'process', 'price', 'avail'];
+const START = ['do', 'services', 'process', 'price'];
 
 const dock = document.getElementById('chat-dock'), fab = document.getElementById('chat-fab'), sugg = document.getElementById('chat-sugg'), closeBtn = document.getElementById('chat-x');
 const log = document.getElementById('chat-log'), quick = document.getElementById('chat-quick'), form = document.getElementById('chat-form'), input = document.getElementById('chat-input'), root = document.getElementById('chat');
@@ -68,8 +76,26 @@ if (log && quick && form) {
     try { const r = await fetch(SEND_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: who.name, contact: who.contact, message: text, sid, website: '' }) }); ok = r.ok && (await r.json()).ok; } catch (e) { ok = false; }
     if (!ok) await say('That one didn’t go through — could you try again in a moment?');
   }
+  // ── Secret commands (for you, the developer). Type them in the chat box; they are never sent to WhatsApp or stored. ──
+  //   /clear  wipes this browser's chat data (chat code, name) and every cached copy of the site, then reloads
+  //   /update refreshes the cached copies of the site's files and reloads (keeps the chat)    /help  lists them
+  const refreshCache = async (wipeChat) => {
+    if (wipeChat) { try { localStorage.removeItem('vira-chat-sid'); localStorage.removeItem('vira-chat-who'); } catch (e) {} }
+    try { for (const k of (await caches?.keys?.()) || []) await caches.delete(k); } catch (e) {}
+    try { for (const r of (await navigator.serviceWorker?.getRegistrations?.()) || []) await r.unregister(); } catch (e) {}
+    const urls = [...new Set([location.href.split('#')[0], ...performance.getEntriesByType('resource').map((e) => e.name)])].filter((u) => u.startsWith(location.origin));
+    await Promise.all(urls.map((u) => fetch(u, { cache: 'reload' }).catch(() => {})));      // forces a fresh copy into the browser cache
+    location.reload();
+  };
+  const COMMANDS = {
+    '/help': async () => say('Secret commands: /clear wipes this browser’s chat data and cache, /update refreshes the cached site files. Neither is sent to me.'),
+    '/clear': async () => { await say('Clearing the chat data and cache, then reloading…'); await refreshCache(true); },
+    '/update': async () => { await say('Refreshing the cached site files, then reloading…'); await refreshCache(false); },
+  };
   async function free(text) {
     if (busy) return;
+    const cmd = COMMANDS[text.trim().toLowerCase()];
+    if (cmd) { busy = true; quick.replaceChildren(); bubble(text, 'me'); await wait(250); await cmd(); busy = false; return; }
     if (who && mode === 'idle') { quick.replaceChildren(); await followUp(text); return; }
     busy = true; quick.replaceChildren(); bubble(text, 'me'); await wait(250);
     if (mode === 'idle' || mode === 'message') { draft.message = text; mode = 'name'; await say('Thanks! Who am I talking to? (just your first name is fine)'); input.placeholder = 'Your name…'; }
