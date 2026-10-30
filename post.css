@@ -19,14 +19,19 @@
 .post-body b { font-weight: 600; }
 .post-body a { color: var(--ink); text-underline-offset: 4px; }
 
-.post-cta { margin: clamp(44px, 7vw, 76px) 0 0; padding: clamp(22px, 4vw, 34px); background: #AD86CF; border-radius: 28px 24px 30px 22px / 24px 30px 22px 28px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px; }
+.post-cta { margin: clamp(44px, 7vw, 76px) 0 0; padding: clamp(22px, 4vw, 34px); background: #AD86CF; clip-path: url(#wob-a); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px; }
 .post-cta-t { margin: 0; font: 400 clamp(1.8rem, 4vw, 2.6rem)/1.1 var(--serif); }
 
 .post-more { margin-top: clamp(40px, 6vw, 64px); }
 .more-grid { display: grid; gap: 10px; margin-top: 14px; }
-.more-card { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 6px 14px; padding: 16px 18px; background: #fff; color: var(--ink); text-decoration: none; border-radius: 22px 18px 24px 16px / 18px 24px 16px 22px; box-shadow: 0 10px 18px -12px rgba(17, 17, 17, .35); transition: background .25s ease, transform .3s cubic-bezier(.3, 1.6, .5, 1); }
+.more-card { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 6px 14px; padding: 22px 24px; background: #fff; color: var(--ink); text-decoration: none; clip-path: url(#wob-b); transition: background .25s ease, transform .3s cubic-bezier(.3, 1.6, .5, 1); }
 .more-card:hover, .more-card:focus-visible { background: var(--accent); transform: translateY(-3px); outline: none; }
 .more-card .blog-tag { grid-column: auto; }
 .more-card b { font: 700 1.05rem/1.25 "Domine", var(--serif); }
 @media (max-width: 560px) { .more-card { grid-template-columns: 1fr auto; } .more-card .blog-tag { grid-column: 1 / -1; } }
 .post-cta .wobbly[data-variant="solid"][data-state="hover"] .wb-shape { fill: #fff; stroke: #fff; }
+
+.more-grid { gap: 16px; filter: drop-shadow(0 5px 5px rgba(17, 17, 17, .12)); }
+.more-card:nth-child(2) { clip-path: url(#wob-c); }
+.more-card:nth-child(3) { clip-path: url(#wob-a); }
+.post-cta { padding-block: clamp(26px, 5vw, 42px); }

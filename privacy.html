@@ -24,13 +24,15 @@
     .priv ul, .priv ol { margin: 0 0 14px; padding-left: 1.3em; }
     .priv li { margin-bottom: 8px; }
     .priv a:not(.wobbly) { color: var(--ink); text-underline-offset: 4px; }
-    .priv .short { padding: clamp(20px, 3vw, 30px); background: #fff; border-radius: 22px 18px 24px 17px / 18px 24px 17px 22px; box-shadow: 0 14px 22px -16px rgba(17, 17, 17, .35); }
+    .priv .short { padding: clamp(20px, 3vw, 30px); background: #fff; clip-path: url(#wob-tall); }
     .priv .short ul { margin: 0; }
     .priv .keep { display: grid; gap: 12px; margin: 6px 0 14px; }
-    .priv .keep > div { padding: 16px 18px; background: #F1ECE6; border-radius: 16px 20px 15px 21px / 20px 15px 21px 16px; }
+    .priv .keep > div { padding: 26px 24px 28px; background: #F1ECE6; clip-path: url(#wob-b); }
+    .priv .keep > div:nth-child(2) { clip-path: url(#wob-c); } .priv .keep > div:nth-child(3) { clip-path: url(#wob-a); }
+    .priv .wob-shadow { filter: drop-shadow(0 10px 10px rgba(17, 17, 17, .18)); }
     .priv .keep b { display: block; font: 400 .72rem/1.2 var(--mono); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 6px; }
     .priv .keep span { font: 400 1.02rem/1.55 var(--body); }
-    .priv .tool { margin: 12px 0 0; padding: 18px 20px; background: #fff; border-radius: 20px 16px 22px 15px / 16px 22px 15px 20px; box-shadow: 0 12px 20px -16px rgba(17, 17, 17, .35); }
+    .priv .tool { margin: 12px 0 0; padding: 18px 20px; background: #fff; clip-path: url(#wob-tall); }
     .priv .tool code { display: block; margin: 8px 0 12px; padding: 10px 12px; background: #F1ECE6; border-radius: 10px; font: 400 .85rem/1.3 var(--mono); word-break: break-all; }
     .priv .tool [hidden] { display: none; }
     .priv .tool button { padding: 10px 18px; border: 0; background: #111; color: #fff; border-radius: 999px 940px 999px 960px / 880px 999px 940px 999px; font: 400 .72rem/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; cursor: pointer; transition: background .2s ease, color .2s ease; }
@@ -40,6 +42,12 @@
   <script>document.documentElement.classList.add("js")</script>
 </head>
 <body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+      <clipPath id="wob-a" clipPathUnits="objectBoundingBox"><path d="M.004 .14 C.05 .02 .14 .12 .3 .05 C.5 -.03 .7 .12 .86 .04 C.93 .01 .98 .05 .997 .09 L.99 .87 C.94 .97 .85 .87 .7 .95 C.5 1.03 .3 .89 .14 .96 C.07 1.0 .02 .95 .0 .91Z"/></clipPath>
+      <clipPath id="wob-b" clipPathUnits="objectBoundingBox"><path d="M.0 .08 C.06 .0 .16 .1 .34 .05 C.52 .0 .72 .13 .9 .03 C.95 .0 .99 .03 1 .08 L.996 .9 C.9 1.0 .8 .88 .62 .95 C.44 1.02 .26 .9 .1 .97 C.05 .99 .01 .96 .004 .92Z"/></clipPath>
+      <clipPath id="wob-c" clipPathUnits="objectBoundingBox"><path d="M.004 .1 C.08 .0 .2 .12 .38 .06 C.58 -.01 .76 .1 .92 .03 C.96 .01 .99 .05 .998 .1 L1 .86 C.92 .96 .78 .9 .56 .97 C.36 1.03 .2 .9 .08 .97 C.04 .99 .0 .94 .0 .9Z"/></clipPath>
+      <clipPath id="wob-tall" clipPathUnits="objectBoundingBox"><path d="M.02 .03 C.12 -.005 .3 .02 .5 .01 S.86 -.005 .98 .02 C1.004 .3 .99 .66 .985 .97 C.9 1.005 .7 .985 .5 .99 S.14 1.005 .015 .975 C-.003 .66 .01 .3 .02 .03Z"/></clipPath>
+  </defs></svg>
   <header class="wrap priv-top">
     <a class="vira-logo" href="./" data-text="vira" aria-label="Vira — back to the home page"></a>
     <a class="priv-back wobbly" data-variant="solid" href="./">← Back to the site</a>
@@ -51,7 +59,7 @@
       <h1>How your <em>messages</em> are handled.</h1>
       <p class="updated">Last updated 29 October 2026</p>
 
-      <div class="short">
+      <div class="wob-shadow"><div class="short">
         <p class="label" style="margin-bottom:10px">The short version</p>
         <ul>
           <li>This is my personal website. I’m Vira, a web designer in Bristol, UK.</li>
@@ -61,7 +69,7 @@
           <li>The copy on the website’s database is kept for 30 days after the last message in a conversation. Copies in WhatsApp are not deleted automatically — see below.</li>
           <li>You can ask to see or delete your messages any time at <a href="mailto:dearviraa@gmail.com">dearviraa@gmail.com</a>.</li>
         </ul>
-      </div>
+      </div></div>
 
       <h2>Who I am</h2>
       <p>I’m Vira, the owner of this website and the person who decides what happens to the information described here. For anything about privacy, email me at <a href="mailto:dearviraa@gmail.com">dearviraa@gmail.com</a>. I’m an individual based in Bristol, UK, so I follow the UK’s data protection rules.</p>
@@ -121,13 +129,13 @@
       <p>I’ll do this by hand. I’ll reply within one month, and I may ask you to confirm it’s really you before I share or remove anything.</p>
       <p>For deletion I will remove your conversation from the website’s database, delete the messages from my WhatsApp, and tell you when it’s done. I can’t promise to remove copies held by Meta, or in Vercel or Upstash’s own logs and backups, which follow their own retention periods. If you want to know more about those, their privacy policies explain how they work.</p>
 
-      <div class="tool" id="mine">
+      <div class="wob-shadow"><div class="tool" id="mine">
         <p class="label" style="margin-bottom:8px">Your chat on this device</p>
         <p id="mine-text" style="margin:0">Checking…</p>
         <code id="mine-code" hidden></code>
         <button type="button" id="mine-clear" hidden>Clear it from this browser</button>
         <p class="done" id="mine-done" hidden>Cleared. ✓</p>
-      </div>
+      </div></div>
       <p style="margin-top:12px">Clearing your browser only forgets the chat on this device. It doesn’t delete the conversation from the website’s database or from WhatsApp.</p>
 
       <h2>Children</h2>
