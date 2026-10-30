@@ -161,7 +161,7 @@ if (log && quick && form) {
   // closed by default: a white button and a few suggestions; opening shows the chat (a suggestion also asks that question)
   // phones: the chat is a fixed sheet, so follow the visible screen (the on-screen keyboard shrinks it)
   const vv = window.visualViewport, phone = matchMedia('(max-width: 700px)');
-  const syncVV = () => { if (!vv || !phone.matches) { root.style.removeProperty('--cvh'); root.style.removeProperty('--cvt'); return; } root.style.setProperty('--cvh', `${vv.height}px`); root.style.setProperty('--cvt', `${vv.offsetTop}px`); scroll(); };
+  const syncVV = () => { if (!vv || !phone.matches) { root.style.removeProperty('--cvh'); root.style.removeProperty('--cvt'); root.classList.remove('kb'); return; } root.style.setProperty('--cvh', `${vv.height}px`); root.style.setProperty('--cvt', `${vv.offsetTop}px`); root.classList.toggle('kb', vv.height < 620 || vv.height < innerHeight * 0.78); scroll(); };      // 'kb': little room left (keyboard open) → compact layout
   vv?.addEventListener('resize', syncVV); vv?.addEventListener('scroll', syncVV);
   const openChat = (key) => {
     document.documentElement.classList.add('chat-lock'); syncVV();

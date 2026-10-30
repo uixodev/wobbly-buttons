@@ -1041,3 +1041,19 @@ html.chat-lock { overflow: hidden; }
   .chat-form input { font-size: 16px; }
   .chat-x { width: 40px; height: 40px; }
 }
+
+/* phones with the keyboard open: only a small strip of screen is left, so shrink the chrome and give the messages the room */
+@media (max-width: 700px) {
+  .chat-dock.open .chat.kb .chat-head { padding: 10px 14px 4px 16px; gap: 10px; }
+  .chat-dock.open .chat.kb .chat-av { width: 38px; height: 38px; }
+  .chat-dock.open .chat.kb .chat-av .chat-logo { font-size: .85rem; }
+  .chat-dock.open .chat.kb .chat-who b { font-size: .95rem; }
+  .chat-dock.open .chat.kb .chat-who i { font-size: .52rem; }
+  .chat-dock.open .chat.kb .chat-x { width: 34px; height: 34px; }
+  .chat-dock.open .chat.kb .chat-live { margin: 0 12px 2px; padding: 7px 10px 8px 14px; }
+  .chat-dock.open .chat.kb .live-t { font-size: .52rem; }
+  .chat-dock.open .chat.kb .live-end { padding: 6px 11px 7px; }
+  .chat-dock.open .chat.kb .chat-note, .chat-dock.open .chat.kb .chat-quick { display: none; }
+  .chat-dock.open .chat.kb .chat-log { padding-top: 6px; padding-bottom: 4px; }
+  .chat-dock.open .chat.kb .chat-form { padding: 4px 12px calc(10px + env(safe-area-inset-bottom, 0px)); }
+}
