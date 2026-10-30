@@ -14,6 +14,8 @@ export default async function handler(req, res) {
       const w = await redis('GET', 'wh:last'); const last = w ? JSON.parse(w) : null;
       out.lastWebhook = last ? { ...last, secondsAgo: Math.round((Date.now() - last.t) / 1000) } : 'none yet: Meta has not reached /api/whatsapp-webhook since this was deployed';
       out.latestVisitorStored = !!(await redis('GET', 'last-sid'));
+      const rd = async (k) => { const v = await redis('GET', k); if (!v) return 'none yet'; const o = JSON.parse(v); return { ...o, secondsAgo: Math.round((Date.now() - o.t) / 1000) }; };
+      out.lastSend = await rd('send:last'); out.lastSendFailure = await rd('send:lastfail');
     } catch (e) { out.redisError = e.message; }
   }
   return res.status(200).json(out);

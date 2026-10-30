@@ -15,21 +15,22 @@ export default async function handler(req, res) {
   if (cors(req, res)) return;
   if (req.method !== 'POST') return res.status(405).json({ ok: false, error: 'method' });
 
+  const note = async (o) => { if (!redisReady()) return; try { const v = JSON.stringify({ t: Date.now(), ...o }); await redis('SET', 'send:last', v, 'EX', TTL); if (!o.ok) await redis('SET', 'send:lastfail', v, 'EX', TTL); } catch (e) {} };     // read back by /api/status (no message text, no secrets)
   const ip = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() || 'unknown', now = Date.now();
   const recent = (hits.get(ip) || []).filter((t) => now - t < 3600e3);
-  if (recent.length >= 20) return res.status(429).json({ ok: false, error: 'rate' });
+  if (recent.length >= 20) { await note({ ok: false, why: 'rate-limit' }); return res.status(429).json({ ok: false, error: 'rate' }); }
 
   const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body || {};
   const clean = (v, n) => String(v || '').replace(/[\u0000-\u001f]+/g, ' ').trim().slice(0, n);
   const anon = body.anon === true;                                         // anonymous live chat: no name, no email
   const name = anon ? 'Anonymous' : clean(body.name, 80), contact = anon ? 'Anonymous (answer in the chat)' : clean(body.contact, 120), message = clean(body.message, 800), sid = body.sid;
   if (body.website) return res.status(200).json({ ok: true });            // honeypot field: bots fill it in, people never see it
-  if (!message || (!anon && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(contact))) return res.status(400).json({ ok: false, error: 'missing' });      // a normal message needs an email to reply to
+  if (!message || (!anon && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(contact))) { await note({ ok: false, why: 'rejected', detail: anon ? 'empty message' : 'missing message or invalid email' }); return res.status(400).json({ ok: false, error: 'missing' }); }      // a normal message needs an email to reply to
 
   const token = String(process.env.WA_TOKEN || '').trim().replace(/^["']|["']$/g, '').replace(/^Bearer\s+/i, '').trim();
   const phoneId = String(process.env.WA_PHONE_ID || '').replace(/\D/g, ''), owner = String(process.env.OWNER_NUMBER || '').replace(/\D/g, '');
   const missing = [!token && 'WA_TOKEN', !phoneId && 'WA_PHONE_ID', !owner && 'OWNER_NUMBER'].filter(Boolean);
-  if (missing.length) { console.error('Missing environment variables (set them for Production, then redeploy):', missing.join(', ')); return res.status(500).json({ ok: false, error: 'config' }); }
+  if (missing.length) { console.error('Missing environment variables (set them for Production, then redeploy):', missing.join(', ')); await note({ ok: false, why: 'missing-settings', detail: missing.join(', ') }); return res.status(500).json({ ok: false, error: 'config' }); }
   if (!/^EA/.test(token)) console.error('WA_TOKEN does not look like a Meta access token (they start with EA...).');
 
   const one = (v) => v.replace(/\s+/g, ' ');
@@ -39,7 +40,13 @@ export default async function handler(req, res) {
     : { messaging_product: 'whatsapp', to: owner, type: 'text', text: { body: anon ? `New LIVE anonymous message${tag}\n\n${message}\n\n(They are waiting in the chat: use WhatsApp's Reply on this message to answer there.)` : `New message from your website${tag}\nName: ${name || '—'}\nReply by email: ${contact}\n\n${message}\n\n(They expect an email reply. WhatsApp's Reply on this message also shows your answer in their chat.)` } };
   try {
     const r = await fetch(`https://graph.facebook.com/v20.0/${phoneId}/messages`, { method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-    if (!r.ok) { console.error('WhatsApp API error', r.status, await r.text()); return res.status(502).json({ ok: false, error: 'upstream' }); }
+    if (!r.ok) {
+      const txt = await r.text(); console.error('WhatsApp API error', r.status, txt);
+      let er = {}; try { er = JSON.parse(txt).error || {}; } catch (e) {}
+      await note({ ok: false, why: 'whatsapp-refused', httpStatus: r.status, code: er.code, subcode: er.error_subcode, detail: String(er.message || '').slice(0, 200) });
+      return res.status(502).json({ ok: false, error: 'upstream' });
+    }
+    await note({ ok: true, why: anon ? 'sent (anonymous)' : 'sent' });
     recent.push(now); hits.set(ip, recent);
     // two-way: remember the conversation and which WhatsApp message belongs to which visitor
     if (redisReady() && validSid(sid)) {
@@ -52,5 +59,5 @@ export default async function handler(req, res) {
       } catch (e) { console.error('Redis error (message was still delivered):', e.message); }
     }
     return res.status(200).json({ ok: true });
-  } catch (e) { return res.status(502).json({ ok: false, error: 'upstream' }); }
+  } catch (e) { await note({ ok: false, why: 'could-not-reach-whatsapp', detail: String(e.message || e).slice(0, 120) }); return res.status(502).json({ ok: false, error: 'upstream' }); }
 }
