@@ -41,7 +41,7 @@ a { color: inherit; }
 .mono { margin: 0; font: 400 .88rem/1.75 var(--mono); color: #5d5751; letter-spacing: .01em; }
 .mono-lede { margin: 0 0 2rem; font: 400 clamp(.88rem, 1.05vw, 1rem)/1.85 var(--mono); color: #4f4a45; }
 .hand { margin: 0; font: 400 clamp(1.25rem, 1.75vw, 1.75rem)/1.1 var(--hand); color: #2a2623; }
-.display { margin: .3em 0 .4em; font: 500 clamp(2.3rem, 4.2vw, 4.2rem)/1.1 var(--head); letter-spacing: -.01em; }
+.display { margin: .3em 0 .4em; font: 400 clamp(2.7rem, 4.8vw, 4.9rem)/1.02 var(--serif); letter-spacing: -.012em; }
 .display em, h1 em { font-style: italic; }
 .lede { margin: 0 0 2.2rem; max-width: 33rem; color: #5b554f; font: 300 clamp(1.05rem, 1.25vw, 1.22rem)/1.62 var(--body); }
 .link-arrow { font: 400 .84rem var(--mono); letter-spacing: .03em; text-decoration: underline; text-underline-offset: 7px; text-decoration-thickness: 1px; transition: color .2s ease; }
@@ -395,9 +395,9 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 /* ═════════ HERO: a scroll story. The cat is alone at first; as you scroll the page adds "Hi," → "I'm Vira." → the intro → the buttons ═════════ */
 .hero-story { height: 380svh; position: relative; }
 .hero-pin { position: sticky; top: 0; height: 100svh; min-height: 560px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(8px, 2vh, 22px); text-align: center; padding: 64px var(--gutter, 24px) 36px; box-sizing: border-box; }
-.hero-story .hs-title { margin: 0; display: flex; align-items: baseline; justify-content: center; gap: .28em; flex-wrap: wrap; font: 500 clamp(2.6rem, 7vw, 6.4rem)/1 var(--head); letter-spacing: -.02em; min-height: 1em; }
+.hero-story .hs-title { margin: 0; display: flex; align-items: baseline; justify-content: center; gap: .28em; flex-wrap: wrap; font: 400 clamp(3rem, 8.2vw, 7.6rem)/.95 var(--serif); letter-spacing: -.025em; min-height: 1em; }
 .hs { opacity: 0; transform: translateY(26px); transition: opacity .7s ease, transform .9s cubic-bezier(.2, .7, .2, 1); }
-.hs-name em { font-style: normal; font-size: .62em; margin-right: .08em; }
+.hs-name em { font-style: italic; font-size: .62em; margin-right: .08em; }
 .hs-name .vn { position: relative; display: inline-block; }
 .h-dot { display: inline-block; transform-origin: 50% 85%; animation: dot-bounce 2.6s ease-in-out infinite; }
 @keyframes dot-bounce { 0%, 80%, 100% { transform: translateY(0) scale(1, 1); } 86% { transform: translateY(-.1em) scale(.94, 1.1); } 92% { transform: translateY(0) scale(1.08, .9); } }
@@ -602,7 +602,7 @@ html:not(.js) .ink-layer.drop, .project .blob.static .ink-layer.drop { display: 
 .iw-close svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
 .iw-close:hover, .iw-close:focus-visible { background: var(--accent); transform: rotate(8deg) scale(1.08); outline: none; }
 .iw-cta { align-items: flex-start; justify-content: center; padding: clamp(24px, 4vw, 48px); gap: 14px; background: var(--accent); }
-.iw-cta h3 { margin: 0; font: 500 clamp(1.7rem, 3.8vw, 3rem)/1.1 var(--head); }
+.iw-cta h3 { margin: 0; font: 400 clamp(2rem, 4.4vw, 3.6rem)/1 var(--serif); }
 .iw-cta p { margin: 0; max-width: 28rem; font: 400 1.05rem/1.55 var(--body); color: #111; }
 @media (max-width: 900px) { .ink-stage { height: clamp(600px, 86svh, 760px); } .iw-meta { flex-wrap: wrap; } .iw-close { right: 32px; top: 32px; } }
 @media (prefers-reduced-motion: reduce) { .ink-tag, .ink-zzz { transition: none; } }
@@ -1004,5 +1004,3 @@ html.ms-open { overflow: hidden; }
 .chat-note a, .priv-link { color: inherit; text-underline-offset: 4px; }
 .footer-dark .priv-link { color: inherit; }
 
-.display em { font-style: normal; color: var(--orchid, #AD86CF); }
-.contact .display em { color: #fff; }
