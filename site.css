@@ -1027,3 +1027,17 @@ html.ms-open { overflow: hidden; }
 
 /* the purple band above the contact section: on narrow screens the section is very tall, so use a much gentler wave */
 @media (max-width: 700px) { #contact::before { clip-path: url(#band-b-soft); top: -24px; } }
+
+/* phones: the open chat is a full-height sheet that stays on screen (and above the keyboard) instead of sitting inside the page */
+html.chat-lock { overflow: hidden; }
+@media (max-width: 700px) {
+  .chat-dock.open { filter: none; }
+  .chat-dock.open::before { content: ""; position: fixed; inset: 0; z-index: 940; background: rgba(17, 17, 17, .42); }
+  .chat-dock.open .chat { position: fixed; z-index: 950; left: 8px; right: 8px; top: calc(var(--cvt, 0px) + 8px); bottom: auto; width: auto; max-width: none; height: calc(var(--cvh, 100dvh) - 16px); margin: 0; display: flex; flex-direction: column; transform-origin: 50% 100%; box-shadow: none; }
+  .chat-dock.open .chat-log { flex: 1 1 auto; height: auto; min-height: 0; }
+  .chat-dock.open .chat-head, .chat-dock.open .chat-live, .chat-dock.open .chat-quick, .chat-dock.open .chat-note, .chat-dock.open .chat-form { flex: none; }
+  .chat-dock.open .chat-head { padding-top: calc(env(safe-area-inset-top, 0px) * 0 + 18px); }
+  .chat-dock.open .chat-form { padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px)); }
+  .chat-form input { font-size: 16px; }
+  .chat-x { width: 40px; height: 40px; }
+}

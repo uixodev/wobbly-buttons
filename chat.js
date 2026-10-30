@@ -38,7 +38,10 @@ if (log && quick && form) {
   const setLive = (on) => { if (liveBar) liveBar.hidden = !on; if (sub) sub.textContent = on ? 'Direct chat · live' : 'Chat bot'; };
   setLive(!!who?.anon);
   const wait = (ms) => new Promise((r) => setTimeout(r, reduced ? 0 : ms));
-  const scroll = () => { log.scrollTop = log.scrollHeight; };
+  let manual = false;                                                    // true once the visitor scrolls the messages by hand
+  const scroll = () => { manual = false; log.scrollTop = log.scrollHeight; };
+  for (const ev of ['wheel', 'touchmove']) log.addEventListener(ev, () => { manual = true; }, { passive: true });
+  if ('ResizeObserver' in window) new ResizeObserver(() => { if (!manual) log.scrollTo({ top: log.scrollHeight, behavior: 'instant' }); }).observe(log);      // keep the newest message in view when the area resizes (suggestion buttons, keyboard)
 
   let shapeN = 0;
   function bubble(text, who) { const b = document.createElement('div'); b.className = `cb ${who} sh${(shapeN++ % 3) + 1}`; if (typeof text === 'string') b.textContent = text; else b.append(text); log.append(b); scroll(); return b; }
@@ -147,12 +150,17 @@ if (log && quick && form) {
     await say('Hi! I’m Viraa — well, her little chat helper. What would you like to know?'); chips(START); busy = false;
   }
   // closed by default: a white button and a few suggestions; opening shows the chat (a suggestion also asks that question)
+  // phones: the chat is a fixed sheet, so follow the visible screen (the on-screen keyboard shrinks it)
+  const vv = window.visualViewport, phone = matchMedia('(max-width: 700px)');
+  const syncVV = () => { if (!vv || !phone.matches) { root.style.removeProperty('--cvh'); root.style.removeProperty('--cvt'); return; } root.style.setProperty('--cvh', `${vv.height}px`); root.style.setProperty('--cvt', `${vv.offsetTop}px`); scroll(); };
+  vv?.addEventListener('resize', syncVV); vv?.addEventListener('scroll', syncVV);
   const openChat = (key) => {
+    document.documentElement.classList.add('chat-lock'); syncVV();
     root.hidden = false; void root.offsetWidth; dock.classList.add('open'); fab.setAttribute('aria-expanded', 'true'); fab.classList.remove('ping');
     if (!started) { start().then(() => { if (key) choose(key); }); } else if (key) choose(key);
     setTimeout(() => input.focus({ preventScroll: true }), 50);
   };
-  const closeChat = () => { dock.classList.remove('open'); fab.setAttribute('aria-expanded', 'false'); setTimeout(() => { if (!dock.classList.contains('open')) root.hidden = true; }, 300); fab.focus({ preventScroll: true }); };
+  const closeChat = () => { document.documentElement.classList.remove('chat-lock'); dock.classList.remove('open'); fab.setAttribute('aria-expanded', 'false'); setTimeout(() => { if (!dock.classList.contains('open')) root.hidden = true; }, 300); fab.focus({ preventScroll: true }); };
   fab.addEventListener('click', () => openChat());
   closeBtn?.addEventListener('click', closeChat);
   addEventListener('keydown', (e) => { if (e.key === 'Escape' && dock.classList.contains('open')) closeChat(); });
