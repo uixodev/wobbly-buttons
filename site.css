@@ -333,7 +333,8 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 
 /* phones: the "Let's connect" links become a row of icons */
 @media (max-width: 640px) {
-  .social { display: flex; flex-wrap: wrap; gap: 16px clamp(12px, 4vw, 22px); padding: 0; }
+  .f-connect { grid-column: 1 / -1; }
+  .social { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px 8px; padding: 0; max-width: 22rem; }
   .social li { margin: 0; padding: 0; }
   .social a { font-size: 0; gap: 0; padding: 10px; margin: -10px; }
   .social svg { width: 28px; height: 28px; }
