@@ -65,3 +65,11 @@ html.menu-open { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
   .burger, .menu-links a, .menu-side, .burger-icon path { transition: none !important; }
 }
+
+/* a solid, hand-cut backdrop behind the floating logo and Menu once you are past the hero, so page text never sits behind them */
+html { scroll-padding-top: 76px; }
+.site-nav::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 74px; background: var(--bg, #F7F3EF); clip-path: url(#bar-shape); filter: none; opacity: 0; pointer-events: none; transition: opacity .3s ease; z-index: -1; }
+html.bar-on .site-nav::before { opacity: 1; }
+html.menu-open .site-nav::before { opacity: 0; }
+@media (max-width: 700px) { .site-nav::before { height: 70px; } }
+@media (prefers-reduced-motion: reduce) { .site-nav::before { transition: none; } }

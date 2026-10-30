@@ -77,3 +77,13 @@ function init() {
     }
   });
 }
+
+// the solid header backdrop switches on once the hero has scrolled away
+{
+  const hero = document.getElementById('hero'), root = document.documentElement;
+  let tick = false;
+  const upd = () => { tick = false; root.classList.toggle('bar-on', !hero || hero.getBoundingClientRect().bottom < 90); };
+  addEventListener('scroll', () => { if (!tick) { tick = true; requestAnimationFrame(upd); } }, { passive: true });
+  addEventListener('resize', upd);
+  upd();
+}
