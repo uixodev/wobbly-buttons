@@ -18,8 +18,8 @@ const ANSWERS = {
   avail: { q: 'Are you available?', a: INFO.open ? 'I’m open for new projects. The quickest way to start is a short message — it takes a minute.' : 'I’m fully booked right now, but leave a message and I’ll tell you when I have space.', next: ['msg', 'do'] },
   work: { q: 'Show me your work', a: 'Sure — I’ll take you to my projects.', action: () => document.getElementById('work')?.scrollIntoView({ behavior: 'smooth' }), next: ['process', 'price', 'msg'] },
   blog: { q: 'Read your blog', a: 'Here are my notes on design, pricing, domains and how I work with AI.', action: () => document.getElementById('blog')?.scrollIntoView({ behavior: 'smooth' }), next: ['price', 'msg'] },
-  msg: { q: 'Leave me a message', a: 'I’d love that. What would you like to tell me? Then I’ll ask for your name and email so I can get back to you.', ask: 'message', next: [] },
-  live: { q: 'Chat with me live, anonymously', a: 'Sure — no name or email needed. Type your message below and it goes straight to me, and my replies show up here in this chat. Please don’t share anything private.', ask: 'live', next: [] },
+  msg: { q: 'Leave me a message', a: 'I’d love that. What would you like to tell me? Then I’ll ask for your name and email — I’ll reply to you by email, not here.', ask: 'message', next: [] },
+  live: { q: 'Chat with me live, anonymously', a: 'Sure — no name or email needed. Type your message below and it goes straight to my phone. I’ll reply right here in this chat, so keep it open while you wait. Please don’t share anything private.', ask: 'live', next: [] },
 };
 const START = ['do', 'process', 'price', 'msg', 'live'];
 
@@ -72,14 +72,14 @@ if (log && quick && form) {
     if (ok) {
       who = { name: draft.name, contact: draft.contact }; store.set('vira-chat-who', JSON.stringify(who));
       await say(`Got it, ${draft.name} — your message is on its way to me. ✓`);
-      await say(`I’ll answer here in this chat, or by email at ${draft.contact}. You can keep typing below.`); startPolling();
+      await say(`What happens next: I’ll reply by email to ${draft.contact}, so keep an eye on your inbox (and your spam folder). You don’t need to keep this chat open.`); startPolling();
     } else { await say('Hmm, that didn’t go through. Could you try the contact section below instead?', null); document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }); }
     draft = { message: '', name: '', contact: '' }; chips(['do', 'process', 'price']); busy = false;
   }
   async function sendLive(text) {                                   // anonymous: no name, no email, just the message
     busy = true; mode = 'idle'; input.placeholder = 'Type a message…'; quick.replaceChildren(); bubble(text, 'me'); await wait(250);
     const ok = await post({ message: text, anon: true });
-    if (ok) { who = { anon: true, name: '', contact: '' }; store.set('vira-chat-who', JSON.stringify(who)); await say('Sent — I’ll answer here. Keep this chat open (or come back on this device) to see my reply.'); startPolling(); }
+    if (ok) { who = { anon: true, name: '', contact: '' }; store.set('vira-chat-who', JSON.stringify(who)); await say('Sent! I’ll reply right here in this chat as soon as I see it, so keep it open. If you close it, come back on this device and my answer will be waiting.'); startPolling(); }
     else { await say('That didn’t go through — could you try again in a moment?'); mode = 'live'; input.placeholder = 'Write your message…'; }
     busy = false;
   }
@@ -119,7 +119,7 @@ if (log && quick && form) {
 
   async function start() {
     if (started) return Promise.resolve(); started = true; busy = true;
-    if (who) { await say(who.anon ? 'Welcome back! Type below to keep chatting — my replies show up here.' : `Welcome back${who.name ? ', ' + who.name : ''}! Type below to message me — my replies show up here.`); await pullReplies(true); startPolling(); chips(START); busy = false; return; }
+    if (who) { await say(who.anon ? 'Welcome back! Type below to keep chatting — my replies show up here.' : `Welcome back${who.name ? ', ' + who.name : ''}! I reply by email (${who.contact}), but you can add to your message below.`); await pullReplies(true); startPolling(); chips(START); busy = false; return; }
     await say('Hi! I’m Vira — well, her little chat helper. What would you like to know?'); chips(START); busy = false;
   }
   // closed by default: a white button and a few suggestions; opening shows the chat (a suggestion also asks that question)

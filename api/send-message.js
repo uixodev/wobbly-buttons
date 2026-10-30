@@ -36,7 +36,7 @@ export default async function handler(req, res) {
   const tag = validSid(sid) ? ` [#${sid.slice(0, 4)}]` : '';
   const payload = process.env.WA_TEMPLATE
     ? { messaging_product: 'whatsapp', to: owner, type: 'template', template: { name: process.env.WA_TEMPLATE, language: { code: process.env.WA_TEMPLATE_LANG || 'en_US' }, components: [{ type: 'body', parameters: [(name || 'Someone') + tag, contact, message].map((t) => ({ type: 'text', text: one(t) || '-' })) }] } }
-    : { messaging_product: 'whatsapp', to: owner, type: 'text', text: { body: `New message from your website${tag}\nName: ${name || '—'}\nReply to: ${contact}\n\n${message}\n\n(Use WhatsApp's Reply on this message to answer in the chat.)` } };
+    : { messaging_product: 'whatsapp', to: owner, type: 'text', text: { body: anon ? `New LIVE anonymous message${tag}\n\n${message}\n\n(They are waiting in the chat: use WhatsApp's Reply on this message to answer there.)` : `New message from your website${tag}\nName: ${name || '—'}\nReply by email: ${contact}\n\n${message}\n\n(They expect an email reply. WhatsApp's Reply on this message also shows your answer in their chat.)` } };
   try {
     const r = await fetch(`https://graph.facebook.com/v20.0/${phoneId}/messages`, { method: 'POST', headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
     if (!r.ok) { console.error('WhatsApp API error', r.status, await r.text()); return res.status(502).json({ ok: false, error: 'upstream' }); }
