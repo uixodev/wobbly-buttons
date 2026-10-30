@@ -380,8 +380,7 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .contact-art { max-width: 640px; }
 .contact-cat { width: 100%; cursor: pointer; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; touch-action: manipulation; }
 .contact-cat svg { display: block; width: 100%; height: auto; overflow: visible; }
-.contact-cat .ink use { fill: var(--ink); }
-.contact-cat .cc-tail { fill: var(--ink); stroke: var(--ink); stroke-width: 1.2; stroke-linejoin: round; }
+.contact-cat .ink path { fill: var(--ink); }
 .contact-cat .cover { fill: var(--ink); } .contact-cat .white { fill: #F7F3EF; }
 .contact-cat .look { transform: translate(var(--ex, 0px), var(--ey, 0px)); transition: transform .12s ease-out; }
 .contact-cat .white { transform-box: fill-box; transform-origin: center; animation: cat-blink 5.5s 1.5s infinite; }
