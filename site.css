@@ -1057,3 +1057,9 @@ html.chat-lock { overflow: hidden; }
   .chat-dock.open .chat.kb .chat-log { padding-top: 6px; padding-bottom: 4px; }
   .chat-dock.open .chat.kb .chat-form { padding: 4px 12px calc(10px + env(safe-area-inset-bottom, 0px)); }
 }
+
+/* phones: more air between the blog tiles, and between the last blog title and the purple band below it */
+@media (max-width: 700px) {
+  #blog .covers { row-gap: clamp(34px, 9vw, 52px); }
+  #blog { margin-bottom: clamp(56px, 16vw, 84px); }
+}
