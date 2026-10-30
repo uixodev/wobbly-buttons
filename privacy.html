@@ -24,7 +24,7 @@
     .priv p { margin: 0 0 14px; }
     .priv ul, .priv ol { margin: 0 0 14px; padding-left: 1.3em; }
     .priv li { margin-bottom: 8px; }
-    .priv a { color: var(--ink); text-underline-offset: 4px; }
+    .priv a:not(.wobbly) { color: var(--ink); text-underline-offset: 4px; }
     .priv .short { padding: clamp(20px, 3vw, 30px); background: #fff; border-radius: 22px 18px 24px 17px / 18px 24px 17px 22px; box-shadow: 0 14px 22px -16px rgba(17, 17, 17, .35); }
     .priv .short ul { margin: 0; }
     .priv .keep { display: grid; gap: 12px; margin: 6px 0 14px; }
@@ -33,6 +33,7 @@
     .priv .keep span { font: 400 1.02rem/1.55 var(--body); }
     .priv .tool { margin: 12px 0 0; padding: 18px 20px; background: #fff; border-radius: 20px 16px 22px 15px / 16px 22px 15px 20px; box-shadow: 0 12px 20px -16px rgba(17, 17, 17, .35); }
     .priv .tool code { display: block; margin: 8px 0 12px; padding: 10px 12px; background: #F1ECE6; border-radius: 10px; font: 400 .85rem/1.3 var(--mono); word-break: break-all; }
+    .priv .tool [hidden] { display: none; }
     .priv .tool button { padding: 10px 18px; border: 0; background: #111; color: #fff; border-radius: 999px 940px 999px 960px / 880px 999px 940px 999px; font: 400 .72rem/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; cursor: pointer; transition: background .2s ease, color .2s ease; }
     .priv .tool button:hover { background: var(--accent); color: #111; }
     .priv .tool .done { margin: 10px 0 0; font: 400 1.4rem/1 var(--hand); }
