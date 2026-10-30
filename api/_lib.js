@@ -12,8 +12,14 @@ export async function redis(...cmd) {
   return j.result;
 }
 
+// Which websites may call these functions from a browser. Your own site calls them on the same address, so this only matters for other origins.
+// Set ALLOWED_ORIGIN in Vercel to override it: one address, several separated by commas, or * for anyone.
+const ORIGINS = (process.env.ALLOWED_ORIGIN || 'https://viraa.me,https://www.viraa.me,https://wobbly-buttons.vercel.app').split(',').map((s) => s.trim()).filter(Boolean);
 export const cors = (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', process.env.ALLOWED_ORIGIN || '*'); res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS'); res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  const origin = req.headers?.origin;
+  if (ORIGINS.includes('*')) res.setHeader('Access-Control-Allow-Origin', '*');
+  else if (origin && ORIGINS.includes(origin)) { res.setHeader('Access-Control-Allow-Origin', origin); res.setHeader('Vary', 'Origin'); }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS'); res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') { res.status(204).end(); return true; }
   return false;
 };

@@ -50,3 +50,9 @@ To use a real photo or screenshot, add an `<img src="…" alt="…">` as the **f
 - `contact.js` + `contact.css` — the "Get in touch" pop-up (any element with `data-contact` opens it). Edit the `LINKS` list at the top of `contact.js` to change the email or social links; the footer icons are in `index.html`.
 - Newsletter: the footer form (`.news` in `index.html`, script in `site.js`) subscribes people through Buttondown (`https://buttondown.com/api/emails/embed-subscribe/uixo`). The privacy page has a matching section.
 - `privacy.html` — the public privacy page (what the chat collects, how it travels via WhatsApp, Upstash/Vercel, 30-day retention, how to ask for access or deletion by email). Linked from the footer and the chat. If you change what the chat stores or for how long, update this page too.
+
+## Domain, search engines and sharing
+- The site lives at **https://viraa.me** (set in Vercel → Domains). The address is written into the canonical links, share cards (`og:` tags), `sitemap.xml` and `robots.txt`; if the domain ever changes, search these files for `viraa.me`.
+- `favicon.svg` / `favicon.ico` / `apple-touch-icon.png` / `icon-*.png` / `site.webmanifest` — the tab and home-screen icon (the Viraa character). `assets/og-image.png` is the picture shown when a link is shared.
+- Every page has its own title, description, canonical link and share card; the home page and the blog posts also carry structured data (JSON-LD) for search engines.
+- `vercel.json` keeps `/api/*` out of search results. `api/_lib.js` lists the addresses allowed to call the chat functions (override with the `ALLOWED_ORIGIN` setting in Vercel).

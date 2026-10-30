@@ -4,7 +4,7 @@
 // Environment variables (hosting dashboard, never the page):
 //   WA_TOKEN, WA_PHONE_ID, OWNER_NUMBER   WhatsApp Cloud API token, the Phone number ID you send FROM, and YOUR WhatsApp number (country code + digits)
 //   WA_TEMPLATE, WA_TEMPLATE_LANG         approved template with 3 body variables {{1}} name {{2}} reply-to {{3}} message (recommended)
-//   ALLOWED_ORIGIN                        your site address (optional)
+//   ALLOWED_ORIGIN                        your site address(es), comma-separated (optional; the default allows viraa.me, www.viraa.me and the vercel.app address)
 //   + the Upstash Redis variables (see _lib.js) for the two-way part
 
 import { redis, redisReady, cors, validSid, TTL } from './_lib.js';

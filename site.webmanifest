@@ -1,0 +1,29 @@
+{
+  "name": "Viraa — web designer in Bristol",
+  "short_name": "Viraa",
+  "description": "Thoughtful websites for people with beautiful ideas.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "browser",
+  "background_color": "#F7F3EF",
+  "theme_color": "#F7F3EF",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
